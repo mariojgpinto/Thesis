@@ -13,6 +13,9 @@
 //Windows
 class Speculum;
 class Preferences;
+class MirrorManagerGUI;
+class FloorManagerGUI;
+class Arena;
 
 class Controller{
 public:
@@ -21,11 +24,18 @@ public:
 
     void set_viewer_window(Speculum* window){this->_main_window = window;}
 	void set_preferences_window(Preferences* window){this->_preferences_window = window;}
+	void set_mirror_manager_window(MirrorManagerGUI* window){this->_mirror_manager_window = window;}
+	void set_floor_manager_window(FloorManagerGUI* window){this->_floor_manager_window = window;}
     
     Speculum* get_viewer_window(){return this->_main_window;}
 	Preferences* get_preferences_window(){return this->_preferences_window;}
+	MirrorManagerGUI* get_mirror_manager_window(){return this->_mirror_manager_window;}
+	FloorManagerGUI* get_floor_manager_window(){return this->_floor_manager_window;}
     
-    QKinect* get_kinect(){return this->_kinect;} 
+	void set_arena(Arena *arena){this->_arena = arena;}
+	Arena* get_arena(){return this->_arena;}	
+	
+	QKinect* get_kinect(){return this->_kinect;} 
 
     //Global Images
     cv::Mat3b* get_color_image(){return this->_color_image;}
@@ -65,9 +75,12 @@ private:
     //Windows
     Speculum* _main_window;
 	Preferences* _preferences_window;
+	MirrorManagerGUI* _mirror_manager_window;
+	FloorManagerGUI* _floor_manager_window;
 
     //Global Variables
     QKinect *_kinect;
+	Arena *_arena;
 
     //Global Images
     cv::Mat3b* _color_image;

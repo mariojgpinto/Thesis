@@ -19,7 +19,7 @@ class Floor{
 		void setup_variables();
 
 	private:
-		bool *_flags;
+		bool _flags[Floor::_n_flags];
 
 		cv::Mat1b _mask;
 };

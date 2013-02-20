@@ -1,0 +1,139 @@
+
+\documentclass[12pt,a4paper]{book}
+
+%------------------------------INTERNATIONALIZATION----------------------------
+%\usepackage[utf8]{inputenc}
+\usepackage[english,portuges]{babel} % amazingly, the filename is really "portuges"! 
+\usepackage[T1]{fontenc} % change from default OT1, which contains only the 128 ASCII characters.
+\usepackage{textcomp}
+
+%-----------------------------------TEXT, FONT---------------------------------
+\usepackage{txfonts} % nicer fonts than TeX's default ones
+\renewcommand{\sfdefault}{txss} %use txfont's sans serif font as default sans-serif font family
+\renewcommand{\familydefault}{\sfdefault} %use sans-serif as default font family
+\renewcommand{\footnotesize}{\fontsize{8}{10}\selectfont} % 8pt font size, 10pt leading (line height)
+\renewcommand{\em}{\fontfamily{\rmdefault}\fontshape{it}\selectfont} % make emphasis use roman font
+\renewcommand{\itshape}{\fontfamily{\rmdefault}\fontshape{it}\selectfont} % make italics use roman font
+
+% Pretendido-----------------------------------SPACING AND MARGINS---------------------------------
+\usepackage{setspace} % for easy configuration of line spacing
+\usepackage{parskip} % separate paragraphs by adding vertical space between them
+                     % instead of indenting the first line
+\setlength{\parskip}{1em plus 0.5em minus 0.5em} % more spacing between paragraphs than the default set by parskip}
+                                                 % the plus and minus values allow for some flexibility
+                                                 % and help with preventing widows and orphand (see next line)
+%\widowpenalty=300 % avoid "widows" (single lines at the end of a page)
+%\clubpenalty=300 % avoid "orphans" (single lines at the beginning of a page)
+\usepackage{a4wide} % more text, less margins
+%\usepackage{fancyhdr} % to format headers and footers
+\usepackage{longtable} % for tables that are too long to fit on a single page
+
+%---------------------------CITATIONS AND BIBLIOGRAPHY-------------------------
+\usepackage[square,colon]{natbib} % author-year bibliography format + many customization options
+\renewcommand{\cite}{\citep} % for backwards compatibility: in case natbib is not used,
+                             % most entries will be already using the standard \cite command
+%\usepackage{footbib} % worth a try: places bibliography entries as footnotes; more user-friendly for long documets.
+
+%---------------------------------FIGURES CONFIG--------------------------------
+\usepackage{graphicx}
+\usepackage{wrapfig}  % to allow images wrapped by text
+\usepackage[font={small,it}]{caption} % to make all captions equally formatted
+                                      % (figure, wrapfig, subfloat).
+                                      % It MUST be loaded *before* package subfig
+\usepackage{subfig} % for producing single figures made up of several images, using \subfloat
+\usepackage{sidecap} % for figures with captions on the side
+%\graphicspath{{./Images/}}
+\graphicspath{{./images-R/}} % use images from folder "images"
+                           % without having to specify the path everytime an image is included
+%\usepackage{hypcap} % To make links point to the top of floats (images and tables), 
+                     % instead of pointing to the bottom, where the caption and label are.
+                     % Remember to include \capstart on the floats
+                     
+%-----------------------------------PDF CONFIG----------------------------------
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[pdfauthor={Mario Pinto, PG17664},%
+            pdftitle={Natural Interaction and Tangible Interfaces for Games and Entertainment in Augmented Reality},%
+            urlcolor=NavyBlue,% default is magenta
+            citecolor=black,% default is green
+            linkcolor=NavyBlue,% default is red
+            pdftex,colorlinks,a4paper,pagebackref]{hyperref}
+\def\chapterautorefname{Chapter}       % Make hyperref's autoref names start with capital letters.
+\def\sectionautorefname{Section}       % See url below for default values:
+\def\subsectionautorefname{Subsection} % http://www.tug.org/applications/hyperref/manual.html#TBL-23
+\def\tableautorefname{Table}           % Note: autoref feature didn't seem to work with tables
+
+\usepackage{pdfpages} % to be able to include pdf documents with includepdf{}
+%-----------------------------------END PACKAGES----------------------------------
+
+\begin{document}
+
+\onehalfspacing % 1.5 line height
+
+\includepdf{./pdf-include/thesis-cover.pdf}
+\thispagestyle{empty} % prevent a page number to appear in the empty page below
+\newpage % insert empty page (back of the cover)
+
+\frontmatter %note: only available in the book class
+
+% The \chapter command automatically sets \thispagestyle{plain},
+% which places page numbers centered in the footer.
+% Setting this pagestyle here makes the empty pages of the front matter
+% follow the same format, for consistency (doing the reverse would be more work).
+\pagestyle{plain}
+
+\includepdf{./pdf-include/thesis-folha-rosto.pdf}
+\includepdf{./pdf-include/declaracao.pdf}
+
+\include{./Text/Commands}
+
+\include{./Text/[00]Head/[00][01]Thanks}
+\include{./Text/[00]Head/[00][02]Abstract}
+\include{./Text/[00]Head/[00][03]Resumo}
+
+\setcounter{tocdepth}{2} % customize maximum depth level of table of contents
+\tableofcontents
+
+\setlength{\parskip}{3em} % silly hack to make the list of figures start with those of chapter 4 on a new page
+\listoffigures
+\setlength{\parskip}{1em plus 0.5em minus 0.5em} % end of silly hack
+
+\listoftables
+
+\mainmatter
+
+\input{./Text/[01]Introduction/[01][00]Introduction}
+\input{./Text/[01]Introduction/[01][01]Motivation}
+\input{./Text/[01]Introduction/[01][02]Objectives}
+\input{./Text/[01]Introduction/[01][03]DocumentOrganization}
+
+\input{./Text/[02]SoA/[02][00]Introduction}
+\input{./Text/[02]SoA/[02][01]AugmentedReality}
+\input{./Text/[02]SoA/[02][02]HCI}
+\input{./Text/[02]SoA/[02][03]DepthSensors}
+
+\input{./Text/[03]Methodology/[03][00]Introduction}
+\input{./Text/[04]Concept_Design/[04][00]Introduction}
+\input{./Text/[05]Development/[05][00]Introduction}
+\input{./Text/[06]Results_and_Discussion/[06][00]Introduction}
+\input{./Text/[07]Conclusion/[07][00]Conclusion}
+
+
+\bibliographystyle{./bibtex/myplainnat} % Based on plainnat, which uses the full first names of the authors instead of initials;
+                               % Differences from plainnat: 
+                               % - Places last names before first names, to ease lookup
+                               % - Uses quotes around titles to make them stand out better
+\cleardoublepage % move to next page so that the link from the next command is added in the proper place
+                 % Note: use \clearpage instead, if the book class is not used
+                 % (or if the "oneside" argument is passed to the document class)
+\phantomsection % create an anchor so that a link can be added in the ToC (see below)
+\addtocounter{chapter}{1}
+\addcontentsline{toc}{chapter}{\arabic{chapter}\hspace*{1em}\bibname} % add this section to the ToC
+
+%\renewcommand{\bibname}{References} % to customize the title of the references section
+
+%\nocite{*} % for debugging: displays all bibliography entries, even if they're not cited in the text.
+\bibliography{./bibtex/references}
+
+\input{./Text/[08]Appendix/[08][00]Appendix}
+
+\end{document}

@@ -11,10 +11,12 @@
 #include "ui_Speculum.h"
 
 #include <ntk/ntk.h>
-#include "controller.h"
 #include "Preferences.h"
+#include "MirrorManagerGUI.h"
+#include "FloorManagerGUI.h"
+//#include "Controller.h"
 
-#include "Mirror.h"
+//#include <Arena.h>
 
 class Speculum : public QMainWindow
 {
@@ -31,9 +33,15 @@ public slots:
 	//Actions
 	//File
 	void on_close();
+	void on_source_file();
+	void on_source_kinect();
+	void on_save_model();
 
 	//Configuration
-	void on_add_mirror();
+	void on_manage_mirrors();
+	void on_manage_floor();
+	void on_save_configuration();
+	void on_load_configuration();
 
 	//Preferences
 	void on_preferences_gui();

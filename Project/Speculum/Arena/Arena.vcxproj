@@ -35,10 +35,16 @@
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_242_DEBUG.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OUTPUT_LIB.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN_DEBUG.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\NESTK.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\QT_472_DEBUG.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST_DEBUG.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_DEBUG.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\QT_472_DEBUG.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

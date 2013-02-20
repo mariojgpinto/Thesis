@@ -75,8 +75,6 @@ void Controller::update(ntk::RGBDImage* image){
 
         ntk::compute_color_encoded_depth(*this->_depth_image, *this->_depth_as_color, &this->_min_depth, &this->_max_depth);
 
-        this->process_images();
-
 		this->update_timer();
     }
 }
@@ -107,7 +105,5 @@ void Controller::update_timer(){
  *
  */
 void Controller::show_images(){
-	if(!this->_preferences_window->isHidden()){
-		this->_preferences_window->show_images();
-	}
+
 }

@@ -6,6 +6,9 @@
 
 #include "Speculum.h"
 
+//-----------------------------------------------------------------------------
+// CONSTRUCTORS
+//-----------------------------------------------------------------------------
 Speculum::Speculum(Controller *c, QApplication *a, QWidget *parent, Qt::WFlags flags):
 	QMainWindow(parent, flags),
 	app(a),
@@ -29,7 +32,7 @@ Speculum::~Speculum()
 }
 
 //-----------------------------------------------------------------------------
-// Setup
+// SETUP
 //-----------------------------------------------------------------------------
 void Speculum::setup_windows(){
     QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -69,10 +72,20 @@ void Speculum::setup_connections(){
 	this->ui->_main_action_preferences->setShortcut(QKeySequence("Ctrl+P"));
 	connect(this->ui->_main_action_preferences,SIGNAL(triggered()),this,SLOT(on_preferences_gui()));
 
-	this->ui->_main_action_add_mirror->setShortcut(QKeySequence("Ctrl+M"));
-	connect(this->ui->_main_action_add_mirror,SIGNAL(triggered()),this,SLOT(on_add_mirror()));
+	this->ui->_main_action_manage_mirrors->setShortcut(QKeySequence("Ctrl+M"));
+	connect(this->ui->_main_action_manage_mirrors,SIGNAL(triggered()),this,SLOT(on_manage_mirrors()));
 
+	this->ui->_main_action_manager_floor->setShortcut(QKeySequence("Ctrl+F"));
+	connect(this->ui->_main_action_manager_floor,SIGNAL(triggered()),this,SLOT(on_manage_floor()));
 	connect(this->ui->_main_push_button_floor, SIGNAL(clicked()), this, SLOT(on_button_floor()));
+
+	connect(this->ui->_main_action_save_configuration,SIGNAL(triggered()),this,SLOT(on_save_configuration()));
+	connect(this->ui->_main_action_load_configuration,SIGNAL(triggered()),this,SLOT(on_load_configuration()));
+
+	connect(this->ui->_main_action_source_file,SIGNAL(triggered()),this,SLOT(on_source_file()));
+	connect(this->ui->_main_action_source_kinect,SIGNAL(triggered()),this,SLOT(on_source_kinect()));
+
+	connect(this->ui->_main_action_save_model,SIGNAL(triggered()),this,SLOT(on_save_model()));
     //connect(this->ui->main_pushButton_background, SIGNAL(clicked()), this, SLOT(on_botton_background()));
     //connect(this->ui->main_pushButton_user, SIGNAL(clicked()), this, SLOT(on_botton_user()));
     //connect(this->ui->main_horizontalSlider_min_depth, SIGNAL(valueChanged(int)), this, SLOT(min_slider_change(int)));
@@ -101,53 +114,37 @@ void Speculum::on_close(){
 	this->app->quit();
 	exit(0);
 }
-Mirror* mirror = new Mirror();
+
+void Speculum::on_source_file(){
+	//TODO Select File as Input Source
+}
+
+void Speculum::on_source_kinect(){
+	//TODO Select Kinect as Input Source
+}
+
+void Speculum::on_save_model(){
+	//TODO Save Model to File
+}
+
+
 //-----------------------------------------------------------------------------
 // SLOTS - CONFIGURATION ACTIONS 
 //-----------------------------------------------------------------------------
-namespace
-{
-	struct TrackerGroundMouseData
-	{
-		std::string window_name;
-		cv::Mat3b image;
-		std::vector<cv::Point*> points;
-	};
-
-	static void on_tracker_ground_mouse(int event, int x, int y, int flags, void *void_data)
-	{
-		if (event != CV_EVENT_LBUTTONUP)
-			return;
-
-		TrackerGroundMouseData* data = (TrackerGroundMouseData*)void_data;
-		data->points.push_back(new cv::Point(x, y));
-		circle(data->image, cv::Point(x,y), 5, cv::Scalar(255,255,255,255));
-		imshow(data->window_name, data->image);
-	}
+void Speculum::on_manage_mirrors(){
+	this->_controller->get_mirror_manager_window()->show();
 }
-void Speculum::on_add_mirror(){
-	// Estimate ground plane equation asking 10 points to the user.
-	TrackerGroundMouseData ground_mouse_data;
-	ground_mouse_data.window_name = "Select the points to estimate the ground plane (left click). Press Space to exit";
-	cv::namedWindow(ground_mouse_data.window_name);
-	//		CV_WINDOW_NORMAL|CV_WINDOW_KEEPRATIO|CV_GUI_EXPANDED);
-	this->_controller->get_color_image()->copyTo(ground_mouse_data.image);
-	cv::imshow(ground_mouse_data.window_name, ground_mouse_data.image);
-	cv::setMouseCallback(ground_mouse_data.window_name, on_tracker_ground_mouse, &ground_mouse_data);
-	while (cv::waitKey(30) != ' ')
-	{
 
-		QApplication::processEvents();
-	}
+void Speculum::on_manage_floor(){
+	this->_controller->get_floor_manager_window()->show();
+}
 
+void Speculum::on_save_configuration(){
+	//TODO Save Configurations
+}
 
-	cv::destroyWindow(ground_mouse_data.window_name);
-
-	if(ground_mouse_data.points.size() > 2){
-		mirror->set_area(&ground_mouse_data.points);
-
-		_button_floor_flag = true;
-	}
+void Speculum::on_load_configuration(){
+	//TODO Save Configurations
 }
 
 //-----------------------------------------------------------------------------
@@ -167,16 +164,30 @@ void Speculum::on_button_floor(){
 void Speculum::process_image()
 {
 	this->_controller->process_images();
-    //if(!this->_controller->get_user_window()->isHidden()){
-    //    this->_controller->get_user_window()->process_image();
-    //}
+
+	if(!_controller->get_preferences_window()->isHidden()){
+		_controller->get_preferences_window()->process_image();
+	}
+
+	if(!_controller->get_mirror_manager_window()->isHidden()){
+		_controller->get_mirror_manager_window()->process_image();
+	}
 }
 
 void Speculum::show_images()
 {
-	if(_button_floor_flag){
+	if(!_controller->get_preferences_window()->isHidden()){
+		_controller->get_preferences_window()->show_images();
+	}
+
+	if(!_controller->get_mirror_manager_window()->isHidden()){
+		_controller->get_mirror_manager_window()->show_images();
+	}
+
+
+	if(this->_button_floor_flag){
 		cv::Mat3b aux;
-		this->_controller->get_depth_as_color()->copyTo(aux,*mirror->get_mask());
+		this->_controller->get_depth_as_color()->copyTo(aux,*this->_controller->get_arena()->get_mirror(0)->get_mask());
 
 
 		this->_ntk_widget_left->setImage(aux);

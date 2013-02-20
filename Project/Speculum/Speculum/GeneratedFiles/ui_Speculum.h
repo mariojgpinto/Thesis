@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'Speculum.ui'
 **
-** Created: Thu 7. Feb 19:51:51 2013
+** Created: Tue 19. Feb 22:53:32 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -38,6 +38,7 @@ public:
     QAction *_main_action_source_file;
     QAction *_main_action_add_mirror;
     QAction *_main_action_manage_mirrors;
+    QAction *_main_action_manager_floor;
     QWidget *centralWidget;
     QWidget *_main_widget_left;
     QWidget *_main_widget_right1;
@@ -85,6 +86,8 @@ public:
         _main_action_add_mirror->setObjectName(QString::fromUtf8("_main_action_add_mirror"));
         _main_action_manage_mirrors = new QAction(SpeculumClass);
         _main_action_manage_mirrors->setObjectName(QString::fromUtf8("_main_action_manage_mirrors"));
+        _main_action_manager_floor = new QAction(SpeculumClass);
+        _main_action_manager_floor->setObjectName(QString::fromUtf8("_main_action_manager_floor"));
         centralWidget = new QWidget(SpeculumClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         _main_widget_left = new QWidget(centralWidget);
@@ -144,8 +147,9 @@ public:
         menuFile->addAction(_main_action_exit);
         menuSource->addAction(_main_action_source_kinect);
         menuSource->addAction(_main_action_source_file);
-        menuConfiguration->addAction(_main_action_add_mirror);
         menuConfiguration->addAction(_main_action_manage_mirrors);
+        menuConfiguration->addSeparator();
+        menuConfiguration->addAction(_main_action_manager_floor);
         menuConfiguration->addSeparator();
         menuConfiguration->addAction(_main_action_save_configuration);
         menuConfiguration->addAction(_main_action_load_configuration);
@@ -168,6 +172,7 @@ public:
         _main_action_source_file->setText(QApplication::translate("SpeculumClass", "File", 0, QApplication::UnicodeUTF8));
         _main_action_add_mirror->setText(QApplication::translate("SpeculumClass", "Add Mirror", 0, QApplication::UnicodeUTF8));
         _main_action_manage_mirrors->setText(QApplication::translate("SpeculumClass", "Manage Mirrors", 0, QApplication::UnicodeUTF8));
+        _main_action_manager_floor->setText(QApplication::translate("SpeculumClass", "Manage Floor", 0, QApplication::UnicodeUTF8));
         _main_push_button_floor->setText(QApplication::translate("SpeculumClass", "Calc Floor", 0, QApplication::UnicodeUTF8));
         _main_push_button_mirrors->setText(QApplication::translate("SpeculumClass", "Floor", 0, QApplication::UnicodeUTF8));
         _main_push_button_object->setText(QApplication::translate("SpeculumClass", "Object", 0, QApplication::UnicodeUTF8));

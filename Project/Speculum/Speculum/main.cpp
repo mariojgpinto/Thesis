@@ -17,7 +17,11 @@ int main(int argc, char *argv[])
 	Controller controller(&kinect);
 
 	Preferences preferences(&controller);
+	MirrorManagerGUI mirror_manager(&controller, &a);
 	Speculum speculum(&controller, &a);
+
+	Arena arena;
+	controller.set_arena(&arena);
 
 	speculum.show();
 	return a.exec();

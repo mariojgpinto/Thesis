@@ -157,8 +157,9 @@
     <property name="title">
      <string>Configuration</string>
     </property>
-    <addaction name="_main_action_add_mirror"/>
     <addaction name="_main_action_manage_mirrors"/>
+    <addaction name="separator"/>
+    <addaction name="_main_action_manager_floor"/>
     <addaction name="separator"/>
     <addaction name="_main_action_save_configuration"/>
     <addaction name="_main_action_load_configuration"/>
@@ -225,6 +226,11 @@
   <action name="_main_action_manage_mirrors">
    <property name="text">
     <string>Manage Mirrors</string>
+   </property>
+  </action>
+  <action name="_main_action_manager_floor">
+   <property name="text">
+    <string>Manage Floor</string>
    </property>
   </action>
  </widget>

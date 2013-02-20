@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'Preferences.ui'
 **
-** Created: Thu 7. Feb 19:09:18 2013
+** Created: Tue 19. Feb 22:53:33 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
