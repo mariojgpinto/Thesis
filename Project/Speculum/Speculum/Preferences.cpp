@@ -35,15 +35,15 @@ Preferences::~Preferences()
  *
  */
 void Preferences::setup_windows(){
-	//QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	//sizePolicy1.setHorizontalStretch(0);
-	//sizePolicy1.setVerticalStretch(0);
-	//sizePolicy1.setHeightForWidth(true);
+	QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	sizePolicy1.setHorizontalStretch(0);
+	sizePolicy1.setVerticalStretch(0);
+	sizePolicy1.setHeightForWidth(true);
 
-	//this->ntk_widget_left = new ntk::ImageWidget(this->ui->main_widget_left);
-	//this->ntk_widget_left->setObjectName(QString::fromUtf8("DepthAsColor"));
-	//this->ntk_widget_left->setSizePolicy(sizePolicy1);
-	//this->ntk_widget_left->setFixedSize(320,240);
+	this->_widget = new ntk::ImageWidget(this->ui->_preferences_widget);
+	this->_widget->setObjectName(QString::fromUtf8("DepthAsColor"));
+	this->_widget->setSizePolicy(sizePolicy1);
+	this->_widget->setFixedSize(this->ui->_preferences_widget->width(),this->ui->_preferences_widget->height());
 }
 
 /** 
@@ -77,6 +77,26 @@ void Preferences::setup_variables(){
  *
  */
 void Preferences::on_close(){
+	cv::imwrite("image.png",*this->_controller->get_depth_as_color());
+
+	cv::Mat coiso;//(this->_controller->get_depth_as_color()->size());
+
+	cv::cvtColor(*this->_controller->get_depth_as_color(), coiso, CV_RGB2GRAY);
+	cv::imwrite("image_gray.png",*this->_controller->get_depth_image());
+	cv::Mat show; //this->_controller->get_depth_image()->convertTo( show, CV_32SC1, 0.05 );
+	cv::blur(*this->_controller->get_depth_image(),show,cv::Size(3,3));
+	cv::FileStorage fs("test.yml", cv::FileStorage::WRITE);
+	fs << "cameraMatrix" << *this->_controller->get_depth_image();
+	fs.release();
+
+	cv::FileStorage fs1("test2.yml", cv::FileStorage::WRITE);
+	fs1 << "cameraMatrix" << show;
+	fs1.release();
+
+	cv::imshow("show",show);
+	cv::waitKey();
+	cv::imwrite("image_gray_orig.png",show);
+
 	this->hide();
 }
 
@@ -140,5 +160,5 @@ void Preferences::process_image(){
  *
  */
 void Preferences::show_images(){
-
+	this->_widget->setImage(*this->_controller->get_depth_as_color());
 }

@@ -14,6 +14,7 @@
 #include "Preferences.h"
 #include "MirrorManagerGUI.h"
 #include "FloorManagerGUI.h"
+#include "3DView.h"
 //#include "Controller.h"
 
 //#include <Arena.h>
@@ -37,6 +38,9 @@ public slots:
 	void on_source_kinect();
 	void on_save_model();
 
+	//View
+	void on_3d_view();
+
 	//Configuration
 	void on_manage_mirrors();
 	void on_manage_floor();
@@ -47,7 +51,8 @@ public slots:
 	void on_preferences_gui();
 	
 	//Buttons
-	void on_button_floor();
+	void on_generate_3d_floor();
+	void on_auto_update();
 
 protected:
     //Setup Methods
@@ -65,6 +70,8 @@ private:
 	Controller* _controller;
 
 	bool _button_floor_flag;
+
+	bool _auto_update;
 
 	//Windows
 	ntk::ImageWidget *_ntk_widget_left;

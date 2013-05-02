@@ -52,19 +52,6 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="_main_push_button_floor">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>500</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Calc Floor</string>
-    </property>
-   </widget>
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
@@ -88,7 +75,20 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="_main_push_button_mirrors">
+   <widget class="QPushButton" name="_main_push_button_generate_3d">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>500</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Generate 3D</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="_main_push_button_auto_update">
     <property name="geometry">
      <rect>
       <x>100</x>
@@ -98,33 +98,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Floor</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="_main_push_button_object">
-    <property name="geometry">
-     <rect>
-      <x>210</x>
-      <y>500</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Object</string>
-    </property>
-   </widget>
-   <widget class="Line" name="line_2">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>500</y>
-      <width>20</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Vertical</enum>
+     <string>Auto Update</string>
     </property>
    </widget>
   </widget>
@@ -166,13 +140,15 @@
    </widget>
    <widget class="QMenu" name="menuPreferences">
     <property name="title">
-     <string>Preferences</string>
+     <string>View</string>
     </property>
+    <addaction name="_main_action_3d_view"/>
+    <addaction name="separator"/>
     <addaction name="_main_action_preferences"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuConfiguration"/>
    <addaction name="menuPreferences"/>
+   <addaction name="menuConfiguration"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -231,6 +207,11 @@
   <action name="_main_action_manager_floor">
    <property name="text">
     <string>Manage Floor</string>
+   </property>
+  </action>
+  <action name="_main_action_3d_view">
+   <property name="text">
+    <string>3D View</string>
    </property>
   </action>
  </widget>

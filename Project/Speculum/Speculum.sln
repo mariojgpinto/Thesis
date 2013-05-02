@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Speculum", "Speculum\Specul
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arena", "Arena\Arena.vcxproj", "{C79C6E52-80FB-4B92-8321-BE9C67B9A4A0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PointCloud", "PointCloud\PointCloud.vcxproj", "{C9C2FBE5-F6AC-4E33-B084-461F91A61205}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +21,10 @@ Global
 		{C79C6E52-80FB-4B92-8321-BE9C67B9A4A0}.Debug|Win32.Build.0 = Debug|Win32
 		{C79C6E52-80FB-4B92-8321-BE9C67B9A4A0}.Release|Win32.ActiveCfg = Release|Win32
 		{C79C6E52-80FB-4B92-8321-BE9C67B9A4A0}.Release|Win32.Build.0 = Release|Win32
+		{C9C2FBE5-F6AC-4E33-B084-461F91A61205}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C9C2FBE5-F6AC-4E33-B084-461F91A61205}.Debug|Win32.Build.0 = Debug|Win32
+		{C9C2FBE5-F6AC-4E33-B084-461F91A61205}.Release|Win32.ActiveCfg = Release|Win32
+		{C9C2FBE5-F6AC-4E33-B084-461F91A61205}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -41,7 +41,7 @@ class Preferences : public QMainWindow
 		Controller *_controller;
 
 		////Windows
-		//ntk::ImageWidget *_widget_top_left;
+		ntk::ImageWidget *_widget;
 		//ntk::ImageWidget *_widget_top_right;
 
 		////Button Flags

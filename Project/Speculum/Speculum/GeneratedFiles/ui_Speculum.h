@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'Speculum.ui'
 **
-** Created: Tue 19. Feb 22:53:32 2013
+** Created: Mon 29. Apr 19:57:11 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -39,15 +39,14 @@ public:
     QAction *_main_action_add_mirror;
     QAction *_main_action_manage_mirrors;
     QAction *_main_action_manager_floor;
+    QAction *_main_action_3d_view;
     QWidget *centralWidget;
     QWidget *_main_widget_left;
     QWidget *_main_widget_right1;
-    QPushButton *_main_push_button_floor;
     QFrame *line;
     QWidget *_main_widget_right2;
-    QPushButton *_main_push_button_mirrors;
-    QPushButton *_main_push_button_object;
-    QFrame *line_2;
+    QPushButton *_main_push_button_generate_3d;
+    QPushButton *_main_push_button_auto_update;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuSource;
@@ -88,6 +87,8 @@ public:
         _main_action_manage_mirrors->setObjectName(QString::fromUtf8("_main_action_manage_mirrors"));
         _main_action_manager_floor = new QAction(SpeculumClass);
         _main_action_manager_floor->setObjectName(QString::fromUtf8("_main_action_manager_floor"));
+        _main_action_3d_view = new QAction(SpeculumClass);
+        _main_action_3d_view->setObjectName(QString::fromUtf8("_main_action_3d_view"));
         centralWidget = new QWidget(SpeculumClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         _main_widget_left = new QWidget(centralWidget);
@@ -96,9 +97,6 @@ public:
         _main_widget_right1 = new QWidget(centralWidget);
         _main_widget_right1->setObjectName(QString::fromUtf8("_main_widget_right1"));
         _main_widget_right1->setGeometry(QRect(670, 10, 240, 160));
-        _main_push_button_floor = new QPushButton(centralWidget);
-        _main_push_button_floor->setObjectName(QString::fromUtf8("_main_push_button_floor"));
-        _main_push_button_floor->setGeometry(QRect(10, 500, 75, 23));
         line = new QFrame(centralWidget);
         line->setObjectName(QString::fromUtf8("line"));
         line->setGeometry(QRect(650, 10, 20, 481));
@@ -107,17 +105,12 @@ public:
         _main_widget_right2 = new QWidget(centralWidget);
         _main_widget_right2->setObjectName(QString::fromUtf8("_main_widget_right2"));
         _main_widget_right2->setGeometry(QRect(670, 190, 240, 160));
-        _main_push_button_mirrors = new QPushButton(centralWidget);
-        _main_push_button_mirrors->setObjectName(QString::fromUtf8("_main_push_button_mirrors"));
-        _main_push_button_mirrors->setGeometry(QRect(100, 500, 75, 23));
-        _main_push_button_object = new QPushButton(centralWidget);
-        _main_push_button_object->setObjectName(QString::fromUtf8("_main_push_button_object"));
-        _main_push_button_object->setGeometry(QRect(210, 500, 75, 23));
-        line_2 = new QFrame(centralWidget);
-        line_2->setObjectName(QString::fromUtf8("line_2"));
-        line_2->setGeometry(QRect(180, 500, 20, 21));
-        line_2->setFrameShape(QFrame::VLine);
-        line_2->setFrameShadow(QFrame::Sunken);
+        _main_push_button_generate_3d = new QPushButton(centralWidget);
+        _main_push_button_generate_3d->setObjectName(QString::fromUtf8("_main_push_button_generate_3d"));
+        _main_push_button_generate_3d->setGeometry(QRect(10, 500, 75, 23));
+        _main_push_button_auto_update = new QPushButton(centralWidget);
+        _main_push_button_auto_update->setObjectName(QString::fromUtf8("_main_push_button_auto_update"));
+        _main_push_button_auto_update->setGeometry(QRect(100, 500, 75, 23));
         SpeculumClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SpeculumClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -139,8 +132,8 @@ public:
         SpeculumClass->setStatusBar(statusBar);
 
         menuBar->addAction(menuFile->menuAction());
-        menuBar->addAction(menuConfiguration->menuAction());
         menuBar->addAction(menuPreferences->menuAction());
+        menuBar->addAction(menuConfiguration->menuAction());
         menuFile->addAction(menuSource->menuAction());
         menuFile->addAction(_main_action_save_model);
         menuFile->addSeparator();
@@ -153,6 +146,8 @@ public:
         menuConfiguration->addSeparator();
         menuConfiguration->addAction(_main_action_save_configuration);
         menuConfiguration->addAction(_main_action_load_configuration);
+        menuPreferences->addAction(_main_action_3d_view);
+        menuPreferences->addSeparator();
         menuPreferences->addAction(_main_action_preferences);
 
         retranslateUi(SpeculumClass);
@@ -173,13 +168,13 @@ public:
         _main_action_add_mirror->setText(QApplication::translate("SpeculumClass", "Add Mirror", 0, QApplication::UnicodeUTF8));
         _main_action_manage_mirrors->setText(QApplication::translate("SpeculumClass", "Manage Mirrors", 0, QApplication::UnicodeUTF8));
         _main_action_manager_floor->setText(QApplication::translate("SpeculumClass", "Manage Floor", 0, QApplication::UnicodeUTF8));
-        _main_push_button_floor->setText(QApplication::translate("SpeculumClass", "Calc Floor", 0, QApplication::UnicodeUTF8));
-        _main_push_button_mirrors->setText(QApplication::translate("SpeculumClass", "Floor", 0, QApplication::UnicodeUTF8));
-        _main_push_button_object->setText(QApplication::translate("SpeculumClass", "Object", 0, QApplication::UnicodeUTF8));
+        _main_action_3d_view->setText(QApplication::translate("SpeculumClass", "3D View", 0, QApplication::UnicodeUTF8));
+        _main_push_button_generate_3d->setText(QApplication::translate("SpeculumClass", "Generate 3D", 0, QApplication::UnicodeUTF8));
+        _main_push_button_auto_update->setText(QApplication::translate("SpeculumClass", "Auto Update", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("SpeculumClass", "File", 0, QApplication::UnicodeUTF8));
         menuSource->setTitle(QApplication::translate("SpeculumClass", "Source", 0, QApplication::UnicodeUTF8));
         menuConfiguration->setTitle(QApplication::translate("SpeculumClass", "Configuration", 0, QApplication::UnicodeUTF8));
-        menuPreferences->setTitle(QApplication::translate("SpeculumClass", "Preferences", 0, QApplication::UnicodeUTF8));
+        menuPreferences->setTitle(QApplication::translate("SpeculumClass", "View", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

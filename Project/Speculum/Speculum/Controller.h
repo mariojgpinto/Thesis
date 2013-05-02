@@ -10,12 +10,17 @@
 #include <QKinect.h>
 #include <ntk/ntk.h>
 
+
 //Windows
 class Speculum;
 class Preferences;
 class MirrorManagerGUI;
 class FloorManagerGUI;
+class View3DWindow;
 class Arena;
+
+
+class View3DWindow;
 
 class Controller{
 public:
@@ -26,11 +31,13 @@ public:
 	void set_preferences_window(Preferences* window){this->_preferences_window = window;}
 	void set_mirror_manager_window(MirrorManagerGUI* window){this->_mirror_manager_window = window;}
 	void set_floor_manager_window(FloorManagerGUI* window){this->_floor_manager_window = window;}
+	void set_3d_window(View3DWindow* window){this->_view3d_window = window;}
     
     Speculum* get_viewer_window(){return this->_main_window;}
 	Preferences* get_preferences_window(){return this->_preferences_window;}
 	MirrorManagerGUI* get_mirror_manager_window(){return this->_mirror_manager_window;}
 	FloorManagerGUI* get_floor_manager_window(){return this->_floor_manager_window;}
+	View3DWindow* get_3d_window(){return this->_view3d_window;}
     
 	void set_arena(Arena *arena){this->_arena = arena;}
 	Arena* get_arena(){return this->_arena;}	
@@ -67,6 +74,10 @@ public:
 	void set_paused(bool state){this->_paused = state;}
     bool is_paused(){return this->_paused;}
 
+	//Buffer for 3DView
+	void start_buffering(int n_frames);	
+	void join_buffer();
+
 private:
     void setup_images();
     void setup_variables();
@@ -77,6 +88,7 @@ private:
 	Preferences* _preferences_window;
 	MirrorManagerGUI* _mirror_manager_window;
 	FloorManagerGUI* _floor_manager_window;
+	View3DWindow* _view3d_window;
 
     //Global Variables
     QKinect *_kinect;
@@ -101,6 +113,12 @@ private:
 	double _last_tick;
 	int _frame_counter;
 	float _frame_rate;
+
+	//3D Buffering
+	bool _buffer_flag;
+	std::vector<ntk::RGBDImage*>* _buffer;
+	int _buffer_counter;
+	cv::Mat1b *_buffer_mask;
 };
 
 #endif // CONTROLLER_H

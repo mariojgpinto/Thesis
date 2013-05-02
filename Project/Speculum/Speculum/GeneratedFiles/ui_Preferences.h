@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'Preferences.ui'
 **
-** Created: Tue 19. Feb 22:53:33 2013
+** Created: Mon 29. Apr 19:57:13 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -34,6 +34,7 @@ public:
     QSlider *preferences_slider_min_depth;
     QCheckBox *preferences_check_box_diff;
     QSlider *preferences_slider_max_depth;
+    QWidget *_preferences_widget;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -41,7 +42,7 @@ public:
     {
         if (Preferences->objectName().isEmpty())
             Preferences->setObjectName(QString::fromUtf8("Preferences"));
-        Preferences->resize(600, 400);
+        Preferences->resize(660, 611);
         centralwidget = new QWidget(Preferences);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         preferences_label_min_depth = new QLabel(centralwidget);
@@ -64,10 +65,13 @@ public:
         preferences_slider_max_depth->setGeometry(QRect(100, 60, 491, 20));
         preferences_slider_max_depth->setValue(30);
         preferences_slider_max_depth->setOrientation(Qt::Horizontal);
+        _preferences_widget = new QWidget(centralwidget);
+        _preferences_widget->setObjectName(QString::fromUtf8("_preferences_widget"));
+        _preferences_widget->setGeometry(QRect(10, 90, 640, 480));
         Preferences->setCentralWidget(centralwidget);
         menubar = new QMenuBar(Preferences);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 600, 21));
+        menubar->setGeometry(QRect(0, 0, 660, 21));
         Preferences->setMenuBar(menubar);
         statusbar = new QStatusBar(Preferences);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));

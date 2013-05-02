@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MirrorManagerGUI.ui'
 **
-** Created: Tue 19. Feb 22:53:33 2013
+** Created: Mon 29. Apr 19:57:13 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -83,7 +83,7 @@ public:
     {
         if (MirrorManagerGUI->objectName().isEmpty())
             MirrorManagerGUI->setObjectName(QString::fromUtf8("MirrorManagerGUI"));
-        MirrorManagerGUI->resize(790, 620);
+        MirrorManagerGUI->resize(789, 620);
         _mirror_action_close = new QAction(MirrorManagerGUI);
         _mirror_action_close->setObjectName(QString::fromUtf8("_mirror_action_close"));
         _mirror_action_add_mirror = new QAction(MirrorManagerGUI);
@@ -230,7 +230,7 @@ public:
         MirrorManagerGUI->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MirrorManagerGUI);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 790, 21));
+        menubar->setGeometry(QRect(0, 0, 789, 21));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         menuConfiguration = new QMenu(menubar);

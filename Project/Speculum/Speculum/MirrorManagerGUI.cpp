@@ -6,6 +6,15 @@
 
 #include "MirrorManagerGUI.h"
 
+#include "ui_MirrorManagerGUI.h"
+#include "controller.h"
+#include "3DView.h"
+
+#include <ntk/ntk.h>
+#include <ntk/gui/image_widget.h>
+
+#include <ntk/mesh/mesh_generator.h>
+
 //-----------------------------------------------------------------------------
 // CONSTRUCTORS
 //-----------------------------------------------------------------------------
@@ -107,11 +116,11 @@ void MirrorManagerGUI::setup_windows(){
 }
 
 void MirrorManagerGUI::setup_connections(){
-    //connect(this->_controller->get_kinect(), SIGNAL(kinect_image(ntk::RGBDImage*)),this, SLOT(update_window(ntk::RGBDImage*)));
-
+	//Close Action and Shortcut
 	this->ui->_mirror_action_close->setShortcut(Qt::Key_Escape);
 	connect(this->ui->_mirror_action_close,SIGNAL(triggered()),this,SLOT(on_close()));
 
+	//Add Mirror Action, Button and Shortcut
 	this->ui->_mirror_action_add_mirror->setShortcut(QKeySequence("Ctrl+M"));
 	connect(this->ui->_mirror_action_add_mirror,SIGNAL(triggered()),this,SLOT(on_add_mirror()));
 	connect(this->ui->_mirror_push_button_add_mirror, SIGNAL(clicked()), this, SLOT(on_add_mirror()));
@@ -133,14 +142,18 @@ void MirrorManagerGUI::setup_connections(){
 }
 
 void MirrorManagerGUI::update_n_mirrors(){
-	this->ui->_mirror_spinbox_mirror->setMaximum(this->_controller->get_arena()->get_n_mirrors());
+	int coiso = this->_controller->get_arena()->get_n_mirrors();
+	this->ui->_mirror_spinbox_mirror->setMaximum(coiso);
 	this->ui->_mirror_spinbox_mirror->setMinimum(1);
+	if(!this->ui->_mirror_spinbox_mirror->value() && coiso)
+		this->ui->_mirror_spinbox_mirror->setValue(1);
+	
+	
 }
 
 //-----------------------------------------------------------------------------
 // SLOTS
 //-----------------------------------------------------------------------------
-
 
 //-----------------------------------------------------------------------------
 // SLOTS - FILE ACTIONS 
@@ -158,12 +171,13 @@ void MirrorManagerGUI::on_mirror_section(int value){
 	if(value){
 		this->ui->_mirror_spinbox_vertix->setMinimum(0);
 		this->ui->_mirror_spinbox_vertix->setMaximum(this->_arena->get_mirror(this->_mirror_index)->get_n_vertexes()-1);
-		this->on_mirror_vertex(0);
+		this->on_mirror_vertex(this->ui->_mirror_spinbox_vertix->value());
 	}
 }
 
 int fuckthisshitX = 0;
 int fuckthisshitY = 0;
+
 void MirrorManagerGUI::on_mirror_vertex(int value){
 	cv::Point *pt = this->_arena->get_mirror(this->_mirror_index)->get_vertex(value);
 
@@ -225,7 +239,6 @@ void MirrorManagerGUI::on_add_mirror(){
 		QApplication::processEvents();
 	}
 
-
 	cv::destroyWindow(ground_mouse_data.window_name);
 
 	if(ground_mouse_data.points.size() > 2){
@@ -249,7 +262,9 @@ void MirrorManagerGUI::on_calc_plane_by_points(){
 	ground_mouse_data.window_name = "Select the points to estimate the ground plane (left click). Press Space to exit";
 	cv::namedWindow(ground_mouse_data.window_name);
 	
-	this->_controller->get_depth_as_color()->copyTo(ground_mouse_data.image,*this->_arena->get_mirror(this->_mirror_index)->get_mask());
+	Mirror* mirror = this->_arena->get_mirror(this->_mirror_index);
+
+	this->_controller->get_depth_as_color()->copyTo(ground_mouse_data.image,*mirror->get_area_mask());
 	
 	// Estimate ground plane equation asking 10 points to the user.
 	//		CV_WINDOW_NORMAL|CV_WINDOW_KEEPRATIO|CV_GUI_EXPANDED);
@@ -263,12 +278,196 @@ void MirrorManagerGUI::on_calc_plane_by_points(){
 	cv::destroyWindow(ground_mouse_data.window_name);
 	
 	//TODO Verify if Points are within the mask
-
 	ntk::Plane* plane = Arena::extract_plane(&ground_mouse_data.points,this->_controller->get_RGBDImage(), 5);
+	
+	if(plane){
+		mirror->set_plane(plane->a,plane->b,plane->c,plane->d);
+	}
 
-	printf("");
+	
+	/*
+
+	cv::Mat1b _floor_mask;
+	cv::Size size = this->_controller->get_RGBDImage()->depth().size();
+
+	_floor_mask.create(size);
+	_floor_mask.ones(size);
+
+	ntk::Mesh mesh;
+
+	float dist = 0.0f;
+	for(int j = 0 ; j < this->_controller->get_RGBDImage()->depth().rows ; j++){
+		for(int i = 0 ; i < this->_controller->get_RGBDImage()->depth().cols ; i++){
+			cv::Point p(i,j);
+			cv::Point3f pf = this->_controller->get_RGBDImage()->calibration()->depth_pose->unprojectFromImage(p, this->_controller->get_RGBDImage()->depth()(p));
+
+			dist = plane->distanceToPlane(pf);
+
+			if(dist < 0.03){
+				_floor_mask[j][i] = 0;
+			}
+			else{
+				_floor_mask[j][i] = 255;
+			}
+		}
+	}
 
 
+	cv::Vec3f normal = plane->normal();
+	normal*=-1;
+	cv::Mat1f depth2;
+	cv::Mat1f depth;
+	this->_controller->get_depth_image()->copyTo(depth2,*this->_arena->get_mirror(this->_mirror_index)->get_area_mask());
+	depth2.copyTo(depth,_floor_mask);
+
+	for(int j = 0 ; j < depth.rows ; j++){
+		for(int i = 0 ; i < depth.cols ; i++){
+			cv::Point p(i,j);
+			if(depth(p)){
+				cv::Point3f pf = this->_controller->get_RGBDImage()->calibration()->depth_pose->unprojectFromImage(p, this->_controller->get_RGBDImage()->depth()(p));
+				
+				double dp = plane->distanceToPlane(pf);
+				cv::Vec3b color = (*this->_controller->get_color_image())(p);
+
+				ntk::Surfel surf;
+				surf.location = cv::Point3f(pf);
+				surf.color = cv::Vec3f::all(170);//cv::Vec3f(color.val[2],color.val[1],color.val[0]);//color;//cv::Vec3f::all(255);
+				mesh.addPointFromSurfel(surf);
+
+				ntk::Surfel surf2;
+
+				cv::Point3f pt2;
+				pt2.x = pf.x + (dp * 2 * normal.val[0]);
+				pt2.y = pf.y + (dp * 2 * normal.val[1]);
+				pt2.z = pf.z + (dp * 2 * normal.val[2]);
+
+				
+
+				surf2.location = cv::Point3f(pt2);
+				surf2.color = cv::Vec3f(color.val[2],color.val[1],color.val[0]);//cv::Vec3f::all(255);
+				mesh.addPointFromSurfel(surf2);
+			}
+		}
+	}
+
+	
+	//this->_controller->get_3d_window()->add_mesh(mesh);
+
+
+
+
+
+
+
+
+
+
+
+
+
+	TrackerGroundMouseData ground_mouse_data2;
+	ground_mouse_data2.window_name = "Select the points to estimate the ground plane (left click). Press Space to exit";
+	cv::namedWindow(ground_mouse_data2.window_name);
+	
+	this->_controller->get_depth_as_color()->copyTo(ground_mouse_data2.image,*this->_arena->get_mirror(this->_mirror_index+1)->get_area_mask());
+	
+	// Estimate ground plane equation asking 10 points to the user.
+	//		CV_WINDOW_NORMAL|CV_WINDOW_KEEPRATIO|CV_GUI_EXPANDED);
+	cv::imshow(ground_mouse_data2.window_name, ground_mouse_data.image);
+	cv::setMouseCallback(ground_mouse_data2.window_name, on_tracker_ground_mouse, &ground_mouse_data2);
+	while (cv::waitKey(30) != ' ')
+	{
+		QApplication::processEvents();
+	}
+
+	cv::destroyWindow(ground_mouse_data2.window_name);
+	
+	//TODO Verify if Points are within the mask
+
+	ntk::Plane* plane2 = Arena::extract_plane(&ground_mouse_data2.points,this->_controller->get_RGBDImage(), 5);
+	
+	cv::Mat1b _floor_mask2;
+	cv::Size size2 = this->_controller->get_RGBDImage()->depth().size();
+
+	_floor_mask2.create(size2);
+	_floor_mask2.ones(size2);
+
+	dist = 0.0f;
+	for(int j = 0 ; j < this->_controller->get_RGBDImage()->depth().rows ; j++){
+		for(int i = 0 ; i < this->_controller->get_RGBDImage()->depth().cols ; i++){
+			cv::Point p(i,j);
+			cv::Point3f pf = this->_controller->get_RGBDImage()->calibration()->depth_pose->unprojectFromImage(p, this->_controller->get_RGBDImage()->depth()(p));
+
+			dist = plane2->distanceToPlane(pf);
+
+			if(dist < 0.03){
+				_floor_mask2[j][i] = 0;
+				
+				
+				//this->_floor_mask_inv[j][i] = 1;
+			}
+			else{
+				_floor_mask2[j][i] = 255;
+			}
+		}
+	}
+
+
+	cv::Vec3f normal2 = plane2->normal();
+
+	normal2*=-1;
+
+	cv::Mat1f depth4;
+	cv::Mat1f depth3;
+	this->_controller->get_depth_image()->copyTo(depth4,*this->_arena->get_mirror(this->_mirror_index+1)->get_area_mask());
+	depth4.copyTo(depth3,_floor_mask2);
+
+	for(int j = 0 ; j < depth.rows ; j++){
+		for(int i = 0 ; i < depth.cols ; i++){
+			cv::Point p(i,j);
+			if(depth3(p)){
+				cv::Point3f pf = this->_controller->get_RGBDImage()->calibration()->depth_pose->unprojectFromImage(p, this->_controller->get_RGBDImage()->depth()(p));
+				
+				double dp = plane2->distanceToPlane(pf);
+				cv::Vec3b color = (*this->_controller->get_color_image())(p);
+
+				ntk::Surfel surf;
+				surf.location = cv::Point3f(pf);
+				surf.color = cv::Vec3f::all(170);//color;cv::Vec3f(color.val[2],color.val[1],color.val[0]);
+				mesh.addPointFromSurfel(surf);
+
+				ntk::Surfel surf2;
+
+				cv::Point3f pt2;
+				pt2.x = pf.x + (dp * 2 * normal2.val[0]);
+				pt2.y = pf.y + (dp * 2 * normal2.val[1]);
+				pt2.z = pf.z + (dp * 2 * normal2.val[2]);
+
+				
+
+				surf2.location = cv::Point3f(pt2);
+				surf2.color = cv::Vec3f(color.val[2],color.val[1],color.val[0]);//cv::Vec3f::all(255);
+				mesh.addPointFromSurfel(surf2);
+			}
+		}
+	}
+
+	
+	this->_controller->get_3d_window()->add_mesh(mesh);
+
+	//cv::Mat3b aux;
+	//cv::Mat3b aux2;
+	//this->_controller->get_depth_as_color()->copyTo(aux,_floor_mask);
+	//aux.copyTo(aux2,*this->_arena->get_mirror(this->_mirror_index)->get_area_mask());
+	//cv::imshow("Mask",_floor_mask);
+	//cv::imshow("masked",aux2);
+
+	//cv::waitKey(11);
+
+	//cv::imshow("Mask",_floor_mask);
+	//cv::imshow("masked",aux2);
+
+	//cv::waitKey(0);*/
 }
 
 //-----------------------------------------------------------------------------
@@ -288,7 +487,7 @@ void MirrorManagerGUI::process_image()
 
 		if(mirrors){
 			for(unsigned int i = 0 ; i < mirrors->size() ; i++){
-				cv::bitwise_or(*mirrors->at(i)->get_mask(),aux,aux);
+				cv::bitwise_or(*mirrors->at(i)->get_area_mask(),aux,aux);
 			}
 
 			aux.assignTo(this->_mat_view_left_mask);
@@ -311,13 +510,13 @@ void MirrorManagerGUI::show_images()
 		} 
 		else{
 			cv::Mat3b aux;
-			this->_controller->get_depth_as_color()->copyTo(aux,*this->_arena->get_mirror(this->_mirror_index)->get_mask());
+			this->_controller->get_depth_as_color()->copyTo(aux,*this->_arena->get_mirror(this->_mirror_index)->get_area_mask());
 
 			cv::Mat3b aux2;
-			this->_controller->get_color_image()->copyTo(aux2,*this->_arena->get_mirror(this->_mirror_index)->get_mask());
+			this->_controller->get_color_image()->copyTo(aux2,*this->_arena->get_mirror(this->_mirror_index)->get_area_mask());
 
 			this->_ntk_widget_top->setImage(aux);
-			this->_ntk_widget_bottom_right->setImage(*this->_arena->get_mirror(this->_mirror_index)->get_mask());
+			this->_ntk_widget_bottom_right->setImage(*this->_arena->get_mirror(this->_mirror_index)->get_area_mask());
 			this->_ntk_widget_bottom_left->setImage(aux2);
 		}
 	} else													
@@ -329,28 +528,28 @@ void MirrorManagerGUI::show_images()
 		this->_ntk_widget_view_left->setImage(aux);
 
 		if(this->_arena->get_mirror(0)){
-			this->_ntk_widget_view1->setImage(*this->_arena->get_mirror(0)->get_mask());
+			this->_ntk_widget_view1->setImage(*this->_arena->get_mirror(0)->get_area_mask());
 		}
 		else{
 			this->_ntk_widget_view1->setImage(*this->_controller->get_depth_as_color());
 		}
 
 		if(this->_arena->get_mirror(1)){
-			this->_ntk_widget_view2->setImage(*this->_arena->get_mirror(1)->get_mask());
+			this->_ntk_widget_view2->setImage(*this->_arena->get_mirror(1)->get_area_mask());
 		}
 		else{
 			this->_ntk_widget_view2->setImage(*this->_controller->get_depth_as_color());
 		}
 
 		if(this->_arena->get_mirror(2)){
-			this->_ntk_widget_view3->setImage(*this->_arena->get_mirror(2)->get_mask());
+			this->_ntk_widget_view3->setImage(*this->_arena->get_mirror(2)->get_area_mask());
 		}
 		else{
 			this->_ntk_widget_view3->setImage(*this->_controller->get_depth_as_color());
 		}
 
 		if(this->_arena->get_mirror(3)){
-			this->_ntk_widget_view4->setImage(*this->_arena->get_mirror(3)->get_mask());
+			this->_ntk_widget_view4->setImage(*this->_arena->get_mirror(3)->get_area_mask());
 		}
 		else{
 			this->_ntk_widget_view4->setImage(*this->_controller->get_depth_as_color());

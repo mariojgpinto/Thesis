@@ -30,6 +30,11 @@ public slots:
 	void on_close();
 
 	//Buttons
+	void on_set_area();
+	void on_add_floor_normal();
+	void on_save();
+
+	void on_threshold_changed(double value);
 
 	//Processing Methods
     void process_image();
@@ -46,8 +51,10 @@ private:
 	
 	Controller* _controller;
 
+	bool _auto_update;
+
 	//Windows
-	//ntk::ImageWidget *_ntk_widget_top;
+	ntk::ImageWidget *_ntk_widget_main;
 	//ntk::ImageWidget *_ntk_widget_bottom_left;
 	//ntk::ImageWidget *_ntk_widget_bottom_right;
 };

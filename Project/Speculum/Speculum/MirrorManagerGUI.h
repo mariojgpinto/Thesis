@@ -8,13 +8,19 @@
 #define MIRROR_MANAGER_GUI_H
 
 #include <QtGui/QMainWindow>
-#include "ui_MirrorManagerGUI.h"
 
-#include <ntk/ntk.h>
-#include <ntk/gui/image_widget.h>
-#include "controller.h"
+namespace Ui {
+    class MirrorManagerGUI;
+}
+
+namespace ntk {
+	class ImageWidget;
+}
 
 #include <Arena.h>
+
+class Controller;
+
 
 class MirrorManagerGUI : public QMainWindow
 {
@@ -27,7 +33,6 @@ public:
 	void update_n_mirrors();
 
 public slots:
-	
 	//Actions
 	//File
 	void on_close();
@@ -45,6 +50,8 @@ public slots:
 	//Buttons
 	void on_add_mirror();
 	void on_calc_plane_by_points();
+
+	//Load update|
 
 protected:
     //Setup Methods
