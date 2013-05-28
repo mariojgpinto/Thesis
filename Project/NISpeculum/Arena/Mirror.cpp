@@ -134,10 +134,7 @@ void Mirror::set_area(std::vector<cv::Point*>* points){
  *
  */
 void Mirror::set_plane(double a, double b, double c, double d){
-	this->_plane.a = a;
-	this->_plane.b = b;
-	this->_plane.c = c;
-	this->_plane.d = d;
+	this->_plane.set(a,b,c,d);
 	
 	this->_flags[Mirror::PLANE] = true;
 }
@@ -232,10 +229,12 @@ void Mirror::add_perspective_to_mesh(ntk::Mesh *mesh, ntk::RGBDImage* image){
 		min_height = 0;
 	}
 
-	cv::Vec3f normal = this->_plane.normal();
+	double xx,yy,zz;
+	this->_plane.get_normal(&xx,&yy,&zz);
+	cv::Vec3f normal(xx,yy,zz);
 	normal*=-1;
 
-	cv::Point3f middle(0.012746937,0.12180407,-0.75500000);
+	cv::Point3f middle(0.012746937f,0.12180407f,-0.75500000f);
 
 	for(int i = min_width ; i < max_width ; i++){
 		for(int j = min_height ; j < max_height ; j++){
@@ -248,7 +247,7 @@ void Mirror::add_perspective_to_mesh(ntk::Mesh *mesh, ntk::RGBDImage* image){
 				cv::Point3f pf = aux_pose->unprojectFromImage(p, aux_depth(p));
 				
 				//Project from Mirror
-				double dp = this->_plane.distanceToPlane(pf);
+				double dp = this->_plane.distance_to_plane(pf.x,pf.y,pf.z);
 
 				if(dp < 0.75){
 					cv::Point3f pt2;
@@ -291,7 +290,7 @@ cv::Mat1b* Mirror::get_area_mask(){
  *
  *
  */
-inline ntk::Plane* Mirror::get_plane(){
+inline ToolBox::Plane* Mirror::get_plane(){
 	return (this->_flags[Mirror::PLANE]) ? &this->_plane : NULL;
 }
 
@@ -387,19 +386,19 @@ bool Mirror::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem
 		tinyxml2::XMLElement *elem_plane = doc->NewElement(_XML_MIRROR_ELEM_PLANE);
 			
 			tinyxml2::XMLElement *elem_plane_a = doc->NewElement(_XML_MIRROR_ELEM_PLANE_A);
-			elem_plane_a->SetAttribute(_XML_VALUE,this->_plane.a);
+			elem_plane_a->SetAttribute(_XML_VALUE,this->_plane._a);
 			elem_plane->LinkEndChild(elem_plane_a);
 
 			tinyxml2::XMLElement *elem_plane_b = doc->NewElement(_XML_MIRROR_ELEM_PLANE_B);
-			elem_plane_b->SetAttribute(_XML_VALUE,this->_plane.b);
+			elem_plane_b->SetAttribute(_XML_VALUE,this->_plane._b);
 			elem_plane->LinkEndChild(elem_plane_b);
 
 			tinyxml2::XMLElement *elem_plane_c = doc->NewElement(_XML_MIRROR_ELEM_PLANE_C);
-			elem_plane_c->SetAttribute(_XML_VALUE,this->_plane.c);
+			elem_plane_c->SetAttribute(_XML_VALUE,this->_plane._c);
 			elem_plane->LinkEndChild(elem_plane_c);
 
 			tinyxml2::XMLElement *elem_plane_d = doc->NewElement(_XML_MIRROR_ELEM_PLANE_D);
-			elem_plane_d->SetAttribute(_XML_VALUE,this->_plane.d);
+			elem_plane_d->SetAttribute(_XML_VALUE,this->_plane._d);
 			elem_plane->LinkEndChild(elem_plane_d);
 
 		elem->LinkEndChild(elem_plane);
@@ -415,7 +414,7 @@ bool Mirror::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem
 			std::string image_file_name;
 			image_file_name.assign(_XML_MIRROR_FILE_AREA_MASK);
 			char buff[8];
-			itoa(index,buff,10);
+			_itoa(index,buff,10);
 			image_file_name.append(buff);
 			image_file_name.append(_XML_MIRROR_FILE_AREA_MASK_PNG);
 
@@ -554,10 +553,7 @@ bool Mirror::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *ro
 		}
 
 		if(this->_flags[Mirror::PLANE]){
-			this->_plane.a = a;
-			this->_plane.b = b;
-			this->_plane.c = c;
-			this->_plane.d = d;
+			this->_plane.set(a,b,c,d);
 		}
 	}
 
