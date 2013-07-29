@@ -40,6 +40,7 @@
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENGL.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -57,6 +58,7 @@
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENGL.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>

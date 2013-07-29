@@ -32,9 +32,23 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_245_DEBUG.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENNI.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\NIKINECT.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_1.6.0_DEBUG.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\VTK_DEBUG.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_245_RELEASE.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENNI.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\NIKINECT.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_1.6.0_RELEASE.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\VTK_RELEASE.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -74,6 +88,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Arena\Arena.vcxproj">
+      <Project>{c79c6e52-80fb-4b92-8321-be9c67b9a4a0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GUI\GUI.vcxproj">
+      <Project>{7a5d85b3-e38e-4eb7-8bfa-7df70b3c15e2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Viewer3D\Viewer3D.vcxproj">
+      <Project>{85180102-0f70-486e-bbf3-107168d794c7}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="PropertyManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Controller.h" />
+    <ClInclude Include="PropertyManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

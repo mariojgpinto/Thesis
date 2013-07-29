@@ -11,18 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C79C6E52-80FB-4B92-8321-BE9C67B9A4A0}</ProjectGuid>
+    <ProjectGuid>{228EAB58-CAB1-4801-9873-1824B16F921E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Arena</RootNamespace>
+    <RootNamespace>PointCloud</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -32,31 +32,9 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_242_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OUTPUT_LIB.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\NESTK.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\QT_472_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_242_RELEASE.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OUTPUT_LIB.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\NESTK.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\QT_472_RELEASE.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_RELEASE.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -96,15 +74,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Arena.h" />
-    <ClInclude Include="ArenaXML.h" />
-    <ClInclude Include="Floor.h" />
-    <ClInclude Include="Mirror.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Arena.cpp" />
-    <ClCompile Include="Floor.cpp" />
-    <ClCompile Include="Mirror.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

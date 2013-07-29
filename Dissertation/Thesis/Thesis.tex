@@ -3,7 +3,7 @@
 
 %------------------------------INTERNATIONALIZATION----------------------------
 %\usepackage[utf8]{inputenc}
-\usepackage[english,portuges]{babel} % amazingly, the filename is really "portuges"! 
+\usepackage[english]{babel} %\usepackage[english,portuges]{babel} % amazingly, the filename is really "portuges"! 
 \usepackage[T1]{fontenc} % change from default OT1, which contains only the 128 ASCII characters.
 \usepackage{textcomp}
 
@@ -40,11 +40,11 @@
 \usepackage[font={small,it}]{caption} % to make all captions equally formatted
                                       % (figure, wrapfig, subfloat).
                                       % It MUST be loaded *before* package subfig
-\usepackage{subfig} % for producing single figures made up of several images, using \subfloat
+\usepackage{subfig}  % for producing single figures made up of several images, using \subfloat
 \usepackage{sidecap} % for figures with captions on the side
 %\graphicspath{{./Images/}}
-\graphicspath{{./images-R/}} % use images from folder "images"
-                           % without having to specify the path everytime an image is included
+\graphicspath{{./[00]Images/}} % use images from folder "images"
+                           		 % without having to specify the path everytime an image is included
 %\usepackage{hypcap} % To make links point to the top of floats (images and tables), 
                      % instead of pointing to the bottom, where the caption and label are.
                      % Remember to include \capstart on the floats
@@ -52,11 +52,11 @@
 %-----------------------------------PDF CONFIG----------------------------------
 \usepackage[usenames,dvipsnames]{color}
 \usepackage[pdfauthor={Mario Pinto, PG17664},%
-            pdftitle={Natural Interaction and Tangible Interfaces for Games and Entertainment in Augmented Reality},%
+            pdftitle={3D Concentric Data Acquisition using a Static Setup},%
             urlcolor=NavyBlue,% default is magenta
             citecolor=black,% default is green
             linkcolor=NavyBlue,% default is red
-            pdftex,colorlinks,a4paper,pagebackref]{hyperref}
+            pdftex,colorlinks,pagebackref]{hyperref} %,a4paper
 \def\chapterautorefname{Chapter}       % Make hyperref's autoref names start with capital letters.
 \def\sectionautorefname{Section}       % See url below for default values:
 \def\subsectionautorefname{Subsection} % http://www.tug.org/applications/hyperref/manual.html#TBL-23
@@ -69,7 +69,7 @@
 
 \onehalfspacing % 1.5 line height
 
-\includepdf{./pdf-include/thesis-cover.pdf}
+%\includepdf{./pdf-include/thesis-cover.pdf}
 \thispagestyle{empty} % prevent a page number to appear in the empty page below
 \newpage % insert empty page (back of the cover)
 
@@ -81,14 +81,14 @@
 % follow the same format, for consistency (doing the reverse would be more work).
 \pagestyle{plain}
 
-\includepdf{./pdf-include/thesis-folha-rosto.pdf}
-\includepdf{./pdf-include/declaracao.pdf}
+%\includepdf{./pdf-include/thesis-folha-rosto.pdf}
+%\includepdf{./pdf-include/declaracao.pdf}
 
-\include{./Text/Commands}
+\include{./Commands}
 
-\include{./Text/[00]Head/[00][01]Thanks}
-\include{./Text/[00]Head/[00][02]Abstract}
-\include{./Text/[00]Head/[00][03]Resumo}
+%\include{./Text/[00]Head/[00][01]Thanks}
+%\include{./Text/[00]Head/[00][02]Abstract}
+%\include{./Text/[00]Head/[00][03]Resumo}
 
 \setcounter{tocdepth}{2} % customize maximum depth level of table of contents
 \tableofcontents
@@ -101,24 +101,24 @@
 
 \mainmatter
 
-\input{./Text/[01]Introduction/[01][00]Introduction}
-\input{./Text/[01]Introduction/[01][01]Motivation}
-\input{./Text/[01]Introduction/[01][02]Objectives}
-\input{./Text/[01]Introduction/[01][03]DocumentOrganization}
+\input{./[01]Introduction/[01][00]Introduction}
+%\input{./Text/[01]Introduction/[01][01]Motivation}
+%\input{./Text/[01]Introduction/[01][02]Objectives}
+%\input{./Text/[01]Introduction/[01][03]DocumentOrganization}
 
-\input{./Text/[02]SoA/[02][00]Introduction}
-\input{./Text/[02]SoA/[02][01]AugmentedReality}
-\input{./Text/[02]SoA/[02][02]HCI}
-\input{./Text/[02]SoA/[02][03]DepthSensors}
+%\input{./Text/[02]SoA/[02][00]Introduction}
+%\input{./Text/[02]SoA/[02][01]AugmentedReality}
+%\input{./Text/[02]SoA/[02][02]HCI}
+%\input{./Text/[02]SoA/[02][03]DepthSensors}
 
-\input{./Text/[03]Methodology/[03][00]Introduction}
-\input{./Text/[04]Concept_Design/[04][00]Introduction}
-\input{./Text/[05]Development/[05][00]Introduction}
-\input{./Text/[06]Results_and_Discussion/[06][00]Introduction}
-\input{./Text/[07]Conclusion/[07][00]Conclusion}
+%\input{./Text/[03]Methodology/[03][00]Introduction}
+%\input{./Text/[04]Concept_Design/[04][00]Introduction}
+%\input{./Text/[05]Development/[05][00]Introduction}
+%\input{./Text/[06]Results_and_Discussion/[06][00]Introduction}
+%\input{./Text/[07]Conclusion/[07][00]Conclusion}
 
 
-\bibliographystyle{./bibtex/myplainnat} % Based on plainnat, which uses the full first names of the authors instead of initials;
+\bibliographystyle{./[00]Bibtex/myplainnat} % Based on plainnat, which uses the full first names of the authors instead of initials;
                                % Differences from plainnat: 
                                % - Places last names before first names, to ease lookup
                                % - Uses quotes around titles to make them stand out better
@@ -132,8 +132,8 @@
 %\renewcommand{\bibname}{References} % to customize the title of the references section
 
 %\nocite{*} % for debugging: displays all bibliography entries, even if they're not cited in the text.
-\bibliography{./bibtex/references}
+\bibliography{./[00]Bibtex/references}
 
-\input{./Text/[08]Appendix/[08][00]Appendix}
+%\input{./Text/[08]Appendix/[08][00]Appendix}
 
 \end{document}

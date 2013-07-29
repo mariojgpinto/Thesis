@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Fishkin(2004)]{Fishkin:2004}
+Fishkin, Kenneth~P.
+\newblock ``A taxonomy for and analysis of tangible interfaces''.
+\newblock \emph{Personal Ubiquitous Comput.}, 8:\penalty0 347--358, September
+  2004.
+\newblock ISSN 1617-4909.
+\newblock \doi{http://dx.doi.org/10.1007/s00779-004-0297-4}.
+\newblock URL \url{http://dx.doi.org/10.1007/s00779-004-0297-4}.
+
+\end{thebibliography}
