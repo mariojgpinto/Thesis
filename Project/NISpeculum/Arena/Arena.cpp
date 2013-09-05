@@ -92,6 +92,7 @@ void Arena::add_floor(Floor* floor){
 //-----------------------------------------------------------------------------
 // PROCESSING
 //-----------------------------------------------------------------------------
+/*
 ntk::Mesh* Arena::calculate_mesh(ntk::RGBDImage* image){
 	//If no floor or no mirrors, return NULL
 	if(!image) // || !this->_flags[Arena::FLOOR] || !this->_flags[Arena::MIRRORS])
@@ -127,7 +128,7 @@ ntk::Mesh* Arena::calculate_mesh(ntk::RGBDImage* image){
 	
 	return mesh;
 }
-
+*/
 //-----------------------------------------------------------------------------
 // UTIL
 //-----------------------------------------------------------------------------
@@ -155,6 +156,7 @@ ntk::Mesh* Arena::calculate_mesh(ntk::RGBDImage* image){
  *
  *
  */
+/*
 ntk::Plane* Arena::extract_plane(std::vector<cv::Point*>* points, ntk::RGBDImage* image, int point_radius){
 	if(!points || !image) return NULL;
 
@@ -231,7 +233,7 @@ ntk::Plane* Arena::extract_plane(std::vector<cv::Point*>* points, ntk::RGBDImage
 	
 	return plane;
 }
-
+*/
 //-----------------------------------------------------------------------------
 // ACCESS
 //-----------------------------------------------------------------------------
@@ -274,15 +276,100 @@ Floor* Arena::get_floor(){
 }
 
 /**
- *
+ * @brief	
+ * @details	
  *
  * @return 
- *
  *
  */
 int Arena::get_n_mirrors(){
 	return this->_mirrors->size();
 }
+
+/**
+ * @brief	
+ * @details	
+ *
+ * @return 
+ *
+ */
+cv::Mat* Arena::get_floor_mask(){
+	if(this->_floor){
+		return this->_floor->get_area_mask();
+	}
+	return NULL;
+}
+
+/**
+ * @brief	
+ * @details	
+ *
+ * @param[in]	idx
+ *				
+ *
+ * @return 
+ *
+ */
+cv::Mat* Arena::get_mirror_mask(int idx){
+	if(this->_mirrors && idx >= 0 && idx < this->_mirrors->size()){
+		return this->_mirrors->at(idx)->get_area_mask();
+	}
+	return NULL;
+}
+
+/**
+ * @brief	
+ * @details	
+ *
+ * @return 
+ *
+ */
+cv::Mat* Arena::get_mirror_masks(){
+	if(this->_mirrors){
+		cv::Mat temp;
+		this->_mirrors->at(0)->get_area_mask()->copyTo(temp);
+		for(int i = 1 ; i < this->_mirrors->size() ; i++){
+			cv::bitwise_or(temp,*this->_mirrors->at(0)->get_area_mask(),temp);
+		}
+
+		return &temp;
+	}
+	return NULL;
+}
+
+/**
+ * @brief	
+ * @details	
+ *
+ * @return 
+ *
+ */
+cv::Mat* Arena::get_all_mask(){
+	if(this->_mirrors || this->_floor){
+		cv::Mat temp;
+
+		if(this->_floor){
+			this->_floor->get_area_mask()->copyTo(temp);
+		}
+		if(this->_mirrors){
+			if(this->_floor){
+				for(int i = 0 ; i < this->_mirrors->size() ; i++){
+					cv::bitwise_or(temp,*this->_mirrors->at(0)->get_area_mask(),temp);
+				}
+			}
+			else{
+				this->_mirrors->at(0)->get_area_mask()->copyTo(temp);
+				for(int i = 1 ; i < this->_mirrors->size() ; i++){
+					cv::bitwise_or(temp,*this->_mirrors->at(0)->get_area_mask(),temp);
+				}
+			}
+		}
+
+		return &temp;
+	}
+	return NULL;
+}
+
 
 //-----------------------------------------------------------------------------
 // STORAGE

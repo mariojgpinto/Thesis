@@ -1,7 +1,7 @@
 #include "SpeculumGUI.h"
 
 #include "..\NISpeculum\Controller.h"
-
+#include "..\NISpeculum\PropertyManager.h"
 
 //-----------------------------------------------------------------------------
 // CONSTRUCTORS
@@ -53,8 +53,17 @@ void SpeculumGUI::setup_connections(){
 	this->_ui->_action_close->setShortcut(Qt::Key_Escape);
 	connect(this->_ui->_action_close,SIGNAL(triggered()),this,SLOT(on_close()));
 
-	//this->ui->main_action_preferences->setShortcut(QKeySequence("Ctrl+P"));
-	//connect(this->ui->main_action_preferences,SIGNAL(triggered()),this,SLOT(on_preferences_gui()));
+	this->_ui->_action_save->setShortcut(QKeySequence("Ctrl+S"));
+	connect(this->_ui->_action_save,SIGNAL(triggered()),this,SLOT(on_save()));
+
+	this->_ui->_action_load->setShortcut(QKeySequence("Ctrl+L"));
+	connect(this->_ui->_action_load,SIGNAL(triggered()),this,SLOT(on_load()));
+
+	this->_ui->_main_pushButton_add_floor->setShortcut(QKeySequence("Ctrl+F"));
+	connect(this->_ui->_main_pushButton_add_floor,SIGNAL(clicked()),this,SLOT(on_button_add_floor()));
+		
+	this->_ui->_main_pushButton_add_mirror->setShortcut(QKeySequence("Ctrl+M"));
+	connect(this->_ui->_main_pushButton_add_mirror,SIGNAL(clicked()),this,SLOT(on_button_add_mirror()));
 
     //connect(this->ui->main_pushButton_floor, SIGNAL(clicked()), this, SLOT(on_botton_floor()));
     //connect(this->ui->main_pushButton_background, SIGNAL(clicked()), this, SLOT(on_botton_background()));
@@ -62,15 +71,54 @@ void SpeculumGUI::setup_connections(){
     //connect(this->ui->main_horizontalSlider_min_depth, SIGNAL(valueChanged(int)), this, SLOT(min_slider_change(int)));
     //connect(this->ui->main_horizontalSlider_max_depth, SIGNAL(valueChanged(int)), this, SLOT(max_slider_change(int)));
 }
+
+//-----------------------------------------------------------------------------
+// SLOTS
+//-----------------------------------------------------------------------------
 void SpeculumGUI::on_close(){
 	this->_q_application->quit();
 	exit(0);
 }
 
-void SpeculumGUI::update_widget(cv::Mat *img){
+void SpeculumGUI::on_save(){
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_SAVE] = true;
+}
+
+void SpeculumGUI::on_load(){
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_LOAD] = true;
+}
+
+void SpeculumGUI::on_button_add_floor(){
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_FLOOR] = true;
+
+	cv::namedWindow("Add Floor");
+}
+
+void SpeculumGUI::on_button_add_mirror(){
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_MIRROR] = true;
+
+	cv::namedWindow("Add Mirror");
+	cv::namedWindow("win1");
+}
+
+//-----------------------------------------------------------------------------
+// UPDATE
+//-----------------------------------------------------------------------------
+void SpeculumGUI::update_widget(){
 	//if(img)
 		//this->_cvwidget->setImage(img);
-	this->_cvwidget->setImage(&this->_controller->_mat_depth8UC1);
+	if(this->_controller->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE]){
+		//cv::Mat temp;
+
+		//this->_controller->_mat_color_bgr.copyTo(temp,this->_controller->_mask_main);
+		this->_cvwidget->setImage(&this->_controller->_mask_main);
+	}
+	else
+		this->_cvwidget->setImage(&this->_controller->_mat_depth8UC1);
 }
 
 //void SpeculumGUI::update_timer(){

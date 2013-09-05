@@ -46,6 +46,6 @@ void GUIController::run(int argc, char* argv[]){
 	app->exec();
 }
 
-void GUIController::update(cv::Mat *img){
-	this->_speculum_gui->update_widget(img);
+void GUIController::update(){
+	this->_speculum_gui->update_widget();
 }

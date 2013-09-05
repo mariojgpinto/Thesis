@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Arena">
+      <UniqueIdentifier>{a5df0ac5-2cce-43cf-b8ed-af315265491a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Arena">
+      <UniqueIdentifier>{89a8b7bc-c174-4384-93d2-476709db6acc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -24,6 +30,15 @@
     <ClCompile Include="PropertyManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Floor.cpp">
+      <Filter>Source Files\Arena</Filter>
+    </ClCompile>
+    <ClCompile Include="Mirror.cpp">
+      <Filter>Source Files\Arena</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller_Arena.cpp">
+      <Filter>Source Files\Arena</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller.h">
@@ -31,6 +46,15 @@
     </ClInclude>
     <ClInclude Include="PropertyManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Floor.h">
+      <Filter>Header Files\Arena</Filter>
+    </ClInclude>
+    <ClInclude Include="Mirror.h">
+      <Filter>Header Files\Arena</Filter>
+    </ClInclude>
+    <ClInclude Include="ArenaXML.h">
+      <Filter>Header Files\Arena</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

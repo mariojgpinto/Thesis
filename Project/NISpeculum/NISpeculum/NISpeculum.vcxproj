@@ -39,6 +39,11 @@
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_1.6.0_DEBUG.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\VTK_DEBUG.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXPCL.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -49,6 +54,11 @@
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_1.6.0_RELEASE.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\VTK_RELEASE.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXPCL.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -88,9 +98,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Arena\Arena.vcxproj">
-      <Project>{c79c6e52-80fb-4b92-8321-be9c67b9a4a0}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\GUI\GUI.vcxproj">
       <Project>{7a5d85b3-e38e-4eb7-8bfa-7df70b3c15e2}</Project>
     </ProjectReference>
@@ -100,11 +107,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="Controller_Arena.cpp" />
+    <ClCompile Include="Floor.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mirror.cpp" />
     <ClCompile Include="PropertyManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArenaXML.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="Floor.h" />
+    <ClInclude Include="Mirror.h" />
     <ClInclude Include="PropertyManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

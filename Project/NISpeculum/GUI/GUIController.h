@@ -23,7 +23,7 @@ class __declspec(dllexport) GUIController{
 	
 		void run(int argc, char* argv[]);
 
-		void update(cv::Mat *img);
+		void update();
 
 	private:
 		SpeculumGUI *_speculum_gui;

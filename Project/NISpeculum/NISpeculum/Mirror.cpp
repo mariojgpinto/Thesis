@@ -26,39 +26,18 @@ Mirror::~Mirror(){
  */
 void Mirror::setup_variables(){
 	for(int i = 0 ; i < _n_flags ; i++)
-		this->_flags[i] = false;
+		this->_ready[i] = false;
 
-	this->_points = new std::vector<cv::Point*>();
+	this->_user_points = new std::vector<cv::Point*>();
 	
 	this->_area_max_width = INT_MIN;
 	this->_area_max_height = INT_MIN;
 	this->_area_min_width = INT_MAX;
 	this->_area_min_height = INT_MAX;
-}
 
-/**
- *
- *
- * @param flag
- *
- *
- * @param value
- *
- *
- */
-inline void Mirror::enable_flag(Mirror::FLAGS flag, bool value){
-	this->_flags[flag] = value;
-}
-
-/**
- *
- *
- * @param flag
- *
- *
- */
-inline bool Mirror::check_flag(Mirror::FLAGS flag){
-	return this->_flags[flag];
+	this->_n_points = 0;
+	this->_points = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
+	this->_points_mirrored = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
 }
 
 //-----------------------------------------------------------------------------
@@ -104,16 +83,16 @@ void Mirror::set_area(std::vector<cv::Point*>* points){
 	}
 	
 	if(ok){
-		this->_points->clear();
+		this->_user_points->clear();
 		for(unsigned int i = 0 ; i < points->size() ; i++){
 			if(points->at(i)){
-				this->_points->push_back(new cv::Point(*points->at(i)));
+				this->_user_points->push_back(new cv::Point(*points->at(i)));
 			}
 		}
 
 		mask.assignTo(this->_area_mask);
-		this->_flags[Mirror::MASK] = true;
-		this->_flags[Mirror::INPUT] = true;
+		this->_ready[Mirror::AREA] = true;
+		this->_ready[Mirror::INPUT] = true;
 	}
 }
 
@@ -136,7 +115,7 @@ void Mirror::set_area(std::vector<cv::Point*>* points){
 void Mirror::set_plane(double a, double b, double c, double d){
 	this->_plane.set(a,b,c,d);
 	
-	this->_flags[Mirror::PLANE] = true;
+	this->_ready[Mirror::PLANE] = true;
 }
 
 /**
@@ -150,14 +129,14 @@ void Mirror::set_plane(double a, double b, double c, double d){
  *
  */
 void Mirror::update_vertex(int index, cv::Point* point){
-	if(point && index >= 0 && index < (int)this->_points->size()){
-		this->_points->at(index)->x = point->x;
-		this->_points->at(index)->y = point->y;
+	if(point && index >= 0 && index < (int)this->_user_points->size()){
+		this->_user_points->at(index)->x = point->x;
+		this->_user_points->at(index)->y = point->y;
 		
 		std::vector<cv::Point*> aux;
 
-		for(unsigned int i = 0 ; i < this->_points->size() ; i++){
-			aux.push_back(new cv::Point(*this->_points->at(i)));
+		for(unsigned int i = 0 ; i < this->_user_points->size() ; i++){
+			aux.push_back(new cv::Point(*this->_user_points->at(i)));
 		}
 
 		this->set_area(&aux);
@@ -196,7 +175,7 @@ void Mirror::area_max_min(cv::Point* pt){
 void Mirror::add_perspective_to_mesh(ntk::Mesh *mesh, ntk::RGBDImage* image){
 	if(!mesh || !image) return;
 
-	if(!this->_flags[Mirror::PLANE]){
+	if(!this->_ready[Mirror::PLANE]){
 		return ;
 	}
 
@@ -215,7 +194,7 @@ void Mirror::add_perspective_to_mesh(ntk::Mesh *mesh, ntk::RGBDImage* image){
 	int min_width;
 	int min_height;
 
-	if(this->_flags[Mirror::MASK]){
+	if(this->_ready[Mirror::AREA]){
 		max_width = this->_area_max_width;
 		max_height = this->_area_max_height;
 		min_width = this->_area_min_width;
@@ -273,40 +252,6 @@ void Mirror::add_perspective_to_mesh(ntk::Mesh *mesh, ntk::RGBDImage* image){
 //-----------------------------------------------------------------------------
 // ACCESS
 //-----------------------------------------------------------------------------
-/**
- *
- *
- * @return
- *
- *
- */
-cv::Mat* Mirror::get_area_mask(){
-	return (this->_flags[Mirror::MASK]) ? &this->_area_mask : NULL;
-}
-
-/**
- *
- *
- * @return
- *
- *
- */
-inline ToolBox::Plane* Mirror::get_plane(){
-	return (this->_flags[Mirror::PLANE]) ? &this->_plane : NULL;
-}
-
-/**
- *
- *
- * @return
- *
- *
- */
-bool Mirror::is_valid(){
-	return this->_flags[Mirror::PLANE];
-}
-
-
 //-----------------------------------------------------------------------------
 // ACCESS - MIRROR MANAGEMENT
 //-----------------------------------------------------------------------------
@@ -318,7 +263,7 @@ bool Mirror::is_valid(){
  *
  */
 int Mirror::get_n_vertexes(){
-	return this->_points->size();
+	return this->_user_points->size();
 }
 
 /** 
@@ -329,7 +274,7 @@ int Mirror::get_n_vertexes(){
  *
  */
 std::vector<cv::Point*>* Mirror::get_vertexes(){
-	return this->_points;
+	return this->_user_points;
 }
 
 /** 
@@ -343,8 +288,8 @@ std::vector<cv::Point*>* Mirror::get_vertexes(){
  *
  */
 cv::Point* Mirror::get_vertex(int index){
-	if(index >= 0 && index < (int)this->_points->size()){
-		return this->_points->at(index);
+	if(index >= 0 && index < (int)this->_user_points->size()){
+		return this->_user_points->at(index);
 	}
 	return NULL;
 }
@@ -365,24 +310,24 @@ bool Mirror::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem
 
 			//PLANE FLAG
 			tinyxml2::XMLElement *elem_flag_plane = doc->NewElement(_XML_MIRROR_ELEM_FLAG_PLANE);
-			elem_flag_plane->SetAttribute(_XML_FLAG,this->_flags[Mirror::PLANE]);
+			elem_flag_plane->SetAttribute(_XML_FLAG,this->_ready[Mirror::PLANE]);
 			elem_flags->LinkEndChild(elem_flag_plane);
 
-			//MASK FLAG
+			//AREA FLAG
 			tinyxml2::XMLElement *elem_flag_mask = doc->NewElement(_XML_MIRROR_ELEM_FLAG_MASK);
-			elem_flag_mask->SetAttribute(_XML_FLAG,this->_flags[Mirror::MASK]);
+			elem_flag_mask->SetAttribute(_XML_FLAG,this->_ready[Mirror::AREA]);
 			elem_flags->LinkEndChild(elem_flag_mask);
 
 			//INPUT FLAG
 			tinyxml2::XMLElement *elem_flag_input = doc->NewElement(_XML_MIRROR_ELEM_FLAG_INPUT);
-			elem_flag_input->SetAttribute(_XML_FLAG,this->_flags[Mirror::INPUT]);
+			elem_flag_input->SetAttribute(_XML_FLAG,this->_ready[Mirror::INPUT]);
 			elem_flags->LinkEndChild(elem_flag_input);
 
 		elem->LinkEndChild(elem_flags);
 	}
 
 	//PLANE
-	if(this->_flags[Mirror::PLANE])
+	if(this->_ready[Mirror::PLANE])
 	{
 		tinyxml2::XMLElement *elem_plane = doc->NewElement(_XML_MIRROR_ELEM_PLANE);
 			
@@ -405,8 +350,8 @@ bool Mirror::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem
 		elem->LinkEndChild(elem_plane);
 	}
 
-	//AREA MASK
-	if(this->_flags[Mirror::MASK])
+	//AREA AREA
+	if(this->_ready[Mirror::AREA])
 	{
 		tinyxml2::XMLElement *elem_mask = doc->NewElement(_XML_MIRROR_ELEM_AREA);
 			
@@ -446,19 +391,19 @@ bool Mirror::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem
 	}
 
 	//INPUT
-	if(this->_flags[Mirror::INPUT])
+	if(this->_ready[Mirror::INPUT])
 	{
 		tinyxml2::XMLElement *elem_input = doc->NewElement(_XML_MIRROR_ELEM_INPUT);
 			
 			tinyxml2::XMLElement *elem_input_n = doc->NewElement(_XML_MIRROR_ELEM_INPUT_N);
-			elem_input_n->SetAttribute(_XML_VALUE,this->_points->size());
+			elem_input_n->SetAttribute(_XML_VALUE,this->_user_points->size());
 			elem_input->LinkEndChild(elem_input_n);
 			
 			tinyxml2::XMLElement *elem_input_vertexes = doc->NewElement(_XML_MIRROR_ELEM_INPUT_POINTS);
 			
-			for(unsigned int i = 0 ; i < this->_points->size() ; i++){
+			for(unsigned int i = 0 ; i < this->_user_points->size() ; i++){
 				tinyxml2::XMLElement *elem_input_vertex = doc->NewElement(_XML_MIRROR_ELEM_INPUT_POINT);
-				result = ToolBoxXML::cv_add_point(elem_input_vertex,this->_points->at(i));
+				result = ToolBoxXML::cv_add_point(elem_input_vertex,this->_user_points->at(i));
 				
 				if(!result) return false;
 				
@@ -491,19 +436,19 @@ bool Mirror::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *ro
 		if(elem_flag_plane){
 			bool temp_flag = false;
 			error = elem_flag_plane->QueryBoolAttribute(_XML_FLAG,&temp_flag);
-			if(error) this->enable_flag(Mirror::PLANE,false);
-			else this->enable_flag(Mirror::PLANE,temp_flag);
-		} else this->enable_flag(Mirror::PLANE,false);
+			if(error) this->_ready[Mirror::PLANE] = false;
+			else this->_ready[Mirror::PLANE] = temp_flag;
+		} else this->_ready[Mirror::PLANE] = false;
 
-		//MASK FLAG
+		//AREA FLAG
 		tinyxml2::XMLElement *elem_flag_mask = elem_flags->FirstChildElement(_XML_MIRROR_ELEM_FLAG_MASK);
 
 		if(elem_flag_mask){
 			bool temp_flag = false;
 			error = elem_flag_mask->QueryBoolAttribute(_XML_FLAG,&temp_flag);
-			if(error) this->enable_flag(Mirror::MASK,false);
-			else this->enable_flag(Mirror::MASK,temp_flag);
-		} else this->enable_flag(Mirror::MASK,false);
+			if(error) this->_ready[Mirror::AREA] = false;
+			else this->_ready[Mirror::AREA] = temp_flag;
+		} else this->_ready[Mirror::AREA] = false;
 
 		//INPUT FLAG
 		tinyxml2::XMLElement *elem_flag_input = elem_flags->FirstChildElement(_XML_MIRROR_ELEM_FLAG_INPUT);
@@ -511,13 +456,13 @@ bool Mirror::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *ro
 		if(elem_flag_input){
 			bool temp_flag = false;
 			error = elem_flag_input->QueryBoolAttribute(_XML_FLAG,&temp_flag);
-			if(error) this->enable_flag(Mirror::INPUT,false);
-			else this->enable_flag(Mirror::INPUT,temp_flag);
-		} else this->enable_flag(Mirror::INPUT,false);
+			if(error) this->_ready[Mirror::INPUT] = false;
+			else this->_ready[Mirror::INPUT] = temp_flag;
+		} else this->_ready[Mirror::INPUT] = false;
 	}
 
 	//READ PLANE
-	if(this->_flags[Mirror::PLANE]){
+	if(this->_ready[Mirror::PLANE]){
 		tinyxml2::XMLElement *elem_plane = root->FirstChildElement(_XML_MIRROR_ELEM_PLANE);
 
 		if(!elem_plane) return false;
@@ -553,13 +498,13 @@ bool Mirror::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *ro
 				return  false;
 		}
 
-		if(this->_flags[Mirror::PLANE]){
+		if(this->_ready[Mirror::PLANE]){
 			this->_plane.set(a,b,c,d);
 		}
 	}
 
-	//READ MASK
-	if(this->_flags[Mirror::MASK]){
+	//READ AREA
+	if(this->_ready[Mirror::AREA]){
 		tinyxml2::XMLElement *elem_mask = root->FirstChildElement(_XML_MIRROR_ELEM_AREA);
 
 		if(!elem_mask) return false;
@@ -598,7 +543,7 @@ bool Mirror::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *ro
 	}
 
 	//READ INPUT
-	if(this->_flags[Mirror::INPUT]){
+	if(this->_ready[Mirror::INPUT]){
 		tinyxml2::XMLElement *elem_input = root->FirstChildElement(_XML_MIRROR_ELEM_INPUT);
 
 		if(!elem_input) return false;
@@ -624,7 +569,7 @@ bool Mirror::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *ro
 			if(!result)
 				return false;
 
-			this->_points->push_back(new cv::Point(pt));
+			this->_user_points->push_back(new cv::Point(pt));
 
 			elem_input_pt = elem_input_pt->NextSiblingElement(_XML_FLOOR_ELEM_INPUT_POINT);
 		}

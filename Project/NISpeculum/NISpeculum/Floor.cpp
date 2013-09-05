@@ -15,7 +15,7 @@
 //-----------------------------------------------------------------------------
 // CONTRUCTORS
 //-----------------------------------------------------------------------------
-Floor::Floor():_area_mask(480,640,(const uchar)0){
+Floor::Floor():_area_mask(480,640,(const uchar)255){
 	this->setup_variables();
 }
 
@@ -32,55 +32,17 @@ Floor::~Floor(){
  */
 void Floor::setup_variables(){
 	for(int i = 0 ; i < _n_flags ; i++)
-		this->_flags[i] = false;
+		this->_ready[i] = false;
 
-	this->_points = new std::vector<cv::Point*>();
+	this->_user_points = new std::vector<cv::Point*>();
 
 	this->_area_max_width = INT_MIN;
 	this->_area_max_height = INT_MIN;
 	this->_area_min_width = INT_MAX;
 	this->_area_min_height = INT_MAX;
-}
 
-/**
- *
- *
- * @param thresh
- *
- *
- */
-void Floor::set_threshold(double thresh){
-	this->_thresh = thresh;
+	this->_thresh = 20;
 }
-
-/**
- *
- *
- * @param flag
- *
- *
- * @param value
- *
- *
- */
-void Floor::enable_flag(Floor::FLAGS flag, bool value){
-	this->_flags[flag] = value;
-}
-
-/**
- *
- *
- * @param flag
- *
- *
- * @param return 
- *
- *
- */
-bool Floor::check_flag(Floor::FLAGS flag){
-	return this->_flags[flag];
-}
-
 
 //-----------------------------------------------------------------------------
 // FLOOR CONSTRUCTION
@@ -130,16 +92,16 @@ void Floor::set_area(std::vector<cv::Point*>* points){
 	}
 	
 	if(ok){
-		this->_points->clear();
+		this->_user_points->clear();
 		for(unsigned int i = 0 ; i < points->size() ; i++){
 			if(points->at(i)){
-				this->_points->push_back(new cv::Point(*points->at(i)));
+				this->_user_points->push_back(new cv::Point(*points->at(i)));
 			}
 		}
 
 		mask.assignTo(this->_area_mask);
-		this->_flags[Floor::AREA] = true;
-		this->_flags[Floor::INPUT] = true;
+		this->_ready[Floor::AREA] = true;
+		this->_ready[Floor::INPUT] = true;
 	}
 }
 
@@ -198,7 +160,7 @@ void Floor::set_plane(double a, double b, double c, double d){
 	//this->_plane.c = c;
 	//this->_plane.d = d;
 	
-	this->_flags[Floor::PLANE] = true;
+	this->_ready[Floor::PLANE] = true;
 }
 
 /**
@@ -212,14 +174,14 @@ void Floor::set_plane(double a, double b, double c, double d){
  *
  */
 void Floor::update_vertex(int index, cv::Point* point){
-	if(point && index >= 0 && index < (int)this->_points->size()){
-		this->_points->at(index)->x = point->x;
-		this->_points->at(index)->y = point->y;
+	if(point && index >= 0 && index < (int)this->_user_points->size()){
+		this->_user_points->at(index)->x = point->x;
+		this->_user_points->at(index)->y = point->y;
 		
 		std::vector<cv::Point*> aux;
 
-		for(unsigned int i = 0 ; i < this->_points->size() ; i++){
-			aux.push_back(new cv::Point(*this->_points->at(i)));
+		for(unsigned int i = 0 ; i < this->_user_points->size() ; i++){
+			aux.push_back(new cv::Point(*this->_user_points->at(i)));
 		}
 
 		this->set_area(&aux);
@@ -249,7 +211,7 @@ void Floor::add_perspective_to_mesh(ntk::Mesh* mesh, ntk::RGBDImage* image){
 	int min_width;
 	int min_height;
 
-	if(this->_flags[Floor::AREA]){
+	if(this->_ready[Floor::AREA]){
 		max_width = this->_area_max_width;
 		max_height = this->_area_max_height;
 		min_width = this->_area_min_width;
@@ -272,10 +234,10 @@ void Floor::add_perspective_to_mesh(ntk::Mesh* mesh, ntk::RGBDImage* image){
 	cv::Mat1b mega_mask;
 	image->depthMask().copyTo(mega_mask);
 
-	if(this->_flags[Floor::AREA]){
+	if(this->_ready[Floor::AREA]){
 		cv::bitwise_and(mega_mask,this->_area_mask,mega_mask);
 	}
-	if(this->_flags[Floor::FLOOR_MASK]){
+	if(this->_ready[Floor::FLOOR_MASK]){
 		cv::bitwise_and(mega_mask,this->_floor_mask,mega_mask);
 	}
 
@@ -357,7 +319,7 @@ void Floor::add_perspective_to_mesh(ntk::Mesh* mesh, ntk::RGBDImage* image){
  *
  */
 //void Floor::construct_floor_mask(ntk::RGBDImage* image){
-//	if(!image || !this->_flags[Floor::PLANE]) return;
+//	if(!image || !this->_ready[Floor::PLANE]) return;
 //
 //	cv::Size size = image->depth().size();
 //
@@ -368,7 +330,7 @@ void Floor::add_perspective_to_mesh(ntk::Mesh* mesh, ntk::RGBDImage* image){
 //	//Create Auxiliar Map with Depth
 //	cv::Mat1f depth;
 //
-//	if(this->_flags[Floor::AREA])
+//	if(this->_ready[Floor::AREA])
 //		image->depth().copyTo(depth,this->_area_mask);
 //	else
 //		image->depth().copyTo(depth);
@@ -397,70 +359,13 @@ void Floor::add_perspective_to_mesh(ntk::Mesh* mesh, ntk::RGBDImage* image){
 //		}
 //	}
 //
-//	this->_flags[Floor::FLOOR_MASK] = true;
+//	this->_ready[Floor::FLOOR_MASK] = true;
 //}
 
 
 //-----------------------------------------------------------------------------
 // ACCESS
 //-----------------------------------------------------------------------------
-/**
- *
- *
- * @return
- *
- *
- */
-cv::Mat* Floor::get_area_mask(){
-	return (this->_flags[Floor::AREA]) ? &this->_area_mask : NULL;
-}
-
-/**
- *
- *
- * @return
- *
- *
- */
-cv::Mat* Floor::get_floor_mask(){
-	return (this->_flags[Floor::FLOOR_MASK]) ? &this->_floor_mask : NULL;
-}
-
-
-/**
- *
- *
- * @return
- *
- *
- */
-double Floor::get_threshold(){
-	return this->_thresh;
-}
-
-/**
- *
- *
- * @return
- *
- *
- */
-ToolBox::Plane* Floor::get_plane(){
-	return (this->_flags[Floor::PLANE]) ? &this->_plane : NULL;
-}
-
-/**
- *
- *
- * @return
- *
- *
- */
-bool Floor::is_valid(){
-	return this->_flags[Floor::PLANE] && this->_flags[Floor::FLOOR_MASK];
-}
-
-
 //-----------------------------------------------------------------------------
 // ACCESS - FLOOR MANAGEMENT
 //-----------------------------------------------------------------------------
@@ -472,7 +377,7 @@ bool Floor::is_valid(){
  *
  */
 int Floor::get_n_vertexes(){
-	return this->_points->size();
+	return this->_user_points->size();
 }
 
 /** 
@@ -483,7 +388,7 @@ int Floor::get_n_vertexes(){
  *
  */
 std::vector<cv::Point*>* Floor::get_vertexes(){
-	return this->_points;
+	return this->_user_points;
 }
 
 /** 
@@ -497,8 +402,8 @@ std::vector<cv::Point*>* Floor::get_vertexes(){
  *
  */
 cv::Point* Floor::get_vertex(int index){
-	if(index >= 0 && index < (int)this->_points->size()){
-		return this->_points->at(index);
+	if(index >= 0 && index < (int)this->_user_points->size()){
+		return this->_user_points->at(index);
 	}
 	return NULL;
 }
@@ -519,29 +424,29 @@ bool Floor::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem,
 
 			//PLANE FLAG
 			tinyxml2::XMLElement *elem_flag_plane = doc->NewElement(_XML_FLOOR_ELEM_FLAG_PLANE);
-			elem_flag_plane->SetAttribute(_XML_FLAG,this->_flags[Floor::PLANE]);
+			elem_flag_plane->SetAttribute(_XML_FLAG,this->_ready[Floor::PLANE]);
 			elem_flags->LinkEndChild(elem_flag_plane);
 
 			//AREA FLAG
 			tinyxml2::XMLElement *elem_flag_area = doc->NewElement(_XML_FLOOR_ELEM_FLAG_AREA);
-			elem_flag_area->SetAttribute(_XML_FLAG,this->_flags[Floor::AREA]);
+			elem_flag_area->SetAttribute(_XML_FLAG,this->_ready[Floor::AREA]);
 			elem_flags->LinkEndChild(elem_flag_area);
 
 			//MASK FLAG
 			tinyxml2::XMLElement *elem_flag_mask = doc->NewElement(_XML_FLOOR_ELEM_FLAG_FLOOR_MASK);
-			elem_flag_mask->SetAttribute(_XML_FLAG,this->_flags[Floor::FLOOR_MASK]);
+			elem_flag_mask->SetAttribute(_XML_FLAG,this->_ready[Floor::FLOOR_MASK]);
 			elem_flags->LinkEndChild(elem_flag_mask);
 
 			//INPUT FLAG
 			tinyxml2::XMLElement *elem_flag_input = doc->NewElement(_XML_FLOOR_ELEM_FLAG_INPUT);
-			elem_flag_input->SetAttribute(_XML_FLAG,this->_flags[Floor::INPUT]);
+			elem_flag_input->SetAttribute(_XML_FLAG,this->_ready[Floor::INPUT]);
 			elem_flags->LinkEndChild(elem_flag_input);
 
 		elem->LinkEndChild(elem_flags);
 	}
 
 	//PLANE
-	if(this->_flags[Floor::PLANE])
+	if(this->_ready[Floor::PLANE])
 	{
 		tinyxml2::XMLElement *elem_plane = doc->NewElement(_XML_FLOOR_ELEM_PLANE);
 			
@@ -565,7 +470,7 @@ bool Floor::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem,
 	}
 
 	//AREA MASK
-	if(this->_flags[Floor::AREA])
+	if(this->_ready[Floor::AREA])
 	{
 		tinyxml2::XMLElement *elem_area = doc->NewElement(_XML_FLOOR_ELEM_AREA);
 			
@@ -598,13 +503,13 @@ bool Floor::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem,
 	}
 
 	//FLOOR MASK
-	if(this->_flags[Floor::FLOOR_MASK])
+	if(this->_ready[Floor::FLOOR_MASK])
 	{
 		tinyxml2::XMLElement *elem_floor_mask = doc->NewElement(_XML_FLOOR_ELEM_MASK);
 			
 			tinyxml2::XMLElement *elem_floor_mask_mask = doc->NewElement(_XML_FLOOR_ELEM_MASK_MASK);
 
-			result = ToolBoxXML::cv_save_image(elem_floor_mask,elem_floor_mask_mask,(char*)path->data(),_XML_FLOOR_FILE_FLOOR_MASK,this->_floor_mask);
+			result = ToolBoxXML::cv_save_image(elem_floor_mask,elem_floor_mask_mask,(char*)path->data(),_XML_FLOOR_FILE_FLOOR_MASK,this->_mask);
 			if(!result) return false;
 
 			tinyxml2::XMLElement *elem_floor_mask_thresh = doc->NewElement(_XML_FLOOR_ELEM_MASK_THRESH);
@@ -615,19 +520,19 @@ bool Floor::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem,
 	}
 
 	//INPUT
-	if(this->_flags[Floor::INPUT])
+	if(this->_ready[Floor::INPUT])
 	{
 		tinyxml2::XMLElement *elem_input = doc->NewElement(_XML_FLOOR_ELEM_INPUT);
 			
 			tinyxml2::XMLElement *elem_input_n = doc->NewElement(_XML_FLOOR_ELEM_INPUT_N);
-			elem_input_n->SetAttribute(_XML_VALUE,this->_points->size());
+			elem_input_n->SetAttribute(_XML_VALUE,this->_user_points->size());
 			elem_input->LinkEndChild(elem_input_n);
 			
 			tinyxml2::XMLElement *elem_input_vertexes = doc->NewElement(_XML_FLOOR_ELEM_INPUT_POINTS);
 			
-			for(unsigned int i = 0 ; i < this->_points->size() ; i++){
+			for(unsigned int i = 0 ; i < this->_user_points->size() ; i++){
 				tinyxml2::XMLElement *elem_input_vertex = doc->NewElement(_XML_FLOOR_ELEM_INPUT_POINT);
-				result = ToolBoxXML::cv_add_point(elem_input_vertex,this->_points->at(i));
+				result = ToolBoxXML::cv_add_point(elem_input_vertex,this->_user_points->at(i));
 				
 				if(!result) return false;
 				
@@ -660,9 +565,9 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 		if(elem_flag_plane){
 			bool temp_flag = false;
 			error = elem_flag_plane->QueryBoolAttribute(_XML_FLAG,&temp_flag);
-			if(error) this->enable_flag(Floor::PLANE,false);
-			else this->enable_flag(Floor::PLANE,temp_flag);
-		} else this->enable_flag(Floor::PLANE,false);
+			if(error) this->_ready[Floor::PLANE] = false;
+			else this->_ready[Floor::PLANE] = temp_flag;
+		} else this->_ready[Floor::PLANE] = false;
 
 		//AREA FLAG
 		tinyxml2::XMLElement *elem_flag_area = elem_flags->FirstChildElement(_XML_FLOOR_ELEM_FLAG_AREA);
@@ -670,9 +575,9 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 		if(elem_flag_area){
 			bool temp_flag = false;
 			error = elem_flag_area->QueryBoolAttribute(_XML_FLAG,&temp_flag);
-			if(error) this->enable_flag(Floor::AREA,false);
-			else this->enable_flag(Floor::AREA,temp_flag);
-		} else this->enable_flag(Floor::AREA,false);
+			if(error) this->_ready[Floor::AREA] = false;
+			else this->_ready[Floor::AREA] = temp_flag;
+		} else this->_ready[Floor::AREA] = false;
 
 		//MASK FLAG
 		tinyxml2::XMLElement *elem_flag_mask = elem_flags->FirstChildElement(_XML_FLOOR_ELEM_FLAG_FLOOR_MASK);
@@ -680,9 +585,9 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 		if(elem_flag_mask){
 			bool temp_flag = false;
 			error = elem_flag_mask->QueryBoolAttribute(_XML_FLAG,&temp_flag);
-			if(error) this->enable_flag(Floor::FLOOR_MASK,false);
-			else this->enable_flag(Floor::FLOOR_MASK,temp_flag);
-		} else this->enable_flag(Floor::FLOOR_MASK,false);
+			if(error) this->_ready[Floor::FLOOR_MASK] = false;
+			else this->_ready[Floor::FLOOR_MASK] = temp_flag;
+		} else this->_ready[Floor::FLOOR_MASK] = false;
 
 		//INPUT FLAG
 		tinyxml2::XMLElement *elem_flag_input = elem_flags->FirstChildElement(_XML_FLOOR_ELEM_FLAG_INPUT);
@@ -690,13 +595,13 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 		if(elem_flag_input){
 			bool temp_flag = false;
 			error = elem_flag_input->QueryBoolAttribute(_XML_FLAG,&temp_flag);
-			if(error) this->enable_flag(Floor::INPUT,false);
-			else this->enable_flag(Floor::INPUT,temp_flag);
-		} else this->enable_flag(Floor::INPUT,false);
+			if(error) this->_ready[Floor::INPUT] = false;
+			else this->_ready[Floor::INPUT] = temp_flag;
+		} else this->_ready[Floor::INPUT] = false;
 	}
 
 	//READ PLANE
-	if(this->_flags[Floor::PLANE]){
+	if(this->_ready[Floor::PLANE]){
 		tinyxml2::XMLElement *elem_plane = root->FirstChildElement(_XML_FLOOR_ELEM_PLANE);
 
 		if(!elem_plane) return false;
@@ -732,18 +637,18 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 				return  false;
 		}
 
-		if(this->_flags[Floor::PLANE]){
+		if(this->_ready[Floor::PLANE]){
 			this->_plane.set(a,b,c,d);
 		}
 	}
 
 	//READ AREA 
-	if(this->_flags[Floor::AREA]){
+	if(this->_ready[Floor::AREA]){
 		tinyxml2::XMLElement *elem_area = root->FirstChildElement(_XML_FLOOR_ELEM_AREA);
 
 		if(!elem_area) return false;
 
-		bool result = ToolBoxXML::cv_load_image_xml(elem_area,_XML_FLOOR_ELEM_AREA_MASK,(cv::Mat1b)_area_mask);
+		bool result = ToolBoxXML::cv_load_image_xml(elem_area,_XML_FLOOR_ELEM_AREA_MASK,_area_mask,0);
 		if(!result) 
 			return false;
 
@@ -777,12 +682,12 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 	}
 
 	//READ MASK
-	if(this->_flags[Floor::FLOOR_MASK]){
+	if(this->_ready[Floor::FLOOR_MASK]){
 		tinyxml2::XMLElement *elem_mask = root->FirstChildElement(_XML_FLOOR_ELEM_MASK);
 
 		if(!elem_mask) return false;
 
-		bool result = ToolBoxXML::cv_load_image_xml(elem_mask,_XML_FLOOR_ELEM_MASK_MASK,(cv::Mat1b)this->_floor_mask);
+		bool result = ToolBoxXML::cv_load_image_xml(elem_mask,_XML_FLOOR_ELEM_MASK_MASK,(cv::Mat1b)this->_mask);
 		if(!result) 
 			return false;
 
@@ -795,7 +700,7 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 	}
 
 	//READ INPUT
-	if(this->_flags[Floor::INPUT]){
+	if(this->_ready[Floor::INPUT]){
 		tinyxml2::XMLElement *elem_input = root->FirstChildElement(_XML_FLOOR_ELEM_INPUT);
 
 		if(!elem_input) return false;
@@ -821,7 +726,7 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 			if(!result)
 				return false;
 
-			this->_points->push_back(new cv::Point(pt));
+			this->_user_points->push_back(new cv::Point(pt));
 
 			elem_input_pt = elem_input_pt->NextSiblingElement(_XML_FLOOR_ELEM_INPUT_POINT);
 		}

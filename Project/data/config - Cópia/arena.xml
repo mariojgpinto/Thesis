@@ -14,7 +14,7 @@
         <A value="-0.0210519"/>
         <B value="-0.00826316"/>
         <C value="0.999744"/>
-        <D value="75.7051"/>
+        <D value="0.757051"/>
     </Plane>
     <Area>
         <AreaMask path="..\..\Data\config\floor_area_mask.png"/>
@@ -40,7 +40,7 @@
     </Input>
 </Floor>
 
-<Mirrors n_mirrors="1">
+<Mirrors n_mirrors="2">
     <Mirror>
         <Flags>
             <Plane flag="1"/>
@@ -48,16 +48,16 @@
             <Input flag="1"/>
         </Flags>
         <Plane>
-            <A value="0.28602489829063416"/>
-            <B value="0.028686676174402237"/>
-            <C value="0.95779275894165039"/>
-            <D value="-550.52575683593750"/>
+            <A value="0.872811"/>
+            <B value="-0.0100384"/>
+            <C value="-0.487955"/>
+            <D value="-0.503085"/>
         </Plane>
         <Area>
             <AreaMask path="..\..\Data\config\mirror_area_mask_0.png"/>
             <Limits>
                 <MaxWidth value="597"/>
-                <MinWidth value="433"/>
+                <MinWidth value="54"/>
                 <MaxHeight value="294"/>
                 <MinHeight value="153"/>
             </Limits>
@@ -72,34 +72,34 @@
             </Points>
         </Input>
     </Mirror>
-	    <Mirror>
+    <Mirror>
         <Flags>
             <Plane flag="1"/>
             <Mask flag="1"/>
             <Input flag="1"/>
         </Flags>
         <Plane>
-            <A value="0.00181333"/>
-            <B value="-0.828255"/>
-            <C value="0.560348"/>
-            <D value="-493.641"/>
+            <A value="-0.00180451"/>
+            <B value="-0.85594"/>
+            <C value="-0.517072"/>
+            <D value="-0.472154"/>
         </Plane>
         <Area>
-            <AreaMask path="..\..\data\config\mirror_area_mask_1.png"/>
+            <AreaMask path="..\..\Data\config\mirror_area_mask_1.png"/>
             <Limits>
-                <MaxWidth value="471"/>
-                <MinWidth value="256"/>
-                <MaxHeight value="471"/>
-                <MinHeight value="301"/>
+                <MaxWidth value="388"/>
+                <MinWidth value="261"/>
+                <MaxHeight value="477"/>
+                <MinHeight value="4"/>
             </Limits>
         </Area>
         <Input>
             <NPoints value="4"/>
             <Points>
-                <Point point_x="412" point_y="305"/>
-                <Point point_x="471" point_y="462"/>
-                <Point point_x="256" point_y="471"/>
-                <Point point_x="269" point_y="301"/>
+                <Point point_x="388" point_y="312"/>
+                <Point point_x="263" point_y="307"/>
+                <Point point_x="261" point_y="440"/>
+                <Point point_x="385" point_y="440"/>
             </Points>
         </Input>
     </Mirror>

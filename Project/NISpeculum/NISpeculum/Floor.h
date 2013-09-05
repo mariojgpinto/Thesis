@@ -1,7 +1,7 @@
 /**
  * @file Floor.h
  * @author Mario Pinto (mariojgpinto@gmail.com)
- * @date February, 2013
+ * @date July, 2013
  *
  * @brief
  *
@@ -14,12 +14,13 @@
 #define _FLOOR 
 
 #include <opencv2/opencv.hpp>
-#include <ToolBox.h>
+#include <XnCppWrapper.h>
 
+#include <ToolBox.h>
 #include <ToolBoxCV.h>
 #include <ToolBoxXML.h>
 
-class __declspec(dllexport)Floor{
+class Floor{
 	public:
 		enum FLAGS{
 			PLANE,
@@ -35,12 +36,6 @@ class __declspec(dllexport)Floor{
 
 		//Setup
 		void setup_variables();
-		void set_threshold(double thresh);
-		bool is_valid();
-
-		//Flag
-		void enable_flag(Floor::FLAGS flag, bool value);
-		bool check_flag(Floor::FLAGS flag);
 
 		//Construction
 		void set_area(std::vector<cv::Point*>* points);
@@ -53,10 +48,6 @@ class __declspec(dllexport)Floor{
 		//void add_perspective_to_mesh(ntk::Mesh* mesh, ntk::RGBDImage* image);
 
 		//Access
-		cv::Mat* get_area_mask();
-		cv::Mat* get_floor_mask();
-		double get_threshold();
-		ToolBox::Plane* get_plane();
 
 		int get_n_vertexes();
 		std::vector<cv::Point*>* get_vertexes();
@@ -69,18 +60,22 @@ class __declspec(dllexport)Floor{
 	private:
 		void area_max_min(cv::Point* pt);
 
-	private:
-		bool _flags[Floor::_n_flags];
+	public:
+		bool _ready[_n_flags];
 
-		//Floor Mask
-		cv::Mat _floor_mask;
-		
+		ToolBox::Plane _plane;
+
+		//Masks
+		cv::Mat _mask;
+		cv::Mat _area_mask;
+
 		//Floor Threshold
 		double _thresh;
 
-		//Area Mask
-		cv::Mat _area_mask;
+		int _n_points;
+		XnPoint3D* _points;
 
+	private:
 		//Area auxiliar variables
 		int _area_max_width;
 		int _area_max_height;
@@ -88,10 +83,10 @@ class __declspec(dllexport)Floor{
 		int _area_min_height;
 
 		//Floor Plane
-		ToolBox::Plane _plane;
+		
 
 		//Floor Points
-		std::vector<cv::Point*>* _points;
+		std::vector<cv::Point*>* _user_points;
 
 };
 

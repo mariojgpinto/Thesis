@@ -16,11 +16,15 @@ class __declspec(dllexport) SpeculumGUI : public QMainWindow
 		SpeculumGUI(Controller* controller, QApplication* app, QWidget *parent = 0, Qt::WFlags flags = 0);
 		~SpeculumGUI();
 
-		void update_widget(cv::Mat *img);
+		void update_widget();
 
 	public slots:
-		
 		void on_close();
+		void on_save();
+		void on_load();
+
+		void on_button_add_floor();
+		void on_button_add_mirror();
 
 	protected:
 		//Setup Methods

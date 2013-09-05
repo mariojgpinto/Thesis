@@ -1,0 +1,42 @@
+<Floor>
+    <Flags>
+        <Plane flag="0"/>
+        <Area flag="0"/>
+        <Mask flag="0"/>
+        <Input flag="0"/>
+    </Flags>
+</Floor>
+
+<Mirrors n_mirrors="1">
+    <Mirror>
+        <Flags>
+            <Plane flag="1"/>
+            <Mask flag="1"/>
+            <Input flag="1"/>
+        </Flags>
+        <Plane>
+            <A value="0.00181333"/>
+            <B value="-0.828255"/>
+            <C value="0.560348"/>
+            <D value="-476.641"/>
+        </Plane>
+        <Area>
+            <AreaMask path="..\..\data\config\mirror_area_mask_0.png"/>
+            <Limits>
+                <MaxWidth value="471"/>
+                <MinWidth value="256"/>
+                <MaxHeight value="471"/>
+                <MinHeight value="301"/>
+            </Limits>
+        </Area>
+        <Input>
+            <NPoints value="4"/>
+            <Points>
+                <Point point_x="412" point_y="305"/>
+                <Point point_x="471" point_y="462"/>
+                <Point point_x="256" point_y="471"/>
+                <Point point_x="269" point_y="301"/>
+            </Points>
+        </Input>
+    </Mirror>
+</Mirrors>

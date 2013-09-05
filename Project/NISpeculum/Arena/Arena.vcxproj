@@ -17,12 +17,12 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -32,29 +32,29 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_242_DEBUG.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OUTPUT_LIB.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\NESTK.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\QT_472_DEBUG.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST_DEBUG.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_DEBUG.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_245_DEBUG.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_242_RELEASE.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OUTPUT_LIB.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\NESTK.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\QT_472_RELEASE.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST_DEBUG.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_RELEASE.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_245_RELEASE.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -64,7 +64,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

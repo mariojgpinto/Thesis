@@ -1,7 +1,7 @@
 /**
  * @file Mirror.h
  * @author Mario Pinto (mariojgpinto@gmail.com)
- * @date May, 2013
+ * @date July, 2013
  *
  * @brief
  *
@@ -14,16 +14,17 @@
 #define _MIRROR
 
 #include <opencv2/opencv.hpp>
-#include <ToolBox.h>
+#include <XnCppWrapper.h>
 
+#include <ToolBox.h>
 #include <ToolBoxCV.h>
 #include <ToolBoxXML.h>
 
-class __declspec(dllexport)Mirror{
+class Mirror{
 	public:
 		enum FLAGS{
 			PLANE,
-			MASK,
+			AREA,
 			INPUT
 		};
 		static const int _n_flags = 3;
@@ -34,11 +35,6 @@ class __declspec(dllexport)Mirror{
 
 		//Setup
 		void setup_variables();
-		bool is_valid();
-
-		//Flag
-		void enable_flag(Mirror::FLAGS flag, bool value);
-		bool check_flag(Mirror::FLAGS flag);
 
 		//Construction
 		void set_area(std::vector<cv::Point*>* points);
@@ -49,9 +45,6 @@ class __declspec(dllexport)Mirror{
 		//void add_perspective_to_mesh(ntk::Mesh *mesh, ntk::RGBDImage* image);
 
 		//Access
-		cv::Mat* get_area_mask();
-		ToolBox::Plane* get_plane();
-
 		int get_n_vertexes();
 		std::vector<cv::Point*>* get_vertexes();
 		cv::Point* get_vertex(int index);
@@ -62,16 +55,19 @@ class __declspec(dllexport)Mirror{
 
 	private:
 		void area_max_min(cv::Point* pt);
+	
+	public:
+		bool _ready[_n_flags];
 
-	private:
-		//Flags
-		bool _flags[Mirror::_n_flags];
+		//Plane
+		ToolBox::Plane _plane;
 
-		//Mirror Mask
+		//Masks
 		cv::Mat _area_mask;
 
-		//Mirror Plane
-		ToolBox::Plane _plane;
+		int _n_points;
+		XnPoint3D* _points;
+		XnPoint3D* _points_mirrored;
 
 		//Area auxiliar variables
 		int _area_max_width;
@@ -79,8 +75,13 @@ class __declspec(dllexport)Mirror{
 		int _area_min_width;
 		int _area_min_height;
 
+	private:
+		//Flags
+
+
+
 		//Mirror Points
-		std::vector<cv::Point*>* _points;
+		std::vector<cv::Point*>* _user_points;
 		//std::vector<cv::Point*>* _user_points;
 };
 
