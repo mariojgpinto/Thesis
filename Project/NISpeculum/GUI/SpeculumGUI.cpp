@@ -65,6 +65,10 @@ void SpeculumGUI::setup_connections(){
 	this->_ui->_main_pushButton_add_mirror->setShortcut(QKeySequence("Ctrl+M"));
 	connect(this->_ui->_main_pushButton_add_mirror,SIGNAL(clicked()),this,SLOT(on_button_add_mirror()));
 
+	this->_ui->_main_pushButton_pause->setShortcut(QKeySequence("Ctrl+P"));
+	connect(this->_ui->_main_pushButton_pause,SIGNAL(clicked()),this,SLOT(on_pause()));
+
+	
     //connect(this->ui->main_pushButton_floor, SIGNAL(clicked()), this, SLOT(on_botton_floor()));
     //connect(this->ui->main_pushButton_background, SIGNAL(clicked()), this, SLOT(on_botton_background()));
     //connect(this->ui->main_pushButton_user, SIGNAL(clicked()), this, SLOT(on_botton_user()));
@@ -88,6 +92,15 @@ void SpeculumGUI::on_save(){
 void SpeculumGUI::on_load(){
 	this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
 	this->_controller->_property_manager->_flag_requests[PropertyManager::R_LOAD] = true;
+}
+
+void SpeculumGUI::on_pause(){
+	this->_controller->_property_manager->_pause = !this->_controller->_property_manager->_pause;
+
+	if(this->_controller->_property_manager->_pause)
+		this->_ui->_main_pushButton_pause->setText("Run");
+	else
+		this->_ui->_main_pushButton_pause->setText("Pause");
 }
 
 void SpeculumGUI::on_button_add_floor(){

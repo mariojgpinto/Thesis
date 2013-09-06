@@ -2,6 +2,7 @@
 
 PropertyManager::PropertyManager(){
 	this->_running = true;
+	this->_pause = false;
 	this->_3d_step = 1;
 	this->_depth_min = 500;
 	this->_depth_max = 1500;

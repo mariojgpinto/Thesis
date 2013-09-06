@@ -9,6 +9,11 @@
 #ifndef _CONTROLLER
 #define _CONTROLLER
 
+//Explanation: http://www.pcl-users.org/Eigen-Dense-Storage-Assertion-Error-Solved-td4023763.html
+//#define EIGEN_DONT_ALIGN_STATICALLY
+#define EIGEN_DONT_VECTORIZE 
+#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
+
 class PropertyManager;
 class GUIController;
 class NIKinect;

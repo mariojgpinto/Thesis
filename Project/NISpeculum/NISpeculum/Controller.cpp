@@ -52,6 +52,7 @@ namespace
  * @details	Initializes the variables to NULL, af applicable.
  */
 Controller::Controller():
+	_mask_depth(480,640,CV_8UC1,(const uchar)255),
 	_mask_main(480,640,CV_8UC1,(const uchar)255),
 	_mask_floor(480,640,CV_8UC1,(const uchar)255),
 	_mask_mirrors(480,640,CV_8UC1,(const uchar)255),
@@ -139,50 +140,53 @@ void Controller::run(int argc, char* argv[]){
 
 	while(this->_property_manager->_running){
 		//Copy the information from the Kinect
-		this->_mutex_kinect.lock();
-			this->process_images();
-		this->_mutex_kinect.unlock();
-
-		if(this->_property_manager->_flag_requests[PropertyManager::R_REQUEST]){
-			this->process_request();
-		}	
-
-		//Creates the prelimenary mask
-		this->process_masks();
+		if(!this->_property_manager->_pause){
+				this->_mutex_kinect.lock();
+					this->process_images();
+				this->_mutex_kinect.unlock();
 		
-		int pcl_flag = 0;
 
-		if(this->generate_3d()){
-			if(this->_property_manager->_flag_processed[PropertyManager::P_MIRROR]){
-				this->generate_3d_mirrors();
-			}
+			if(this->_property_manager->_flag_requests[PropertyManager::R_REQUEST]){
+				this->process_request();
+			}	
 
-			if(this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE]){
-				this->remove_floor();
-			}
+			//Creates the prelimenary mask
+			this->process_masks();
+		
+			int pcl_flag = 0;
+
+			if(this->generate_3d()){
+				if(this->_property_manager->_flag_processed[PropertyManager::P_MIRROR]){
+					this->generate_3d_mirrors();
+				}
+
+				if(this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE]){
+					this->remove_floor();
+				}
 
 			
-		}
+			}
 
-		if(this->_property_manager->_flag_update[PropertyManager::U_PCL]){
-			this->_mutex_pcl.lock();
-				this->copy_to_pcl(pcl_flag);
-			this->_mutex_pcl.unlock();
+			if(this->_property_manager->_flag_update[PropertyManager::U_PCL]){
+				this->_mutex_pcl.lock();
+					this->copy_to_pcl(pcl_flag);
+				this->_mutex_pcl.unlock();
 
-			this->_condition_consumer.notify_all();
-		}
-		if(this->_property_manager->_flag_update[PropertyManager::U_IMAGE]){
-			this->_gui->update();
-		}
+				this->_condition_consumer.notify_all();
+			}
+			if(this->_property_manager->_flag_update[PropertyManager::U_IMAGE]){
+				this->_gui->update();
+			}
 
-		++this->_frame_counter[Controller::CONTROLLER];
-		if (this->_frame_counter[Controller::CONTROLLER] == 15)
-		{
-			double current_tick = cv::getTickCount();
-			this->_frame_rate[Controller::CONTROLLER] = this->_frame_counter[Controller::CONTROLLER] / ((current_tick - this->_last_tick[Controller::CONTROLLER])/cv::getTickFrequency());
-			this->_last_tick[Controller::CONTROLLER] = current_tick;
-			this->_frame_counter[Controller::CONTROLLER] = 0;
-			printf("Frame Rate: %.2f\n",_frame_rate[Controller::CONTROLLER]);
+			++this->_frame_counter[Controller::CONTROLLER];
+			if (this->_frame_counter[Controller::CONTROLLER] == 15)
+			{
+				double current_tick = cv::getTickCount();
+				this->_frame_rate[Controller::CONTROLLER] = this->_frame_counter[Controller::CONTROLLER] / ((current_tick - this->_last_tick[Controller::CONTROLLER])/cv::getTickFrequency());
+				this->_last_tick[Controller::CONTROLLER] = current_tick;
+				this->_frame_counter[Controller::CONTROLLER] = 0;
+				printf("Frame Rate: %.2f\n",_frame_rate[Controller::CONTROLLER]);
+			}
 		}
 	}
 

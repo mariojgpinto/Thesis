@@ -3,12 +3,6 @@
 
 class PropertyManager{
 	public:
-		enum CAPTURE{
-			DEPTH		= 1,	/**< Capture and copy the Depth cv::Mat.*/
-			DEPTH_MD	= 2,	/**< Capture and copy the Depth MetaData.*/
-			COLOR		= 4,	/**< Capture and copy the Color cv::Mat.*/
-			COLOR_MD	= 8		/**< Capture and copy the Color MetaData.*/
-		};
 		static const int _n_capture_flags = 4;
 
 		enum REQUESTS{
@@ -39,6 +33,7 @@ class PropertyManager{
 
 	public:
 		bool _running;
+		bool _pause;
 		int _3d_step;
 
 		//Depth
@@ -47,7 +42,6 @@ class PropertyManager{
 		int _depth_min;
 		int _depth_max;	
 
-		bool _flag_capture[_n_capture_flags * _n_capture_flags + _n_capture_flags + 1];	
 		bool _flag_requests[_n_request_flags];	
 		bool _flag_processed[_n_processed_flags];
 		bool _flag_update[_n_update_flags];

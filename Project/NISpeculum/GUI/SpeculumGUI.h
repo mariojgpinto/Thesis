@@ -23,6 +23,7 @@ class __declspec(dllexport) SpeculumGUI : public QMainWindow
 		void on_save();
 		void on_load();
 
+		void on_pause();
 		void on_button_add_floor();
 		void on_button_add_mirror();
 
