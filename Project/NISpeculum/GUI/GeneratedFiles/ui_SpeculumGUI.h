@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SpeculumGUI.ui'
 **
-** Created: Fri 6. Sep 17:19:30 2013
-**      by: Qt User Interface Compiler version 4.8.2
+** Created: Sat 7. Sep 17:45:51 2013
+**      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
