@@ -88,6 +88,8 @@ Controller::Controller():
 			 this->_back_2d_to_3d[i][j] = 0;
 		 }
 	}
+
+	this->_aux_points = new std::vector<cv::Point*>();
 }
 
 /**
@@ -226,39 +228,23 @@ void Controller::process_request(){
 			cv::destroyWindow("Add Floor");
 		}
 		else{
-			printf("Floor not found");
-
-			TrackerGroundMouseData ground_mouse_data;
-			ground_mouse_data.window_name = "Add Floor";
-
-			this->_mat_color_bgr.copyTo(ground_mouse_data.image);
-
-			cv::imshow(ground_mouse_data.window_name, ground_mouse_data.image);
-			cv::setMouseCallback(ground_mouse_data.window_name, on_tracker_ground_mouse, &ground_mouse_data);
-			while (cv::waitKey(30) != ' ')
-			{
-				//QApplication::processEvents();
-			}
-
-			cv::destroyWindow(ground_mouse_data.window_name);
-
-			if(ground_mouse_data.points.size() > 2){
+			if(this->_aux_points->size() > 2){
 				std::vector<cv::Point3f*> points3d;
-				XnPoint3D *points_in = (XnPoint3D*)malloc(sizeof(XnPoint3D) * ground_mouse_data.points.size());
-				XnPoint3D *points_out = (XnPoint3D*)malloc(sizeof(XnPoint3D) * ground_mouse_data.points.size());
+				XnPoint3D *points_in = (XnPoint3D*)malloc(sizeof(XnPoint3D) * _aux_points->size());
+				XnPoint3D *points_out = (XnPoint3D*)malloc(sizeof(XnPoint3D) * _aux_points->size());
 
-				for(int i = 0 ; i < ground_mouse_data.points.size() ; ++i){
-					points_in[i].X = ground_mouse_data.points.at(i)->x;
-					points_in[i].Y = ground_mouse_data.points.at(i)->y;
+				for(int i = 0 ; i < _aux_points->size() ; ++i){
+					points_in[i].X = _aux_points->at(i)->x;
+					points_in[i].Y = _aux_points->at(i)->y;
 					points_in[i].Z = this->_xn_depth_md[points_in[i].Y * XN_VGA_X_RES + points_in[i].X]; 
 				}
 
-				if(! this->_kinect->convert_to_realworld(ground_mouse_data.points.size(),points_in,points_out)){
+				if(! this->_kinect->convert_to_realworld(_aux_points->size(),points_in,points_out)){
 					this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE] = false;
 					
 				}
 				else{
-					for(int i = 0 ; i < ground_mouse_data.points.size() ; ++i){
+					for(int i = 0 ; i < _aux_points->size() ; ++i){
 						points3d.push_back(new cv::Point3f(points_out[i].X,points_out[i].Y,points_out[i].Z));
 					}
 				
@@ -281,82 +267,59 @@ void Controller::process_request(){
 		this->_property_manager->_flag_requests[PropertyManager::R_FLOOR] = false;
 	}
 
-	if(this->_property_manager->_flag_requests[PropertyManager::R_MIRROR]){
-		TrackerGroundMouseData ground_mouse_data;
-		ground_mouse_data.window_name = "Add Mirror";
-
-		this->_mat_color_bgr.copyTo(ground_mouse_data.image);
-
-		cv::imshow(ground_mouse_data.window_name, ground_mouse_data.image);
-		cv::setMouseCallback(ground_mouse_data.window_name, on_tracker_ground_mouse, &ground_mouse_data);
-		while (cv::waitKey(30) != ' ')
-		{
-			//QApplication::processEvents();
-		}
-
-		//cv::destroyWindow(ground_mouse_data.window_name);
-
-		if(ground_mouse_data.points.size() > 2){
+	if(this->_property_manager->_flag_requests[PropertyManager::R_MIRROR_AREA]){
+		if(this->_aux_points->size() > 2){
 			Mirror *mirror = new Mirror();
 
-			mirror->set_area(&ground_mouse_data.points);
+			mirror->set_area(this->_aux_points);
 
-			//TODO GET MIRROR PLANE
-			TrackerGroundMouseData ground_mouse_data;
-			ground_mouse_data.window_name = "Add Mirror";
+			this->add_mirror(mirror);
+		}
+		this->_property_manager->_flag_requests[PropertyManager::R_MIRROR_AREA] = false;
+	}
+	
+	if(this->_property_manager->_flag_requests[PropertyManager::R_MIRROR_POINTS]){
+		if(this->_aux_points->size() > 2){
+			Mirror *mirror = this->_mirrors[this->_mirrors.size()-1];
 
-			this->_mat_color_bgr.copyTo(ground_mouse_data.image,mirror->_area_mask);
+			std::vector<cv::Point3f*> points3d;
+			XnPoint3D *points_in = (XnPoint3D*)malloc(sizeof(XnPoint3D) * this->_aux_points->size());
+			XnPoint3D *points_out = (XnPoint3D*)malloc(sizeof(XnPoint3D) * this->_aux_points->size());
 
-			cv::imshow(ground_mouse_data.window_name, ground_mouse_data.image);
-			cv::setMouseCallback(ground_mouse_data.window_name, on_tracker_ground_mouse, &ground_mouse_data);
-			while (cv::waitKey(30) != ' ')
-			{
-				//QApplication::processEvents();
+			for(int i = 0 ; i < this->_aux_points->size() ; ++i){
+				if(this->_xn_depth_md[this->_aux_points->at(i)->y * XN_VGA_X_RES + this->_aux_points->at(i)->x] > 1){
+					points_in[i].X = this->_aux_points->at(i)->x;
+					points_in[i].Y = this->_aux_points->at(i)->y;
+					points_in[i].Z = this->_xn_depth_md[points_in[i].Y * XN_VGA_X_RES + points_in[i].X]; 
+				}
 			}
 
-			cv::destroyWindow(ground_mouse_data.window_name);
-
-			if(ground_mouse_data.points.size() > 2){
-				std::vector<cv::Point3f*> points3d;
-				XnPoint3D *points_in = (XnPoint3D*)malloc(sizeof(XnPoint3D) * ground_mouse_data.points.size());
-				XnPoint3D *points_out = (XnPoint3D*)malloc(sizeof(XnPoint3D) * ground_mouse_data.points.size());
-
-				for(int i = 0 ; i < ground_mouse_data.points.size() ; ++i){
-					if(this->_xn_depth_md[ground_mouse_data.points.at(i)->y * XN_VGA_X_RES + ground_mouse_data.points.at(i)->x] > 1){
-						points_in[i].X = ground_mouse_data.points.at(i)->x;
-						points_in[i].Y = ground_mouse_data.points.at(i)->y;
-						points_in[i].Z = this->_xn_depth_md[points_in[i].Y * XN_VGA_X_RES + points_in[i].X]; 
-					}
-				}
-
-				if(! this->_kinect->convert_to_realworld(ground_mouse_data.points.size(),points_in,points_out)){
-					this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = false;
+			if(! this->_kinect->convert_to_realworld(this->_aux_points->size(),points_in,points_out)){
+				this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = false;
 					
+			}
+			else{
+				for(int i = 0 ; i < this->_aux_points->size() ; ++i){
+					points3d.push_back(new cv::Point3f(points_out[i].X,points_out[i].Y,points_out[i].Z));
+				}
+				double a,b,c,d;
+				if(ToolBoxPCL::calc_plane_from_points(&points3d,&a,&b,&c,&d,1)){
+					mirror->set_plane(a,b,c,d);
+
+					this->add_mirror(mirror);
+
+					this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = true;
 				}
 				else{
-					for(int i = 0 ; i < ground_mouse_data.points.size() ; ++i){
-						points3d.push_back(new cv::Point3f(points_out[i].X,points_out[i].Y,points_out[i].Z));
-					}
-					double a,b,c,d;
-					if(ToolBoxPCL::calc_plane_from_points(&points3d,&a,&b,&c,&d,1)){
-						mirror->set_plane(a,b,c,d);
-
-						this->add_mirror(mirror);
-
-						this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = true;
-					}
-					else{
-						this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = false;
-					}					
-				}
+					this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = false;
+				}					
+			}
 		}
 		else{
 			this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = false;
 		}
+	}
 
-		this->_property_manager->_flag_requests[PropertyManager::R_MIRROR] = false;
-	}
-	}
 	if(this->_property_manager->_flag_requests[PropertyManager::R_SAVE]){
 		this->save_to_file("..\\..\\data\\config","arena.xml");
 		this->_property_manager->_flag_requests[PropertyManager::R_SAVE] = false;

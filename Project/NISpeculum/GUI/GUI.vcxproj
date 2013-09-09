@@ -33,6 +33,8 @@
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_1.6.0.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\UI_POINTSELECTION.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -43,6 +45,8 @@
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_1.6.0.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\UI_POINTSELECTION.props" />
+    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>

@@ -125,7 +125,7 @@ class Controller{
 		int *_back_mirror_to_realworld;
 
 
-
+		std::vector<cv::Point*>* _aux_points;
 	private:		
 		//THREADS
 		boost::thread *_t_kinect;

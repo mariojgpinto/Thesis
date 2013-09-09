@@ -2,6 +2,9 @@
 
 #include "..\NISpeculum\Controller.h"
 #include "..\NISpeculum\PropertyManager.h"
+//#include "..\NISpeculum\Mirror.h"
+
+#include "GUIController.h"
 
 //-----------------------------------------------------------------------------
 // CONSTRUCTORS
@@ -104,18 +107,31 @@ void SpeculumGUI::on_pause(){
 }
 
 void SpeculumGUI::on_button_add_floor(){
-	this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
-	this->_controller->_property_manager->_flag_requests[PropertyManager::R_FLOOR] = true;
+	this->_controller->_gui->point_selection(1);
+	//this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
+	//this->_controller->_property_manager->_flag_requests[PropertyManager::R_FLOOR] = true;
 
-	cv::namedWindow("Add Floor");
+	//cv::namedWindow("Add Floor");
 }
 
 void SpeculumGUI::on_button_add_mirror(){
-	this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
-	this->_controller->_property_manager->_flag_requests[PropertyManager::R_MIRROR] = true;
+	static bool area = true;
 
-	cv::namedWindow("Add Mirror");
-	cv::namedWindow("win1");
+	if(area){
+		this->_controller->_gui->point_selection(2);
+		area = false;
+	}
+	else{
+		//cv::Mat masked_image;
+		this->_controller->_gui->point_selection(3);
+		area = true;
+	}
+
+	//this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
+	//this->_controller->_property_manager->_flag_requests[PropertyManager::R_MIRROR_AREA] = true;
+
+	//cv::namedWindow("Add Mirror");
+	//cv::namedWindow("win1");
 }
 
 //-----------------------------------------------------------------------------

@@ -13,6 +13,7 @@
 
 class SpeculumGUI;
 class Controller;
+class PointSelectionGUI;
 
 class __declspec(dllexport) GUIController{
 	public:
@@ -25,10 +26,17 @@ class __declspec(dllexport) GUIController{
 
 		void update();
 
+		void point_selection(int flag_id, cv::Mat* img = 0);
+
 	private:
 		SpeculumGUI *_speculum_gui;
+		PointSelectionGUI *_point_selection;
 
 		Controller* _controller;
+
+		bool _point_selection_flag;
+		int _point_selection_id;
+
 		//QApplication *_q_application;//(argc, argv);
 };
 
