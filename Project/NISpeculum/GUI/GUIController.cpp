@@ -45,8 +45,8 @@ void GUIController::run(int argc, char* argv[]){
 	//cv::namedWindow("Color");
 	//kinect = new QNIKinect("C:\\Dev\\Kinect\\Data\\ONI\\mirror_papers.oni");
 	//kinect->get_kinect()->set_processing_flag(NIKinect::DEPTH_COLOR, true);
-	_point_selection = new PointSelectionGUI();
 	_mirror_manager = new MirrorManagerGUI(_controller,app);
+	_point_selection = new PointSelectionGUI();
 	_speculum_gui = new SpeculumGUI(_controller,_mirror_manager,app);
 	
 	//boost::thread coiso(&MainGUI::update_cycle, this);

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MirrorManagerGUI.ui'
 **
-** Created: Tue 10. Sep 17:35:56 2013
+** Created: Tue 10. Sep 23:02:20 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

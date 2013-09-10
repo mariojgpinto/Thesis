@@ -131,7 +131,7 @@ void Controller::init(const char* oni_file){
 //-----------------------------------------------------------------------------
 void Controller::run(int argc, char* argv[]){
 	this->_t_gui = new boost::thread(&Controller::thread_gui,this,argc,argv);
-	Sleep(500);
+	Sleep(1000);
 
 	this->_t_kinect = new boost::thread(&Controller::thread_kinect,this);
 	Sleep(1000);
@@ -349,6 +349,12 @@ bool Controller::generate_3d(){
 	//Create buffer
 	this->_n_points = 0;
 	uchar* ptr = this->_mask_main.data;
+
+	//cv::GaussianBlur(this->_mat_depth16UC1,this->_mat_depth16UC1,cv::Size(3,3),0);
+
+	UINT16* ptr_16u = (UINT16*)this->_mat_depth16UC1.data;
+
+	
 	
 	for(int y = 0; y < XN_VGA_Y_RES ; y += this->_property_manager->_3d_step) { 
 		for(int x = 0; x < XN_VGA_X_RES ; x += this->_property_manager->_3d_step) { 
@@ -356,7 +362,7 @@ bool Controller::generate_3d(){
 				XnPoint3D point1;
 				point1.X = x; 
 				point1.Y = y; 
-				point1.Z = this->_xn_depth_md[y * XN_VGA_X_RES + x]; 
+				point1.Z = ptr_16u[y * XN_VGA_X_RES + x]; 
 
 				this->_back_3d_to_2d[_n_points][XX] = x;
 				this->_back_3d_to_2d[_n_points][YY] = y;
