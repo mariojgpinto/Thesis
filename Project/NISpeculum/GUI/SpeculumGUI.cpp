@@ -5,11 +5,12 @@
 //#include "..\NISpeculum\Mirror.h"
 
 #include "GUIController.h"
+#include "MirrorManagerGUI.h"
 
 //-----------------------------------------------------------------------------
 // CONSTRUCTORS
 //-----------------------------------------------------------------------------
-SpeculumGUI::SpeculumGUI(Controller* controller, QApplication *app, QWidget *parent, Qt::WFlags flags): 
+SpeculumGUI::SpeculumGUI(Controller* controller, MirrorManagerGUI *mirror_manager, QApplication *app, QWidget *parent, Qt::WFlags flags): 
 	QMainWindow(parent, flags),
 	_q_application(app),
 	_ui(new Ui::SpeculumGUI)
@@ -17,6 +18,7 @@ SpeculumGUI::SpeculumGUI(Controller* controller, QApplication *app, QWidget *par
 	_ui->setupUi(this);
 
 	this->_controller = controller;
+	this->_mirror_manager = mirror_manager;
 
 	this->setup_windows();
 	this->setup_connections();
@@ -71,6 +73,8 @@ void SpeculumGUI::setup_connections(){
 	this->_ui->_main_pushButton_pause->setShortcut(QKeySequence("Ctrl+P"));
 	connect(this->_ui->_main_pushButton_pause,SIGNAL(clicked()),this,SLOT(on_pause()));
 
+	//this->_ui->_main_pushButton_mirror_manager->setShortcut(QKeySequence("Ctrl+P"));
+	connect(this->_ui->_main_pushButton_mirror_manager,SIGNAL(clicked()),this,SLOT(on_button_mirror_manager()));
 	
     //connect(this->ui->main_pushButton_floor, SIGNAL(clicked()), this, SLOT(on_botton_floor()));
     //connect(this->ui->main_pushButton_background, SIGNAL(clicked()), this, SLOT(on_botton_background()));
@@ -110,8 +114,6 @@ void SpeculumGUI::on_button_add_floor(){
 	this->_controller->_gui->point_selection(1);
 	//this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
 	//this->_controller->_property_manager->_flag_requests[PropertyManager::R_FLOOR] = true;
-
-	//cv::namedWindow("Add Floor");
 }
 
 void SpeculumGUI::on_button_add_mirror(){
@@ -122,18 +124,17 @@ void SpeculumGUI::on_button_add_mirror(){
 		area = false;
 	}
 	else{
-		//cv::Mat masked_image;
 		this->_controller->_gui->point_selection(3);
 		area = true;
 	}
 
 	//this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
 	//this->_controller->_property_manager->_flag_requests[PropertyManager::R_MIRROR_AREA] = true;
-
-	//cv::namedWindow("Add Mirror");
-	//cv::namedWindow("win1");
 }
 
+void SpeculumGUI::on_button_mirror_manager(){
+	this->_mirror_manager->show();
+}
 //-----------------------------------------------------------------------------
 // UPDATE
 //-----------------------------------------------------------------------------
@@ -141,13 +142,13 @@ void SpeculumGUI::update_widget(){
 	//if(img)
 		//this->_cvwidget->setImage(img);
 	if(this->_controller->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE]){
-		//cv::Mat temp;
+		cv::Mat temp;
 
-		//this->_controller->_mat_color_bgr.copyTo(temp,this->_controller->_mask_main);
-		this->_cvwidget->setImage(&this->_controller->_mask_main);
+		this->_controller->_mat_color_bgr.copyTo(temp,this->_controller->_mask_main);
+		this->_cvwidget->setImage(&temp);
 	}
 	else
-		this->_cvwidget->setImage(&this->_controller->_mat_depth8UC1);
+		this->_cvwidget->setImage(&this->_controller->_mat_color_bgr);
 }
 
 //void SpeculumGUI::update_timer(){

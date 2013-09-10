@@ -9,11 +9,12 @@
 #include "GUIController.h"
 
 #include "SpeculumGUI.h"
+#include "PointSelectionGUI.h"
+#include "MirrorManagerGUI.h"
+
 #include "..\NISpeculum\Controller.h"
 #include "..\NISpeculum\PropertyManager.h"
 #include "..\NISpeculum\Mirror.h"
-
-#include <PointSelectionGUI.h>
 
 //-----------------------------------------------------------------------------
 // CONSTRUCTORS
@@ -45,7 +46,8 @@ void GUIController::run(int argc, char* argv[]){
 	//kinect = new QNIKinect("C:\\Dev\\Kinect\\Data\\ONI\\mirror_papers.oni");
 	//kinect->get_kinect()->set_processing_flag(NIKinect::DEPTH_COLOR, true);
 	_point_selection = new PointSelectionGUI();
-	_speculum_gui = new SpeculumGUI(_controller,app);
+	_mirror_manager = new MirrorManagerGUI(_controller,app);
+	_speculum_gui = new SpeculumGUI(_controller,_mirror_manager,app);
 	
 	//boost::thread coiso(&MainGUI::update_cycle, this);
 
@@ -95,6 +97,10 @@ void GUIController::point_selection(int flag_id, cv::Mat* image){
 void GUIController::update(){
 	this->_speculum_gui->update_widget();
 
+	if(!this->_mirror_manager->isHidden()){
+		this->_mirror_manager->update_widget();
+	}
+
 	if(this->_point_selection_flag){
 		if(this->_point_selection->isHidden()){
 			this->_point_selection->get_points(*this->_controller->_aux_points);
@@ -116,4 +122,8 @@ void GUIController::update(){
 			this->_point_selection_flag = false;
 		}
 	}
+}
+
+void GUIController::update_mirror_manager(){
+	this->_mirror_manager->update_values();
 }

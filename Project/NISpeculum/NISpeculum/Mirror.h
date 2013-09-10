@@ -71,6 +71,7 @@ class Mirror{
 		int _n_points;
 		XnPoint3D* _points;
 		XnPoint3D* _points_mirrored;
+		int *_points_idx;
 
 		//Area auxiliar variables
 		int _area_max_width;

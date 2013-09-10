@@ -39,8 +39,11 @@ void Mirror::setup_variables(){
 	this->_area_min_height = INT_MAX;
 
 	this->_n_points = 0;
+	this->_points_idx = (int *)malloc(sizeof(int) * XN_VGA_Y_RES * XN_VGA_X_RES); 
 	this->_points = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
 	this->_points_mirrored = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
+
+
 }
 
 //-----------------------------------------------------------------------------

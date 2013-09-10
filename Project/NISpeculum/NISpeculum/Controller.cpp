@@ -160,12 +160,12 @@ void Controller::run(int argc, char* argv[]){
 			if(this->generate_3d()){
 				if(this->_property_manager->_flag_processed[PropertyManager::P_MIRROR]){
 					this->generate_3d_mirrors();
+					pcl_flag++;
 				}
 
 				if(this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE]){
 					this->remove_floor();
 				}
-
 			
 			}
 
@@ -274,6 +274,9 @@ void Controller::process_request(){
 			mirror->set_area(this->_aux_points);
 
 			this->add_mirror(mirror);
+
+			this->_gui->update_mirror_manager();
+			//this->_gui->point_selection(3);
 		}
 		this->_property_manager->_flag_requests[PropertyManager::R_MIRROR_AREA] = false;
 	}
@@ -321,12 +324,13 @@ void Controller::process_request(){
 	}
 
 	if(this->_property_manager->_flag_requests[PropertyManager::R_SAVE]){
-		this->save_to_file("..\\..\\data\\config","arena.xml");
+		this->save_to_file("..\\..\\data\\config","arena");
 		this->_property_manager->_flag_requests[PropertyManager::R_SAVE] = false;
 	}
 
 	if(this->_property_manager->_flag_requests[PropertyManager::R_LOAD]){
 		this->load_from_file("..\\..\\data\\config\\arena.xml");
+		this->_gui->update_mirror_manager();
 		this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = true;
 		this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE] = true;
 
@@ -392,15 +396,21 @@ bool Controller::generate_3d_mirrors(){
 						XnPoint3D pt = this->_real_world[idx];
 						//mirror->_points[mirror->_n_points] = this->_real_world[idx];
 
+						mirror->_points[mirror->_n_points].X = pt.X;
+						mirror->_points[mirror->_n_points].Y = pt.Y;
+						mirror->_points[mirror->_n_points].Z = pt.Z;
+
 						dist = mirror->_plane.distance_to_plane(pt.X,pt.Y,pt.Z);
 
 						pt.X = pt.X + (2 * dist * nx);
 						pt.Y = pt.Y + (2 * dist * ny);
 						pt.Z = pt.Z + (2 * dist * nz);
 
-						mirror->_points[mirror->_n_points].X = pt.X;
-						mirror->_points[mirror->_n_points].Y = pt.Y;
-						mirror->_points[mirror->_n_points].Z = pt.Z;
+						mirror->_points_mirrored[mirror->_n_points].X = pt.X;
+						mirror->_points_mirrored[mirror->_n_points].Y = pt.Y;
+						mirror->_points_mirrored[mirror->_n_points].Z = pt.Z;
+
+						mirror->_points_idx[mirror->_n_points] = idx;
 						mirror->_n_points++; 						
 
 						//this->_real_world[idx].X = pt.X;//+= dist * 2 * nx;
@@ -428,29 +438,20 @@ void Controller::copy_to_pcl(int flag){
 				//	pt.z = this->_real_world[this->_back_topview_to_realworld[i]].Z;
 				//	this->_pcl_cloud.push_back(pt);
 				//}
-			}
-			break;
-
-		default: //CASE 0
-			{
 				uchar* ptr = this->_mask_main.data;
 				uchar* ptr_floor = this->_mask_floor.data;
 				uchar* ptr_mirror = this->_mask_mirrors.data;
+				uint8_t* ptr_clr = (uint8_t*)this->_mat_color_bgr.data;
 				//cv::imshow("win1",this->_mask_mirrors);
 				for(int i = 0 ; i < _n_points ; ++i){
 					int xx = this->_back_3d_to_2d[i][XX];
 					int yy = this->_back_3d_to_2d[i][YY];
 
-					if(ptr[yy * XN_VGA_X_RES + xx]){
-						pcl::PointXYZRGB pt(255,255,255);
-						//if(ptr_floor[yy * XN_VGA_X_RES + xx]){
-						//	pt.r = 0;
-						//	pt.b = 0;
-						//} else
-						if(ptr_mirror[yy * XN_VGA_X_RES + xx]){
-							pt.r = 0;
-							pt.g = 0;
-						}
+					if(ptr[yy * XN_VGA_X_RES + xx] && !ptr_mirror[yy * XN_VGA_X_RES + xx]){
+						//pcl::PointXYZRGB pt(0,0,255);
+						pcl::PointXYZRGB pt(ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2],
+											ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1],
+											ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0]);
 						
 						pt.x = this->_real_world[i].X;
 						pt.y = this->_real_world[i].Y;
@@ -459,19 +460,26 @@ void Controller::copy_to_pcl(int flag){
 					}
 				}
 
+				//uint8_t* ptr_clr = (uint8_t*)this->_mat_color_bgr.data;
 				for(int i = 0 ; i < this->_mirrors.size() ; ++i){
 					Mirror *mirror = this->_mirrors[i];
 
 					if(mirror){
 						for(int j = 0 ; j < mirror->_n_points ; ++j){
+							int idx = mirror->_points_idx[j];
 							pcl::PointXYZRGB pt(255,255,0);
 							pt.x = mirror->_points[j].X;
 							pt.y = mirror->_points[j].Y;
 							pt.z = mirror->_points[j].Z;
 
 							this->_pcl_cloud.push_back(pt);
+							int xx = this->_back_3d_to_2d[idx][XX];
+							int yy = this->_back_3d_to_2d[idx][YY];
 
-							pcl::PointXYZRGB pt2(0,255,0);
+							//pcl::PointXYZRGB pt2(ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2],
+							//					 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1],
+							//					 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0]);
+							pcl::PointXYZRGB pt2(255,255,255);
 							pt2.x = mirror->_points_mirrored[j].X;
 							pt2.y = mirror->_points_mirrored[j].Y;
 							pt2.z = mirror->_points_mirrored[j].Z;
@@ -480,6 +488,72 @@ void Controller::copy_to_pcl(int flag){
 						}
 					}
 				}
+
+				printf("");
+			}
+			break;
+
+		default: //CASE 0
+			{
+				uchar* ptr = this->_mask_main.data;
+				uchar* ptr_floor = this->_mask_floor.data;
+				uchar* ptr_mirror = this->_mask_mirrors.data;
+				uint8_t* ptr_clr = (uint8_t*)this->_mat_color_bgr.data;
+				//cv::imshow("win1",this->_mask_mirrors);
+				for(int i = 0 ; i < _n_points ; ++i){
+					int xx = this->_back_3d_to_2d[i][XX];
+					int yy = this->_back_3d_to_2d[i][YY];
+
+					if(ptr[yy * XN_VGA_X_RES + xx]){
+						//pcl::PointXYZRGB pt(255,255,255);
+						pcl::PointXYZRGB pt(ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2],
+												 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1],
+												 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0]);
+						//if(ptr_floor[yy * XN_VGA_X_RES + xx]){
+						//	pt.r = 0;
+						//	pt.b = 0;
+						//} else
+						//if(ptr_mirror[yy * XN_VGA_X_RES + xx]){
+						//	pt.r = 0;
+						//	pt.g = 0;
+						//}
+						
+						pt.x = this->_real_world[i].X;
+						pt.y = this->_real_world[i].Y;
+						pt.z = this->_real_world[i].Z;
+						this->_pcl_cloud.push_back(pt);
+					}
+				}
+
+				//uint8_t* ptr_clr = (uint8_t*)this->_mat_color_bgr.data;
+				//for(int i = 0 ; i < this->_mirrors.size() ; ++i){
+				//	Mirror *mirror = this->_mirrors[i];
+
+				//	if(mirror){
+				//		for(int j = 0 ; j < mirror->_n_points ; ++j){
+				//			int idx = mirror->_points_idx[j];
+				//			pcl::PointXYZRGB pt(255,255,0);
+				//			pt.x = mirror->_points[j].X;
+				//			pt.y = mirror->_points[j].Y;
+				//			pt.z = mirror->_points[j].Z;
+
+				//			this->_pcl_cloud.push_back(pt);
+				//			int xx = this->_back_3d_to_2d[idx][XX];
+				//			int yy = this->_back_3d_to_2d[idx][YY];
+
+				//			pcl::PointXYZRGB pt2(ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2] * 1.5,
+				//								 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1] * 1.5,
+				//								 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0] * 1.5);
+				//			pt2.x = mirror->_points_mirrored[j].X;
+				//			pt2.y = mirror->_points_mirrored[j].Y;
+				//			pt2.z = mirror->_points_mirrored[j].Z;
+
+				//			this->_pcl_cloud.push_back(pt2);
+				//		}
+				//	}
+				//}
+
+				printf("");
 			}
 			break;
 	}

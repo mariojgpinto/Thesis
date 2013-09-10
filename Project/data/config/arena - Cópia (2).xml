@@ -24,7 +24,7 @@
             <A value="-0.0104147"/>
             <B value="-0.820435"/>
             <C value="0.571645"/>
-            <D value="-480.215"/>
+            <D value="-500.215"/>
         </Plane>
         <Area>
             <AreaMask path="..\..\data\config\mirror_area_mask_0.png"/>
@@ -55,7 +55,7 @@
             <A value="0.899017"/>
             <B value="-0.0171947"/>
             <C value="0.437576"/>
-            <D value="-464.752"/>
+            <D value="-454.752"/>
         </Plane>
         <Area>
             <AreaMask path="..\..\data\config\mirror_area_mask_2.png"/>

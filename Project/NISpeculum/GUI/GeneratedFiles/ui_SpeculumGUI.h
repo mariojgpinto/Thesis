@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SpeculumGUI.ui'
 **
-** Created: Sat 7. Sep 17:45:51 2013
-**      by: Qt User Interface Compiler version 4.8.1
+** Created: Tue 10. Sep 17:04:19 2013
+**      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -14,13 +14,12 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QFrame>
 #include <QtGui/QHeaderView>
 #include <QtGui/QMainWindow>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QPushButton>
-#include <QtGui/QStatusBar>
-#include <QtGui/QToolBar>
 #include <QtGui/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -36,16 +35,16 @@ public:
     QPushButton *_main_pushButton_add_floor;
     QPushButton *_main_pushButton_add_mirror;
     QPushButton *_main_pushButton_pause;
+    QFrame *line;
+    QPushButton *_main_pushButton_mirror_manager;
     QMenuBar *menuBar;
     QMenu *menuFile;
-    QToolBar *mainToolBar;
-    QStatusBar *statusBar;
 
     void setupUi(QMainWindow *SpeculumGUI)
     {
         if (SpeculumGUI->objectName().isEmpty())
             SpeculumGUI->setObjectName(QString::fromUtf8("SpeculumGUI"));
-        SpeculumGUI->resize(660, 581);
+        SpeculumGUI->resize(660, 560);
         _action_close = new QAction(SpeculumGUI);
         _action_close->setObjectName(QString::fromUtf8("_action_close"));
         _action_save = new QAction(SpeculumGUI);
@@ -66,6 +65,14 @@ public:
         _main_pushButton_pause = new QPushButton(centralWidget);
         _main_pushButton_pause->setObjectName(QString::fromUtf8("_main_pushButton_pause"));
         _main_pushButton_pause->setGeometry(QRect(570, 10, 75, 23));
+        line = new QFrame(centralWidget);
+        line->setObjectName(QString::fromUtf8("line"));
+        line->setGeometry(QRect(170, 10, 20, 21));
+        line->setFrameShape(QFrame::VLine);
+        line->setFrameShadow(QFrame::Sunken);
+        _main_pushButton_mirror_manager = new QPushButton(centralWidget);
+        _main_pushButton_mirror_manager->setObjectName(QString::fromUtf8("_main_pushButton_mirror_manager"));
+        _main_pushButton_mirror_manager->setGeometry(QRect(200, 10, 81, 23));
         SpeculumGUI->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SpeculumGUI);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -73,12 +80,6 @@ public:
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         SpeculumGUI->setMenuBar(menuBar);
-        mainToolBar = new QToolBar(SpeculumGUI);
-        mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
-        SpeculumGUI->addToolBar(Qt::TopToolBarArea, mainToolBar);
-        statusBar = new QStatusBar(SpeculumGUI);
-        statusBar->setObjectName(QString::fromUtf8("statusBar"));
-        SpeculumGUI->setStatusBar(statusBar);
 
         menuBar->addAction(menuFile->menuAction());
         menuFile->addAction(_action_load);
@@ -100,6 +101,7 @@ public:
         _main_pushButton_add_floor->setText(QApplication::translate("SpeculumGUI", "Add Floor", 0, QApplication::UnicodeUTF8));
         _main_pushButton_add_mirror->setText(QApplication::translate("SpeculumGUI", "Add Mirror", 0, QApplication::UnicodeUTF8));
         _main_pushButton_pause->setText(QApplication::translate("SpeculumGUI", "Pause", 0, QApplication::UnicodeUTF8));
+        _main_pushButton_mirror_manager->setText(QApplication::translate("SpeculumGUI", "MirrorManager", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("SpeculumGUI", "File", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
