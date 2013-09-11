@@ -76,7 +76,10 @@ int main (int argc, char** argv){
 	//	viewer2.spinOnce (100);
 	//}
 
-	main_smoothing(argc,argv);
+	
+	//main_smoothing(argc,argv);
+	//main_fast_triangulation(argc,argv);
+
 
 	printf(")");
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr merged (new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -122,7 +125,7 @@ int main (int argc, char** argv){
 	gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
 	gp3.setMinimumAngle(M_PI/18); // 10 degrees
 	gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
-	gp3.setNormalConsistency(false);
+	gp3.setNormalConsistency(true);
 
 	// Get result
 	gp3.setInputCloud (vertices);
@@ -134,12 +137,12 @@ int main (int argc, char** argv){
 	std::vector<int> states = gp3.getPointStates();
 
 	pcl::visualization::PCLVisualizer viewer("3D Viewer");
-	viewer.setBackgroundColor (0, 255, 0);
+	viewer.setBackgroundColor (50, 50, 155);
 
 	viewer.addPolygonMesh(triangles,"coiso");
 
 	viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "coiso");
-	viewer.addPointCloudNormals<pcl::PointXYZRGBNormal> (vertices, 2, 0.02, "normals");
+	//viewer.addPointCloudNormals<pcl::PointXYZRGBNormal> (vertices, 2, 0.02, "normals");
 	viewer.addCoordinateSystem (1.0);
 	viewer.initCameraParameters ();
 

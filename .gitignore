@@ -67,3 +67,4 @@ Desktop.ini
 
 #My Files and Folders not to upload
 *.tlog
+GeneratedFiles/
