@@ -48,9 +48,9 @@
             <AreaMask path="..\..\data\config\mirror_area_mask_0.png"/>
             <Limits>
                 <MaxWidth value="590"/>
-                <MinWidth value="425"/>
+                <MinWidth value="426"/>
                 <MaxHeight value="300"/>
-                <MinHeight value="61"/>
+                <MinHeight value="62"/>
             </Limits>
         </Area>
         <Input>

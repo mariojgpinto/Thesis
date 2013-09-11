@@ -2,7 +2,7 @@
 
 #include "..\NISpeculum\Controller.h"
 #include "..\NISpeculum\PropertyManager.h"
-//#include "..\NISpeculum\Mirror.h"
+#include "..\NISpeculum\Mirror.h"
 
 #include "GUIController.h"
 #include "MirrorManagerGUI.h"
@@ -64,9 +64,7 @@ void SpeculumGUI::setup_connections(){
 	this->_ui->_main_push_button_mirror_manager->setShortcut(QKeySequence("Ctrl+M"));
 	connect(this->_ui->_main_push_button_mirror_manager,SIGNAL(clicked()),this,SLOT(on_button_mirror_manager()));
 	
-	
-	connect(this->_ui->_main_horizontalSlider_min, SIGNAL(valueChanged(int)), this, SLOT(on_slider_min(int)));
-	connect(this->_ui->_main_horizontalSlider_max, SIGNAL(valueChanged(int)), this, SLOT(on_slider_max(int)));
+	connect(this->_ui->_main_spin_box_pcl, SIGNAL(valueChanged(int)), this, SLOT(on_spinbox_step(int)));
 }
 
 //-----------------------------------------------------------------------------
@@ -106,20 +104,21 @@ void SpeculumGUI::on_button_floor_manager(){
 	this->_floor_manager->show();
 }
 
-void SpeculumGUI::on_slider_min(int value){
-	this->_controller->_property_manager->_depth_min = value;
+void SpeculumGUI::on_spinbox_step(int value){
+	this->_controller->_property_manager->_3d_step = value;
 
-	char buff[128];
-	sprintf(buff,"Min: %dmm",this->_controller->_property_manager->_depth_min);
-	this->_ui->_main_label_min->setText(buff);
-}
+	if(this->_controller->_mirrors.size()){
+		for(int i = 0 ; i < this->_controller->_mirrors.size() ; ++i){
+			Mirror *mirror = this->_controller->_mirrors[i];
 
-void SpeculumGUI::on_slider_max(int value){
-	this->_controller->_property_manager->_depth_max = value;
-
-	char buff[128];
-	sprintf(buff,"Max: %dmm",this->_controller->_property_manager->_depth_max);
-	this->_ui->_main_label_max->setText(buff);
+			if(mirror->_area_min_height % value != 0){
+				mirror->_area_min_height += value - (mirror->_area_min_height % value);
+			}
+			if(mirror->_area_min_width % value != 0){
+				mirror->_area_min_width += value - (mirror->_area_min_width % value);
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

@@ -29,8 +29,7 @@ class __declspec(dllexport) SpeculumGUI : public QMainWindow
 		void on_button_mirror_manager();
 		void on_button_floor_manager();
 
-		void on_slider_min(int value);
-		void on_slider_max(int value);
+		void on_spinbox_step(int value);
 
 	protected:
 		//Setup Methods

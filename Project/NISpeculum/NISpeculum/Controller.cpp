@@ -427,8 +427,8 @@ bool Controller::generate_3d_mirrors(){
 
 			uchar* mask_mirror_ptr = mirror->_mask.data;
 
-			for(int x = mirror->_area_min_width ; x < mirror->_area_max_width ; ++x){
-				for(int y = mirror->_area_min_height ; y < mirror->_area_max_height ; ++y){
+			for(int x = mirror->_area_min_width ; x < mirror->_area_max_width ; x+=this->_property_manager->_3d_step){
+				for(int y = mirror->_area_min_height ; y < mirror->_area_max_height ; y+=this->_property_manager->_3d_step){
 					if(mask_ptr[y * XN_VGA_X_RES + x] && mask_mirror_ptr[y * XN_VGA_X_RES + x]){
 						idx = this->_back_2d_to_3d[x][y];
 						XnPoint3D pt = this->_real_world[idx];
@@ -453,11 +453,6 @@ bool Controller::generate_3d_mirrors(){
 							mirror->_points_idx[mirror->_n_points] = idx;
 							mirror->_n_points++; 		
 						}
-										
-
-						//this->_real_world[idx].X = pt.X;//+= dist * 2 * nx;
-						//this->_real_world[idx].Y = pt.Y;//+= dist * 2 * ny;
-						//this->_real_world[idx].Z = pt.Z;//+= dist * 2 * nz;
 					}
 				}
 			}
