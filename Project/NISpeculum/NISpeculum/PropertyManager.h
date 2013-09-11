@@ -7,18 +7,19 @@ class PropertyManager{
 
 		enum REQUESTS{
 			R_REQUEST,
-				R_FLOOR,
+				R_FLOOR_AREA,
+				R_FLOOR_POINTS,
 				R_MIRROR_AREA,
 				R_MIRROR_POINTS,
 				R_SAVE,
 				R_LOAD
 		};
-		static const int _n_request_flags = 6;
+		static const int _n_request_flags = 7;
 
 		enum PROCESSED{
-			P_FLOOR_PLANE,
-			P_MIRROR,
-			P_MASK
+			P_FLOOR_PLANE = 1,
+			P_MIRROR = 2,
+			P_MASK = 4
 		};
 		static const int _n_processed_flags = 3;
 

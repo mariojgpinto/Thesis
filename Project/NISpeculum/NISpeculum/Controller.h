@@ -72,11 +72,14 @@ class Controller{
 		void process_request();
 		void process_images();
 		void process_masks();
+		void process_mirrors_masks();
+		void process_floor_mask();
 
 		bool generate_3d();
 		bool generate_3d_mirrors();
 
 		void remove_floor();
+		void remove_floor_from_mirrors();
 
 		void add_mirror(Mirror* mirror);
 		void add_floor(Floor *floor);

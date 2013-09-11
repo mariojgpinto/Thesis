@@ -12,10 +12,14 @@
 
 #include "Floor.h"
 
+#include <ToolBoxXML.h>
+
 //-----------------------------------------------------------------------------
 // CONTRUCTORS
 //-----------------------------------------------------------------------------
-Floor::Floor():_area_mask(480,640,(const uchar)255){
+Floor::Floor():
+_area_mask(480,640,(const uchar)255),
+_mask(480,640,(const uchar)255){
 	this->setup_variables();
 }
 
@@ -41,7 +45,9 @@ void Floor::setup_variables(){
 	this->_area_min_width = INT_MAX;
 	this->_area_min_height = INT_MAX;
 
-	this->_thresh = 20;
+	this->_thresh = 10;
+
+	this->_plane.set(0,0,0,0);
 }
 
 //-----------------------------------------------------------------------------

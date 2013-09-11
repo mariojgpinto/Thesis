@@ -68,6 +68,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_MirrorManagerGUI.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_FloorManagerGUI.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_FloorManagerGUI.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="FloorManagerGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Speculum.qrc">
@@ -91,6 +100,12 @@
     <CustomBuild Include="MirrorManagerGUI.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="FloorManagerGUI.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FloorManagerGUI.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_SpeculumGUI.h">
@@ -103,6 +118,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_MirrorManagerGUI.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_FloorManagerGUI.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

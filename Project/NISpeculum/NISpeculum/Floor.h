@@ -18,7 +18,11 @@
 
 #include <ToolBox.h>
 #include <ToolBoxCV.h>
-#include <ToolBoxXML.h>
+
+namespace tinyxml2{
+	class XMLDocument;
+	class XMLElement;
+}
 
 class Floor{
 	public:

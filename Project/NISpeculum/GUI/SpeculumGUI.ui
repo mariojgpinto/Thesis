@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>660</width>
-    <height>560</height>
+    <height>625</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>SpeculumGUI</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="_widget" native="true">
+   <widget class="QWidget" name="_main_widget" native="true">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -24,33 +24,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="_main_pushButton_add_floor">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add Floor</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="_main_pushButton_add_mirror">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>10</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add Mirror</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="_main_pushButton_pause">
+   <widget class="QPushButton" name="_main_push_button_pause">
     <property name="geometry">
      <rect>
       <x>570</x>
@@ -66,7 +40,7 @@
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>170</x>
+      <x>200</x>
       <y>10</y>
       <width>20</width>
       <height>21</height>
@@ -76,10 +50,10 @@
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="_main_pushButton_mirror_manager">
+   <widget class="QPushButton" name="_main_push_button_mirror_manager">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>110</x>
       <y>10</y>
       <width>81</width>
       <height>23</height>
@@ -87,6 +61,102 @@
     </property>
     <property name="text">
      <string>MirrorManager</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="_main_label_min">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>540</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Min: 500mm</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="_main_label_max">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>570</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Max: 1000mm</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>520</y>
+      <width>641</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="_main_horizontalSlider_min">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>540</y>
+      <width>551</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>400</number>
+    </property>
+    <property name="maximum">
+     <number>2000</number>
+    </property>
+    <property name="value">
+     <number>500</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="_main_horizontalSlider_max">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>570</y>
+      <width>551</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>400</number>
+    </property>
+    <property name="maximum">
+     <number>2000</number>
+    </property>
+    <property name="value">
+     <number>1000</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="_main_push_button_floor_manager">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>81</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>FloorManager</string>
     </property>
    </widget>
   </widget>

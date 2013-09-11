@@ -44,9 +44,6 @@ class Mirror{
 		void set_plane(double a, double b, double c, double d);
 		void update_vertex(int index, cv::Point* point);
 		
-		//Processing
-		//void add_perspective_to_mesh(ntk::Mesh *mesh, ntk::RGBDImage* image);
-
 		//Access
 		int get_n_vertexes();
 		std::vector<cv::Point*>* get_vertexes();
@@ -65,8 +62,12 @@ class Mirror{
 		//Plane
 		ToolBox::Plane _plane;
 
+		int _depth_min;
+		int _depth_max;
+
 		//Masks
 		cv::Mat _area_mask;
+		cv::Mat _mask;
 
 		int _n_points;
 		XnPoint3D* _points;
@@ -80,13 +81,8 @@ class Mirror{
 		int _area_min_height;
 
 	private:
-		//Flags
-
-
-
 		//Mirror Points
 		std::vector<cv::Point*>* _user_points;
-		//std::vector<cv::Point*>* _user_points;
 };
 
 

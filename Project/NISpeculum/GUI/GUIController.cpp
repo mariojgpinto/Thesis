@@ -11,10 +11,12 @@
 #include "SpeculumGUI.h"
 #include "PointSelectionGUI.h"
 #include "MirrorManagerGUI.h"
+#include "FloorManagerGUI.h"
 
 #include "..\NISpeculum\Controller.h"
 #include "..\NISpeculum\PropertyManager.h"
 #include "..\NISpeculum\Mirror.h"
+#include "..\NISpeculum\Floor.h"
 
 //-----------------------------------------------------------------------------
 // CONSTRUCTORS
@@ -46,8 +48,9 @@ void GUIController::run(int argc, char* argv[]){
 	//kinect = new QNIKinect("C:\\Dev\\Kinect\\Data\\ONI\\mirror_papers.oni");
 	//kinect->get_kinect()->set_processing_flag(NIKinect::DEPTH_COLOR, true);
 	_mirror_manager = new MirrorManagerGUI(_controller,app);
+	_floor_manager = new FloorManagerGUI(_controller,app);
 	_point_selection = new PointSelectionGUI();
-	_speculum_gui = new SpeculumGUI(_controller,_mirror_manager,app);
+	_speculum_gui = new SpeculumGUI(_controller,_mirror_manager,_floor_manager,app);
 	
 	//boost::thread coiso(&MainGUI::update_cycle, this);
 
@@ -68,7 +71,16 @@ void GUIController::point_selection(int flag_id, cv::Mat* image){
 			}
 			this->_point_selection_id = flag_id;
 			break;
-		case 2:
+		case 2: //FLOOR POINTS
+			if(image && image->cols && image->rows){
+				image->copyTo(img);
+			}
+			else{
+				this->_controller->_mat_color_bgr.copyTo(img,this->_controller->_floor->_area_mask);
+			}
+			this->_point_selection_id = flag_id;
+			break;
+		case 3:
 			if(image && image->cols && image->rows){
 				image->copyTo(img);
 			}
@@ -77,7 +89,7 @@ void GUIController::point_selection(int flag_id, cv::Mat* image){
 			}
 			this->_point_selection_id = flag_id;
 			break;
-		case 3:
+		case 4:
 			if(image && image->cols && image->rows){
 				image->copyTo(img);
 			}
@@ -101,6 +113,10 @@ void GUIController::update(){
 		this->_mirror_manager->update_widget();
 	}
 
+	if(!this->_floor_manager->isHidden()){
+		this->_floor_manager->update_widget();
+	}
+
 	if(this->_point_selection_flag){
 		if(this->_point_selection->isHidden()){
 			this->_point_selection->get_points(*this->_controller->_aux_points);
@@ -109,12 +125,15 @@ void GUIController::update(){
 
 			switch(this->_point_selection_id){
 				case 1: //FLOOR POINTS
-					this->_controller->_property_manager->_flag_requests[PropertyManager::R_FLOOR] = true;
+					this->_controller->_property_manager->_flag_requests[PropertyManager::R_FLOOR_AREA] = true;
 					break;
 				case 2: //FLOOR POINTS
-					this->_controller->_property_manager->_flag_requests[PropertyManager::R_MIRROR_AREA] = true;
+					this->_controller->_property_manager->_flag_requests[PropertyManager::R_FLOOR_POINTS] = true;
 					break;
 				case 3: //FLOOR POINTS
+					this->_controller->_property_manager->_flag_requests[PropertyManager::R_MIRROR_AREA] = true;
+					break;
+				case 4: //FLOOR POINTS
 					this->_controller->_property_manager->_flag_requests[PropertyManager::R_MIRROR_POINTS] = true;
 					break;
 			}
@@ -126,4 +145,8 @@ void GUIController::update(){
 
 void GUIController::update_mirror_manager(){
 	this->_mirror_manager->update_values();
+}
+
+void GUIController::update_floor_manager(){
+	this->_floor_manager->update_values();
 }

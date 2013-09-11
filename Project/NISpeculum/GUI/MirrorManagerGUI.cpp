@@ -48,12 +48,18 @@ void MirrorManagerGUI::setup_connections(){
 	this->_ui->_mirror_action_close->setShortcut(Qt::Key_Escape);
 	connect(this->_ui->_mirror_action_close,SIGNAL(triggered()),this,SLOT(on_close()));
 
+	this->_ui->_mirror_push_button_add->setShortcut(QKeySequence("Ctrl+M"));
+	connect(this->_ui->_mirror_push_button_add,SIGNAL(clicked()),this,SLOT(on_button_add_mirror()));
+
 	connect(this->_ui->_mirror_horizontal_slider_a, SIGNAL(valueChanged(int)), this, SLOT(on_slider_a(int)));
 	connect(this->_ui->_mirror_horizontal_slider_b, SIGNAL(valueChanged(int)), this, SLOT(on_slider_b(int)));
 	connect(this->_ui->_mirror_horizontal_slider_c, SIGNAL(valueChanged(int)), this, SLOT(on_slider_c(int)));
 	connect(this->_ui->_mirror_horizontal_slider_d, SIGNAL(valueChanged(int)), this, SLOT(on_slider_d(int)));
 
 	connect(this->_ui->_mirror_spin_box, SIGNAL(valueChanged(int)), this, SLOT(on_mirror_checkBox(int)));
+
+	connect(this->_ui->_mirror_horizontal_slider_min, SIGNAL(valueChanged(int)), this, SLOT(on_slider_min(int)));
+	connect(this->_ui->_mirror_horizontal_slider_max, SIGNAL(valueChanged(int)), this, SLOT(on_slider_max(int)));
 }
 
 //-----------------------------------------------------------------------------
@@ -61,6 +67,19 @@ void MirrorManagerGUI::setup_connections(){
 //-----------------------------------------------------------------------------
 void MirrorManagerGUI::on_close(){
 	this->hide();
+}
+
+void MirrorManagerGUI::on_button_add_mirror(){
+	static bool area = true;
+
+	if(area){
+		this->_controller->_gui->point_selection(3);
+		area = false;
+	}
+	else{
+		this->_controller->_gui->point_selection(4);
+		area = true;
+	}	
 }
 
 void MirrorManagerGUI::on_slider_a(int value){
@@ -133,6 +152,23 @@ void MirrorManagerGUI::on_mirror_checkBox(int value){
 	this->update_values();
 }
 
+void MirrorManagerGUI::on_slider_min(int value){
+	if(this->_controller->_mirrors.size()){
+		this->_controller->_mirrors[this->_idx_mirror]->_depth_min = value;
+	}
+	char buff[128];
+	sprintf(buff,"Min: %dmm",value);
+	this->_ui->_mirror_label_min->setText(buff);
+}
+
+void MirrorManagerGUI::on_slider_max(int value){
+	if(this->_controller->_mirrors.size()){
+		this->_controller->_mirrors[this->_idx_mirror]->_depth_max = value;
+	}
+	char buff[128];
+	sprintf(buff,"Max: %dmm",value);
+	this->_ui->_mirror_label_max->setText(buff);
+}
 
 //-----------------------------------------------------------------------------
 // UPDATE
@@ -153,6 +189,9 @@ void MirrorManagerGUI::update_values(){
 		this->on_slider_c(plane->_c * 1000);
 		this->_ui->_mirror_horizontal_slider_d->setValue(plane->_d * -1);
 		this->on_slider_d(plane->_d * 1000);
+
+		this->_ui->_mirror_horizontal_slider_min->setValue(this->_controller->_mirrors[this->_idx_mirror]->_depth_min);
+		this->_ui->_mirror_horizontal_slider_max->setValue(this->_controller->_mirrors[this->_idx_mirror]->_depth_max);
 	}
 }
 

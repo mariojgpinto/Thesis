@@ -15,6 +15,7 @@ class SpeculumGUI;
 class Controller;
 class PointSelectionGUI;
 class MirrorManagerGUI;
+class FloorManagerGUI;
 
 class __declspec(dllexport) GUIController{
 	public:
@@ -30,11 +31,13 @@ class __declspec(dllexport) GUIController{
 		void point_selection(int flag_id, cv::Mat* img = 0);
 
 		void update_mirror_manager();
+		void update_floor_manager();
 
 	private:
 		SpeculumGUI *_speculum_gui;
 		PointSelectionGUI *_point_selection;
 		MirrorManagerGUI *_mirror_manager;
+		FloorManagerGUI *_floor_manager;
 
 		Controller* _controller;
 
