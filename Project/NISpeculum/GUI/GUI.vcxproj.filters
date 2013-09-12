@@ -77,6 +77,9 @@
     <ClCompile Include="FloorManagerGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ThreeDGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Speculum.qrc">
@@ -106,6 +109,12 @@
     <CustomBuild Include="FloorManagerGUI.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="ThreeDGUI.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ThreeDGUI.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_SpeculumGUI.h">
@@ -121,6 +130,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_FloorManagerGUI.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_ThreeDGUI.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

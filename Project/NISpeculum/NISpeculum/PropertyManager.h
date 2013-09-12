@@ -25,9 +25,10 @@ class PropertyManager{
 
 		enum UPDATE{
 			U_IMAGE,
-			U_PCL
+			U_PCL,
+			U_POLYGON
 		};
-		static const int _n_update_flags = 2;
+		static const int _n_update_flags = 3;
 
 	public:
 		PropertyManager();

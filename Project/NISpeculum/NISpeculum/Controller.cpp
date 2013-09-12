@@ -120,8 +120,6 @@ void Controller::init(const char* oni_file){
 	//this->_mirrors = new std::vector<Mirror*>();
 	this->_n_mirrors = 0;
 
-	this->_3d_viewer = new Viewer3D();
-
 	this->_gui = new GUIController(this);
 
 }
@@ -192,6 +190,9 @@ void Controller::run(int argc, char* argv[]){
 				this->_frame_counter[Controller::CONTROLLER] = 0;
 				printf("Frame Rate: %.2f\n",_frame_rate[Controller::CONTROLLER]);
 			}
+		}
+		else{
+			this->_condition_consumer.notify_all();
 		}
 	}
 
@@ -731,6 +732,11 @@ void Controller::thread_pcl_producer(){
  */
 void Controller::thread_pcl_consumer(){
 	pcl::PointCloud<pcl::PointXYZRGB> cloud;
+	pcl::PolygonMesh polygon;
+
+	this->_3d_viewer = new Viewer3D();
+
+	//this->_3d_viewer->init(&cloud);
 
 	while(_property_manager->_running){
 		//Wait for PointCloud
@@ -739,12 +745,19 @@ void Controller::thread_pcl_consumer(){
 			this->_condition_consumer.wait(lock);
 		}
 
-		this->_mutex_pcl.lock();
-			cloud = this->_pcl_cloud;
-		this->_mutex_pcl.unlock();
+		if(this->_property_manager->_flag_update[PropertyManager::U_POLYGON]){
 
-		this->_3d_viewer->show_cloud(&cloud);
+			//polygon copy
 
+			this->_3d_viewer->show_polygon(&polygon);
+		}
+		else{
+			this->_mutex_pcl.lock();
+				cloud = this->_pcl_cloud;
+			this->_mutex_pcl.unlock();
+
+			this->_3d_viewer->show_cloud(&cloud);
+		}
 		++_frame_counter[Controller::PCL_CONSUMER];
 		if (_frame_counter[Controller::PCL_CONSUMER] == 15)
 		{
