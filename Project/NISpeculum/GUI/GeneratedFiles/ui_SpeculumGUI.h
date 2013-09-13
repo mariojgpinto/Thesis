@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SpeculumGUI.ui'
 **
-** Created: Thu 12. Sep 17:56:39 2013
+** Created: Fri 13. Sep 16:56:41 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -42,6 +42,7 @@ public:
     QSpinBox *_main_spin_box_pcl;
     QLabel *label;
     QFrame *line_3;
+    QPushButton *_main_push_button_3d_manager;
     QMenuBar *menuBar;
     QMenu *menuFile;
 
@@ -93,10 +94,13 @@ public:
         line_3->setGeometry(QRect(560, 10, 20, 21));
         line_3->setFrameShape(QFrame::VLine);
         line_3->setFrameShadow(QFrame::Sunken);
+        _main_push_button_3d_manager = new QPushButton(centralWidget);
+        _main_push_button_3d_manager->setObjectName(QString::fromUtf8("_main_push_button_3d_manager"));
+        _main_push_button_3d_manager->setGeometry(QRect(230, 10, 81, 23));
         SpeculumGUI->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SpeculumGUI);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 660, 21));
+        menuBar->setGeometry(QRect(0, 0, 660, 18));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         SpeculumGUI->setMenuBar(menuBar);
@@ -119,9 +123,10 @@ public:
         _action_save->setText(QApplication::translate("SpeculumGUI", "Save", 0, QApplication::UnicodeUTF8));
         _action_load->setText(QApplication::translate("SpeculumGUI", "Load", 0, QApplication::UnicodeUTF8));
         _main_push_button_pause->setText(QApplication::translate("SpeculumGUI", "Pause", 0, QApplication::UnicodeUTF8));
-        _main_push_button_mirror_manager->setText(QApplication::translate("SpeculumGUI", "MirrorManager", 0, QApplication::UnicodeUTF8));
-        _main_push_button_floor_manager->setText(QApplication::translate("SpeculumGUI", "FloorManager", 0, QApplication::UnicodeUTF8));
+        _main_push_button_mirror_manager->setText(QApplication::translate("SpeculumGUI", "Mirror Manager", 0, QApplication::UnicodeUTF8));
+        _main_push_button_floor_manager->setText(QApplication::translate("SpeculumGUI", "Floor Manager", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("SpeculumGUI", "Step:", 0, QApplication::UnicodeUTF8));
+        _main_push_button_3d_manager->setText(QApplication::translate("SpeculumGUI", "3D Manager", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("SpeculumGUI", "File", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

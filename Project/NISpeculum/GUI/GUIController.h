@@ -16,6 +16,7 @@ class Controller;
 class PointSelectionGUI;
 class MirrorManagerGUI;
 class FloorManagerGUI;
+class ThreeDGUI;
 
 class __declspec(dllexport) GUIController{
 	public:
@@ -38,6 +39,7 @@ class __declspec(dllexport) GUIController{
 		PointSelectionGUI *_point_selection;
 		MirrorManagerGUI *_mirror_manager;
 		FloorManagerGUI *_floor_manager;
+		ThreeDGUI *_3d_manager;
 
 		Controller* _controller;
 

@@ -12,6 +12,7 @@
 #include "PointSelectionGUI.h"
 #include "MirrorManagerGUI.h"
 #include "FloorManagerGUI.h"
+#include "ThreeDGUI.h"
 
 #include "..\NISpeculum\Controller.h"
 #include "..\NISpeculum\PropertyManager.h"
@@ -50,7 +51,8 @@ void GUIController::run(int argc, char* argv[]){
 	_mirror_manager = new MirrorManagerGUI(_controller,app);
 	_floor_manager = new FloorManagerGUI(_controller,app);
 	_point_selection = new PointSelectionGUI();
-	_speculum_gui = new SpeculumGUI(_controller,_mirror_manager,_floor_manager,app);
+	_3d_manager = new ThreeDGUI(_controller,app);
+	_speculum_gui = new SpeculumGUI(_controller,_mirror_manager,_floor_manager,_3d_manager,app);
 	
 	//boost::thread coiso(&MainGUI::update_cycle, this);
 

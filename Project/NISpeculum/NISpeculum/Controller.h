@@ -25,6 +25,7 @@ class Mirror;
 #include <XnCppWrapper.h>
 #include <boost\thread.hpp>
 #include <pcl\point_types.h>
+#include <pcl\PolygonMesh.h>
 
 #define XX 0
 #define YY 1
@@ -84,6 +85,8 @@ class Controller{
 		void add_mirror(Mirror* mirror);
 		void add_floor(Floor *floor);
 
+		void generate_polygon();
+
 		void copy_to_pcl(int flag);
 
 	public:
@@ -114,6 +117,7 @@ class Controller{
 		XnPoint3D* _point_list;// = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
 		XnPoint3D* _real_world;// = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
 		pcl::PointCloud<pcl::PointXYZRGB> _pcl_cloud;
+		pcl::PolygonMesh _polygon;
 		//pcl::PointCloud<pcl::PointXYZ> _pcl_cloud;
 
 		int _n_points;
@@ -129,6 +133,10 @@ class Controller{
 
 
 		std::vector<cv::Point*>* _aux_points;
+
+		
+
+
 	private:		
 		//THREADS
 		boost::thread *_t_kinect;
@@ -145,8 +153,6 @@ class Controller{
 		double  _last_tick[_n_thread_flags];
 		int _frame_counter[_n_thread_flags];
 		float  _frame_rate[_n_thread_flags];
-
-		
 };
 
 #endif//_CONTROLLER

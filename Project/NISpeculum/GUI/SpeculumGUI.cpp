@@ -7,11 +7,12 @@
 #include "GUIController.h"
 #include "MirrorManagerGUI.h"
 #include "FloorManagerGUI.h"
+#include "ThreeDGUI.h"
 
 //-----------------------------------------------------------------------------
 // CONSTRUCTORS
 //-----------------------------------------------------------------------------
-SpeculumGUI::SpeculumGUI(Controller* controller, MirrorManagerGUI *mirror_manager, FloorManagerGUI *floor_manager, QApplication *app, QWidget *parent, Qt::WFlags flags): 
+SpeculumGUI::SpeculumGUI(Controller* controller, MirrorManagerGUI *mirror_manager, FloorManagerGUI *floor_manager, ThreeDGUI *three_d_manager, QApplication *app, QWidget *parent, Qt::WFlags flags): 
 	QMainWindow(parent, flags),
 	_q_application(app),
 	_ui(new Ui::SpeculumGUI)
@@ -21,6 +22,7 @@ SpeculumGUI::SpeculumGUI(Controller* controller, MirrorManagerGUI *mirror_manage
 	this->_controller = controller;
 	this->_mirror_manager = mirror_manager;
 	this->_floor_manager = floor_manager;
+	this->_3d_manager = three_d_manager;
 
 	this->setup_windows();
 	this->setup_connections();
@@ -63,6 +65,8 @@ void SpeculumGUI::setup_connections(){
 	connect(this->_ui->_main_push_button_floor_manager,SIGNAL(clicked()),this,SLOT(on_button_floor_manager()));
 	this->_ui->_main_push_button_mirror_manager->setShortcut(QKeySequence("Ctrl+M"));
 	connect(this->_ui->_main_push_button_mirror_manager,SIGNAL(clicked()),this,SLOT(on_button_mirror_manager()));
+	this->_ui->_main_push_button_3d_manager->setShortcut(QKeySequence("Ctrl+3"));
+	connect(this->_ui->_main_push_button_3d_manager,SIGNAL(clicked()),this,SLOT(on_button_3d_manager()));
 	
 	connect(this->_ui->_main_spin_box_pcl, SIGNAL(valueChanged(int)), this, SLOT(on_spinbox_step(int)));
 }
@@ -102,6 +106,10 @@ void SpeculumGUI::on_button_mirror_manager(){
 void SpeculumGUI::on_button_floor_manager(){
 	this->_floor_manager->update_values();
 	this->_floor_manager->show();
+}
+
+void SpeculumGUI::on_button_3d_manager(){
+	this->_3d_manager->show();
 }
 
 void SpeculumGUI::on_spinbox_step(int value){

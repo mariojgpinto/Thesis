@@ -9,13 +9,14 @@
 class Controller;
 class MirrorManagerGUI;
 class FloorManagerGUI;
+class ThreeDGUI;
 
 class __declspec(dllexport) SpeculumGUI : public QMainWindow
 {
 	Q_OBJECT
 
 	public:
-		SpeculumGUI(Controller* controller, MirrorManagerGUI *mirror_manager, FloorManagerGUI *floor_manager, QApplication* app, QWidget *parent = 0, Qt::WFlags flags = 0);
+		SpeculumGUI(Controller* controller, MirrorManagerGUI *mirror_manager, FloorManagerGUI *floor_manager, ThreeDGUI *three_d_manager, QApplication* app, QWidget *parent = 0, Qt::WFlags flags = 0);
 		~SpeculumGUI();
 
 		void update_widget();
@@ -28,6 +29,7 @@ class __declspec(dllexport) SpeculumGUI : public QMainWindow
 		void on_pause();
 		void on_button_mirror_manager();
 		void on_button_floor_manager();
+		void on_button_3d_manager();
 
 		void on_spinbox_step(int value);
 
@@ -44,6 +46,7 @@ class __declspec(dllexport) SpeculumGUI : public QMainWindow
 
 		MirrorManagerGUI *_mirror_manager;
 		FloorManagerGUI *_floor_manager;
+		ThreeDGUI *_3d_manager;
 
 		Controller* _controller;
 

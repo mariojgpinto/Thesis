@@ -84,7 +84,9 @@ int main (int argc, char** argv){
 	printf(")");
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr merged (new pcl::PointCloud<pcl::PointXYZRGB>);
 
-	if (pcl::io::loadPLYFile("floor_2_mirror_even_better.ply", *merged) == -1){ //* load the file	
+	
+	if (pcl::io::loadPCDFile ("speculum.pcd", *merged) == -1){ //* load the file	
+	//if (pcl::io::loadPLYFile("floor_2_mirror_even_better.ply", *merged) == -1){ //* load the file	
 		PCL_ERROR ("Couldn't read file test_pcd.pcd \n");
 		return (-1);
 	}
@@ -117,11 +119,11 @@ int main (int argc, char** argv){
 	pcl::PolygonMesh triangles;
 
 	// Set the maximum distance between connected points (maximum edge length)
-	gp3.setSearchRadius (0.25);
+	gp3.setSearchRadius (5);
 
 	// Set typical values for the parameters
-	gp3.setMu (2.5);
-	gp3.setMaximumNearestNeighbors (200);
+	gp3.setMu (5);
+	gp3.setMaximumNearestNeighbors (500);
 	gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
 	gp3.setMinimumAngle(M_PI/18); // 10 degrees
 	gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
@@ -137,7 +139,7 @@ int main (int argc, char** argv){
 	std::vector<int> states = gp3.getPointStates();
 
 	pcl::visualization::PCLVisualizer viewer("3D Viewer");
-	viewer.setBackgroundColor (50, 50, 155);
+	viewer.setBackgroundColor (128, 128, 128);
 
 	viewer.addPolygonMesh(triangles,"coiso");
 

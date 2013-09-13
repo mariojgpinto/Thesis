@@ -12,23 +12,24 @@ class PropertyManager{
 				R_MIRROR_AREA,
 				R_MIRROR_POINTS,
 				R_SAVE,
-				R_LOAD
+				R_LOAD,
+				R_SAVE_PCL
 		};
-		static const int _n_request_flags = 7;
+		static const int _n_request_flags = 8;
 
 		enum PROCESSED{
 			P_FLOOR_PLANE = 1,
 			P_MIRROR = 2,
-			P_MASK = 4
+			P_MASK = 4,
+			P_POLYGON = 8
 		};
-		static const int _n_processed_flags = 3;
+		static const int _n_processed_flags = 9;
 
 		enum UPDATE{
 			U_IMAGE,
 			U_PCL,
-			U_POLYGON
 		};
-		static const int _n_update_flags = 3;
+		static const int _n_update_flags = 2;
 
 	public:
 		PropertyManager();

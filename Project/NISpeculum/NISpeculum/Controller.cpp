@@ -168,6 +168,9 @@ void Controller::run(int argc, char* argv[]){
 					pcl_flag += PropertyManager::P_FLOOR_PLANE;
 				}
 			
+				if(this->_property_manager->_flag_processed[PropertyManager::P_POLYGON]){
+					this->generate_polygon();
+				}
 			}
 
 			if(this->_property_manager->_flag_update[PropertyManager::U_PCL]){
@@ -175,11 +178,16 @@ void Controller::run(int argc, char* argv[]){
 					this->copy_to_pcl(pcl_flag);
 				this->_mutex_pcl.unlock();
 
+				if(this->_property_manager->_flag_requests[PropertyManager::R_SAVE_PCL]){
+					ToolBoxPCL::write_to_pcd_file(this->_pcl_cloud,"cloud.pcd");
+					this->_property_manager->_flag_requests[PropertyManager::R_SAVE_PCL] = false;
+				}
+
 				this->_condition_consumer.notify_all();
 			}
 			if(this->_property_manager->_flag_update[PropertyManager::U_IMAGE]){
 				this->_gui->update();
-			}
+			}		
 
 			++this->_frame_counter[Controller::CONTROLLER];
 			if (this->_frame_counter[Controller::CONTROLLER] == 15)
@@ -463,6 +471,61 @@ bool Controller::generate_3d_mirrors(){
 	return true;
 }
 
+
+//OUTLIERS
+#include <pcl/filters/statistical_outlier_removal.h>
+
+//SMOOTHING
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/surface/mls.h>
+
+//TRIANGULATION
+//#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/surface/gp3.h>
+
+//VOXEL
+#include <pcl/filters/voxel_grid.h>
+
+void Controller::generate_polygon(){
+	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr vertices (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+	pcl::copyPointCloud(this->_pcl_cloud, *vertices);
+
+	pcl::NormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne;
+	ne.setRadiusSearch (0.01);
+	ne.setInputCloud (this->_pcl_cloud.makeShared());
+	ne.compute (*vertices);
+
+	pcl::search::KdTree<pcl::PointXYZRGBNormal>::Ptr tree2 (new pcl::search::KdTree<pcl::PointXYZRGBNormal>); 
+	tree2->setInputCloud (vertices); 
+
+	// Initialize objects
+	pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal> gp3;
+	pcl::PolygonMesh triangles;
+
+	// Set the maximum distance between connected points (maximum edge length)
+	gp3.setSearchRadius (10);
+
+	// Set typical values for the parameters
+	gp3.setMu (15);
+	gp3.setMaximumNearestNeighbors (200);
+	gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
+	gp3.setMinimumAngle(M_PI/18); // 10 degrees
+	gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+	gp3.setNormalConsistency(true);
+
+	// Get result
+	gp3.setInputCloud (vertices);
+	gp3.setSearchMethod (tree2);
+	gp3.reconstruct (triangles);
+
+	this->_polygon = triangles;
+
+	//// Additional vertex information
+	//std::vector<int> parts = gp3.getPartIDs();
+	//std::vector<int> states = gp3.getPointStates();
+}
+
 void Controller::copy_to_pcl(int flag){
 	_pcl_cloud.clear();
 
@@ -592,9 +655,6 @@ void Controller::remove_floor(){
 					ptr[yy * XN_VGA_X_RES + xx] = 0;
 				}
 			}
-			//else{
-			//	ptr[yy * XN_VGA_X_RES + xx] = 0;
-			//}
 		}
 	}
 }
@@ -611,26 +671,6 @@ void Controller::remove_floor_from_mirrors(){
 			}
 		}
 	}
-
-
-
-	//for(int i = 0 ; i < this->_n_points ; ++i){
-	//	XnPoint3D pt = this->_real_world[i];
-	//	if(pt.Z > 0.0){
-	//		int xx = this->_back_3d_to_2d[i][XX];
-	//		int yy = this->_back_3d_to_2d[i][YY];
-
-	//		if(ptr_floor[yy * XN_VGA_X_RES + xx]){
-	//			double dist = this->_floor->_plane.distance_to_plane(pt.X,pt.Y,pt.Z);
-	//			if(dist < this->_floor->_thresh){
-	//				ptr[yy * XN_VGA_X_RES + xx] = 0;
-	//			}
-	//		}
-	//		//else{
-	//		//	ptr[yy * XN_VGA_X_RES + xx] = 0;
-	//		//}
-	//	}
-	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -745,11 +785,12 @@ void Controller::thread_pcl_consumer(){
 			this->_condition_consumer.wait(lock);
 		}
 
-		if(this->_property_manager->_flag_update[PropertyManager::U_POLYGON]){
-
+		if(this->_property_manager->_flag_processed[PropertyManager::P_POLYGON]){
 			//polygon copy
+			polygon = this->_polygon;
 
-			this->_3d_viewer->show_polygon(&polygon);
+			if(polygon.polygons.size())
+				this->_3d_viewer->show_polygon(&polygon);
 		}
 		else{
 			this->_mutex_pcl.lock();
