@@ -21,6 +21,12 @@ class __declspec(dllexport) ThreeDGUI : public QMainWindow
 
 		void on_button_save();
 
+		void on_spin_box_radius_normal(double value);
+
+
+		void on_spin_box_nframes(int value);
+		void on_button_capture_model();
+
 	protected:
 		//Setup Methods
 		void setup_connections();

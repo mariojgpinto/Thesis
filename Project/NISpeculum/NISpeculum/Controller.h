@@ -38,9 +38,10 @@ class Controller{
 			KINECT,
 			GUI,
 			PCL_PRODUCER,
-			PCL_CONSUMER
+			PCL_CONSUMER,
+			PCL_POLYGON
 		};
-		static const int _n_thread_flags = 5;
+		static const int _n_thread_flags = 6;
 
 
 	public:
@@ -68,6 +69,7 @@ class Controller{
 		void thread_gui(int argc, char* argv[]);
 		void thread_pcl_producer();
 		void thread_pcl_consumer();
+		void thread_pcl_polygon();
 
 		//Running
 		void process_request();
@@ -84,6 +86,9 @@ class Controller{
 
 		void add_mirror(Mirror* mirror);
 		void add_floor(Floor *floor);
+
+		void model_add_frame();
+		void generate_model();
 
 		void generate_polygon();
 
@@ -117,7 +122,12 @@ class Controller{
 		XnPoint3D* _point_list;// = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
 		XnPoint3D* _real_world;// = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
 		pcl::PointCloud<pcl::PointXYZRGB> _pcl_cloud;
+		bool _polygon_ready_new;
+		bool _polygon_ready_show;
+		pcl::PointCloud<pcl::PointXYZRGB> _pcl_cloud_polygon;
 		pcl::PolygonMesh _polygon;
+		boost::mutex _mutex_condition_polygon;
+		boost::condition_variable _condition_polygon;
 		//pcl::PointCloud<pcl::PointXYZ> _pcl_cloud;
 
 		int _n_points;
@@ -134,7 +144,16 @@ class Controller{
 
 		std::vector<cv::Point*>* _aux_points;
 
-		
+		int _model_n_frames;
+		std::vector<cv::Mat> _model_frames_depth;
+		std::vector<cv::Mat> _model_frames_color;
+		cv::Mat _model_depth_average;
+		cv::Mat _model_color_average;
+		int _model_n_points;
+		XnPoint3D* _model_projective;
+		XnPoint3D* _model_realworld;
+		pcl::PointCloud<pcl::PointXYZRGB> _model_cloud;
+		pcl::PolygonMesh _model_polygon;
 
 
 	private:		
@@ -143,6 +162,7 @@ class Controller{
 		boost::thread *_t_gui;
 		boost::thread *_t_pcl_consumer;
 		boost::thread *_t_pcl_producer;
+		boost::thread *_t_pcl_polygon;
 
 		boost::mutex _mutex_kinect;
 		boost::mutex _mutex_pcl;

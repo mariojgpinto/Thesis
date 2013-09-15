@@ -29,6 +29,10 @@
             <Point point_x="405" point_y="278"/>
         </Points>
     </Input>
+	<Depth>
+		<Min value="500"/>
+		<Max value="1000"/>
+	</Depth>
 </Floor>
 
 <Mirrors n_mirrors="2">

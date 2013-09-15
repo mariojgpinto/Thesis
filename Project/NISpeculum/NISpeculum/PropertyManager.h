@@ -13,17 +13,19 @@ class PropertyManager{
 				R_MIRROR_POINTS,
 				R_SAVE,
 				R_LOAD,
-				R_SAVE_PCL
+				R_SAVE_PCL,
+				R_CAPTURE
 		};
-		static const int _n_request_flags = 8;
+		static const int _n_request_flags = 9;
 
 		enum PROCESSED{
 			P_FLOOR_PLANE = 1,
 			P_MIRROR = 2,
 			P_MASK = 4,
-			P_POLYGON = 8
+			P_POLYGON = 8,
+			P_CAPTURE = 16
 		};
-		static const int _n_processed_flags = 9;
+		static const int _n_processed_flags = 17;
 
 		enum UPDATE{
 			U_IMAGE,
@@ -45,6 +47,8 @@ class PropertyManager{
 		static const int depth_min = 400;
 		int _depth_min;
 		int _depth_max;	
+
+		double _3d_normal_radius;
 
 		bool _flag_requests[_n_request_flags];	
 		bool _flag_processed[_n_processed_flags];

@@ -78,6 +78,7 @@ void Viewer3D::show_cloud(pcl::PointCloud<pcl::PointXYZRGB>* cloud){
 void Viewer3D::show_polygon(pcl::PolygonMesh* polygon){
 	if(polygon){
 		this->_viewer->removeAllShapes();
+		this->_viewer->removeAllPointClouds();
 		this->_viewer->addPolygonMesh(*polygon);
 		//this->_viewer->updatePolygonMesh(*polygon);
 		this->_viewer->spinOnce(50);

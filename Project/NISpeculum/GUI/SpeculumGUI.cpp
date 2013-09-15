@@ -69,6 +69,9 @@ void SpeculumGUI::setup_connections(){
 	connect(this->_ui->_main_push_button_3d_manager,SIGNAL(clicked()),this,SLOT(on_button_3d_manager()));
 	
 	connect(this->_ui->_main_spin_box_pcl, SIGNAL(valueChanged(int)), this, SLOT(on_spinbox_step(int)));
+
+	connect(this->_ui->_main_horizontal_slider_min, SIGNAL(valueChanged(int)), this, SLOT(on_slider_min(int)));
+	connect(this->_ui->_main_horizontal_slider_max, SIGNAL(valueChanged(int)), this, SLOT(on_slider_max(int)));
 }
 
 //-----------------------------------------------------------------------------
@@ -127,6 +130,22 @@ void SpeculumGUI::on_spinbox_step(int value){
 			}
 		}
 	}
+}
+
+void SpeculumGUI::on_slider_min(int value){
+	this->_controller->_property_manager->_depth_min = value;
+	
+	char buff[128];
+	sprintf(buff,"Min: %dmm",value);
+	this->_ui->_main_label_min->setText(buff);
+}
+
+void SpeculumGUI::on_slider_max(int value){
+	this->_controller->_property_manager->_depth_max = value;
+	
+	char buff[128];
+	sprintf(buff,"Max: %dmm",value);
+	this->_ui->_main_label_max->setText(buff);
 }
 
 //-----------------------------------------------------------------------------

@@ -154,7 +154,7 @@ void FloorManagerGUI::on_slider_thresh(int value){
 }
 
 void FloorManagerGUI::on_slider_min(int value){
-	this->_controller->_property_manager->_depth_min = value;
+	this->_controller->_floor->_depth_min = value;
 	
 	char buff[128];
 	sprintf(buff,"Min: %dmm",value);
@@ -162,7 +162,7 @@ void FloorManagerGUI::on_slider_min(int value){
 }
 
 void FloorManagerGUI::on_slider_max(int value){
-	this->_controller->_property_manager->_depth_max = value;
+	this->_controller->_floor->_depth_max = value;
 	
 	char buff[128];
 	sprintf(buff,"Max: %dmm",value);
@@ -186,8 +186,8 @@ void FloorManagerGUI::update_values(){
 
 	this->_ui->_floor_horizontal_slider_thresh->setValue(this->_controller->_floor->_thresh);
 
-	this->_ui->_floor_horizontal_slider_min->setValue(this->_controller->_property_manager->_depth_min);
-	this->_ui->_floor_horizontal_slider_max->setValue(this->_controller->_property_manager->_depth_max);
+	this->_ui->_floor_horizontal_slider_min->setValue(this->_controller->_floor->_depth_min);
+	this->_ui->_floor_horizontal_slider_max->setValue(this->_controller->_floor->_depth_max);
 }
 
 void FloorManagerGUI::update_widget(){

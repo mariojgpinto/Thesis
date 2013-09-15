@@ -22,26 +22,21 @@
 #include <NIKinect.h>
 #include <ToolBoxPCL.h>
 
-namespace
-{
-	struct TrackerGroundMouseData
-	{
-		std::string window_name;
-		cv::Mat image;
-		std::vector<cv::Point*> points;
-	};
 
-	static void on_tracker_ground_mouse(int event, int x, int y, int flags, void *void_data)
-	{
-		if (event != CV_EVENT_LBUTTONUP)
-			return;
+//OUTLIERS
+#include <pcl/filters/statistical_outlier_removal.h>
 
-		TrackerGroundMouseData* data = (TrackerGroundMouseData*)void_data;
-		data->points.push_back(new cv::Point(x, y));
-		circle(data->image, cv::Point(x,y), 5, cv::Scalar(255,255,255,255));
-		imshow(data->window_name, data->image);
-	}
-}
+//SMOOTHING
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/surface/mls.h>
+
+//TRIANGULATION
+//#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/surface/gp3.h>
+
+//VOXEL
+#include <pcl/filters/voxel_grid.h>
 
 //-----------------------------------------------------------------------------
 // CONSTRUCTORS
@@ -60,7 +55,8 @@ Controller::Controller():
 	_t_kinect(NULL),
 	_t_gui(NULL),
 	_t_pcl_consumer(NULL),
-	_t_pcl_producer(NULL){
+	_t_pcl_producer(NULL),
+	_t_pcl_polygon(NULL){
 
 	//this->_mutex_kinect = new boost::mutex();
 	//this->_mutex_pcl = new boost::mutex();
@@ -90,6 +86,11 @@ Controller::Controller():
 	}
 
 	this->_aux_points = new std::vector<cv::Point*>();
+	
+	this->_model_n_frames = 0;
+	this->_model_n_points = 0;
+	this->_model_projective = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES);
+	this->_model_realworld = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES);
 }
 
 /**
@@ -138,6 +139,9 @@ void Controller::run(int argc, char* argv[]){
 	this->_t_pcl_consumer = new boost::thread(&Controller::thread_pcl_consumer,this);
 	Sleep(500);
 
+	this->_t_pcl_polygon = new boost::thread(&Controller::thread_pcl_polygon,this);
+	Sleep(500);
+
 	while(this->_property_manager->_running){
 		//Copy the information from the Kinect
 		if(!this->_property_manager->_pause){
@@ -168,8 +172,25 @@ void Controller::run(int argc, char* argv[]){
 					pcl_flag += PropertyManager::P_FLOOR_PLANE;
 				}
 			
+				if(this->_property_manager->_flag_processed[PropertyManager::P_CAPTURE]){
+					if(this->_model_frames_depth.size() < this->_model_n_frames){
+						this->model_add_frame();
+					}
+					else{
+						this->generate_model();
+						this->_property_manager->_flag_processed[PropertyManager::P_CAPTURE] = false;
+					}
+				}
+
 				if(this->_property_manager->_flag_processed[PropertyManager::P_POLYGON]){
-					this->generate_polygon();
+					if(this->_polygon_ready_new){
+						pcl::copyPointCloud(this->_pcl_cloud,this->_pcl_cloud_polygon);
+
+						this->_polygon_ready_new = false;
+
+						this->_condition_polygon.notify_all();
+					}
+					//this->generate_polygon();
 				}
 			}
 
@@ -231,8 +252,8 @@ void Controller::process_floor_mask(){
 	cv::Mat temp;
 	this->_mat_depth16UC1.copyTo(temp,this->_floor->_area_mask);
 	cv::inRange(temp,
-				this->_property_manager->_depth_min,
-				this->_property_manager->_depth_max,
+				this->_floor->_depth_min,
+				this->_floor->_depth_max,
 				this->_floor->_mask);
 }
 
@@ -383,9 +404,19 @@ void Controller::process_request(){
 		this->_property_manager->_flag_requests[PropertyManager::R_LOAD] = false;
 	}
 
+	if(this->_property_manager->_flag_requests[PropertyManager::R_CAPTURE]){
+		this->_model_frames_depth.clear();
+		this->_model_frames_color.clear();
+		this->_model_cloud.clear();
+		this->_model_n_points = 0;
+
+		this->_property_manager->_flag_processed[PropertyManager::P_CAPTURE] = true;
+
+		this->_property_manager->_flag_requests[PropertyManager::R_CAPTURE] = false;
+	}
+
 	this->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = false;
 }
-
 
 //-----------------------------------------------------------------------------
 // GENERATE 3D
@@ -471,29 +502,14 @@ bool Controller::generate_3d_mirrors(){
 	return true;
 }
 
-
-//OUTLIERS
-#include <pcl/filters/statistical_outlier_removal.h>
-
-//SMOOTHING
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/surface/mls.h>
-
-//TRIANGULATION
-//#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/surface/gp3.h>
-
-//VOXEL
-#include <pcl/filters/voxel_grid.h>
-
 void Controller::generate_polygon(){
+	//MP SEARCH FOR FAST MESH GENERATION AND PCL VOXEL GRID
 	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr vertices (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
-	pcl::copyPointCloud(this->_pcl_cloud, *vertices);
+	pcl::copyPointCloud(this->_pcl_cloud_polygon, *vertices);
 
 	pcl::NormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne;
-	ne.setRadiusSearch (0.01);
-	ne.setInputCloud (this->_pcl_cloud.makeShared());
+	ne.setRadiusSearch (this->_property_manager->_3d_normal_radius);
+	ne.setInputCloud (this->_pcl_cloud_polygon.makeShared());
 	ne.compute (*vertices);
 
 	pcl::search::KdTree<pcl::PointXYZRGBNormal>::Ptr tree2 (new pcl::search::KdTree<pcl::PointXYZRGBNormal>); 
@@ -502,6 +518,26 @@ void Controller::generate_polygon(){
 	// Initialize objects
 	pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal> gp3;
 	pcl::PolygonMesh triangles;
+
+
+	/*
+	setMaximumNearestNeighbors(unsigned) and setMu(double) control the size of the neighborhood. 
+		The former defines how many neighbors are searched for, while the latter specifies the maximum acceptable distance 
+		for a point to be considered, relative to the distance of the nearest point (in order to adjust to changing densities). 
+		Typical values are 50-100 and 2.5-3 (or 1.5 for grids).
+	setSearchRadius(double) is practically the maximum edge length for every triangle. 
+		This has to be set by the user such that to allow for the biggest triangles that should be possible.
+	setMinimumAngle(double) and setMaximumAngle(double) are the minimum and maximum angles in each triangle. 
+		While the first is not guaranteed, the second is. Typical values are 10 and 120 degrees (in radians).
+	setMaximumSurfaceAgle(double) and setNormalConsistency(bool) are meant to deal with the cases where there are sharp 
+		edges or corners and where two sides of a surface run very close to each other. To achieve this, points are not 
+		connected to the current point if their normals deviate more than the specified angle 
+		(note that most surface normal estimation methods produce smooth transitions between normal angles even at sharp edges). 
+		This angle is computed as the angle between the lines defined by the normals (disregarding the normal’s direction) 
+		if the normal-consistency-flag is not set, as not all normal estimation methods can guarantee consistently oriented normals. 
+		Typically, 45 degrees (in radians) and false works on most datasets.
+	*/
+
 
 	// Set the maximum distance between connected points (maximum edge length)
 	gp3.setSearchRadius (10);
@@ -520,10 +556,126 @@ void Controller::generate_polygon(){
 	gp3.reconstruct (triangles);
 
 	this->_polygon = triangles;
+}
 
-	//// Additional vertex information
-	//std::vector<int> parts = gp3.getPartIDs();
-	//std::vector<int> states = gp3.getPointStates();
+void Controller::model_add_frame(){
+	cv::Mat temp_depth;
+	cv::Mat temp_color;
+
+	this->_mat_depth16UC1.copyTo(temp_depth);
+	this->_mat_color_bgr.copyTo(temp_color);
+
+	this->_model_frames_depth.push_back(temp_depth);
+	this->_model_frames_color.push_back(temp_color);
+}
+
+void Controller::generate_model(){
+	//Create Average images;
+	this->_model_depth_average.zeros(cv::Size(640,480),CV_16UC1);
+	this->_model_color_average.zeros(cv::Size(640,480),CV_8UC3);
+	cv::Mat average_counter = cv::Mat::zeros(cv::Size(640,480),CV_8UC1);
+	
+	cv::Mat1i freq_n(cv::Size(640,480),0);
+	cv::Mat1f freq_v(cv::Size(640,480),0);
+
+	int idx;
+	int* ptr_freq_v = (int*)freq_v.data;
+	float* ptr_freq_n = (float*)freq_n.data;
+	for(int k = 0 ; k < this->_model_frames_depth.size() ; ++k){
+		UINT16* ptr_16u = (UINT16*)this->_model_frames_depth[k].data;
+		for(int y = 0; y < XN_VGA_Y_RES ; ++y) { 
+			for(int x = 0; x < XN_VGA_X_RES ; ++x) { 
+				idx = y * XN_VGA_X_RES + x;
+				if(ptr_16u[idx]){
+					ptr_freq_n[idx]++;
+					ptr_freq_v[idx]+=ptr_16u[idx];
+				}
+			} 
+		}
+
+		//this->_model_depth_average += this->_model_depth_average[k];
+		this->_model_color_average += this->_model_frames_color[k];
+	}
+
+	for(int y = 0; y < XN_VGA_Y_RES ; ++y) { 
+		for(int x = 0; x < XN_VGA_X_RES ; ++x) {
+			idx = y * XN_VGA_X_RES + x;
+			if(ptr_freq_n[idx]){
+				ptr_freq_v[idx] /= ptr_freq_n[idx];
+			}
+		}
+	}
+
+	//this->_model_depth_average /= this->_model_frames_depth.size();
+	freq_v.copyTo(this->_model_depth_average);
+	this->_model_color_average /= this->_model_frames_depth.size();
+
+	//Create Masks for avg images
+	cv::Mat main_mask;
+	cv::inRange(this->_model_depth_average,
+				this->_property_manager->_depth_min,
+				this->_property_manager->_depth_max,
+				main_mask);
+
+	cv::Mat mask_floor_temp;
+	cv::Mat mask_floor;
+	this->_model_depth_average.copyTo(mask_floor_temp,this->_floor->_area_mask);
+	cv::inRange(mask_floor_temp,
+				this->_floor->_depth_min, //this->_floor->_depth_min
+				this->_floor->_depth_max, //this->_floor->_depth_max
+				mask_floor);
+
+	std::vector<cv::Mat> mirror_mask(this->_mirrors.size());
+	for(int i = 0 ; i < this->_mirrors.size() ; ++i){
+		cv::Mat temp;
+		this->_model_depth_average.copyTo(mask_floor_temp,this->_mirrors[i]->_area_mask);
+		cv::inRange(temp,
+					this->_mirrors[i]->_depth_min,
+					this->_mirrors[i]->_depth_max,
+					mirror_mask[i]);
+	}
+
+	//Generate 3D
+	this->_model_n_points;
+
+	uchar* ptr_main_mask = main_mask.data;
+	UINT16* ptr_16u = (UINT16*)this->_mat_depth16UC1.data;
+
+	for(int y = 0; y < XN_VGA_Y_RES ; y += this->_property_manager->_3d_step) { 
+		for(int x = 0; x < XN_VGA_X_RES ; x += this->_property_manager->_3d_step) { 
+			if(ptr_main_mask[y * XN_VGA_X_RES + x]){
+				XnPoint3D point1;
+				point1.X = x; 
+				point1.Y = y; 
+				point1.Z = ptr_16u[y * XN_VGA_X_RES + x]; 
+
+				
+				this->_model_projective[this->_model_n_points++] = point1;
+			}
+		}
+	} 
+
+	bool result = this->_kinect->convert_to_realworld(	this->_model_n_points, 
+														this->_model_projective,
+														this->_model_realworld); 
+
+	
+	uint8_t* ptr_clr = (uint8_t*)this->_model_color_average.data;
+
+	//Generate PCL-3D Floor
+	uchar* ptr_mask_floor = mask_floor.data;
+	for(int y = 0; y < XN_VGA_Y_RES ; y += this->_property_manager->_3d_step) { 
+		for(int x = 0; x < XN_VGA_X_RES ; x += this->_property_manager->_3d_step) { 
+			if(ptr_mask_floor[y * XN_VGA_X_RES + x]){
+
+			}
+		}
+	}
+
+	//Generate PCL-3D from Mirrors
+
+
+
 }
 
 void Controller::copy_to_pcl(int flag){
@@ -786,11 +938,18 @@ void Controller::thread_pcl_consumer(){
 		}
 
 		if(this->_property_manager->_flag_processed[PropertyManager::P_POLYGON]){
-			//polygon copy
-			polygon = this->_polygon;
+			if(this->_polygon_ready_show){
+				//polygon copy
+				polygon = this->_polygon;
 
-			if(polygon.polygons.size())
-				this->_3d_viewer->show_polygon(&polygon);
+				if(polygon.polygons.size())
+					this->_3d_viewer->show_polygon(&polygon);
+				
+				this->_polygon_ready_show = false;
+			}
+			else{
+				this->_3d_viewer->spin();
+			}
 		}
 		else{
 			this->_mutex_pcl.lock();
@@ -806,6 +965,31 @@ void Controller::thread_pcl_consumer(){
 			_frame_rate[Controller::PCL_CONSUMER] = _frame_counter[Controller::PCL_CONSUMER] / ((current_tick - _last_tick[Controller::PCL_CONSUMER])/cv::getTickFrequency());
 			_last_tick[Controller::PCL_CONSUMER] = current_tick;
 			_frame_counter[Controller::PCL_CONSUMER] = 0;
+			//printf("\t\t\t PCLProducer FrameRate %.2f\n",_frame_rate);
+		}
+	}
+}
+
+void Controller::thread_pcl_polygon(){
+	while(this->_property_manager->_running){
+		//Wait for PointCloud
+		{
+			boost::mutex::scoped_lock lock(this->_mutex_condition_polygon);
+			this->_condition_polygon.wait(lock);
+		}
+
+		this->generate_polygon();
+		
+		this->_polygon_ready_show = true;
+		this->_polygon_ready_new = true;
+
+		++_frame_counter[Controller::PCL_POLYGON];
+		if (_frame_counter[Controller::PCL_POLYGON] == 15)
+		{
+			double current_tick = cv::getTickCount();
+			_frame_rate[Controller::PCL_POLYGON] = _frame_counter[Controller::PCL_POLYGON] / ((current_tick - _last_tick[Controller::PCL_POLYGON])/cv::getTickFrequency());
+			_last_tick[Controller::PCL_POLYGON] = current_tick;
+			_frame_counter[Controller::PCL_POLYGON] = 0;
 			//printf("\t\t\t PCLProducer FrameRate %.2f\n",_frame_rate);
 		}
 	}

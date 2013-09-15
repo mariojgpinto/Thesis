@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SpeculumGUI.ui'
 **
-** Created: Fri 13. Sep 17:24:36 2013
+** Created: Sun 15. Sep 02:31:11 2013
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -21,6 +21,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QPushButton>
+#include <QtGui/QSlider>
 #include <QtGui/QSpinBox>
 #include <QtGui/QWidget>
 
@@ -43,6 +44,10 @@ public:
     QLabel *label;
     QFrame *line_3;
     QPushButton *_main_push_button_3d_manager;
+    QSlider *_main_horizontal_slider_min;
+    QLabel *_main_label_min;
+    QLabel *_main_label_max;
+    QSlider *_main_horizontal_slider_max;
     QMenuBar *menuBar;
     QMenu *menuFile;
 
@@ -50,7 +55,7 @@ public:
     {
         if (SpeculumGUI->objectName().isEmpty())
             SpeculumGUI->setObjectName(QString::fromUtf8("SpeculumGUI"));
-        SpeculumGUI->resize(660, 580);
+        SpeculumGUI->resize(660, 640);
         _action_close = new QAction(SpeculumGUI);
         _action_close->setObjectName(QString::fromUtf8("_action_close"));
         _action_save = new QAction(SpeculumGUI);
@@ -61,7 +66,7 @@ public:
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         _main_widget = new QWidget(centralWidget);
         _main_widget->setObjectName(QString::fromUtf8("_main_widget"));
-        _main_widget->setGeometry(QRect(10, 60, 640, 480));
+        _main_widget->setGeometry(QRect(10, 120, 640, 480));
         _main_push_button_pause = new QPushButton(centralWidget);
         _main_push_button_pause->setObjectName(QString::fromUtf8("_main_push_button_pause"));
         _main_push_button_pause->setGeometry(QRect(480, 10, 75, 23));
@@ -86,6 +91,7 @@ public:
         _main_spin_box_pcl->setGeometry(QRect(611, 10, 41, 22));
         _main_spin_box_pcl->setMinimum(1);
         _main_spin_box_pcl->setMaximum(16);
+        _main_spin_box_pcl->setValue(2);
         label = new QLabel(centralWidget);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(580, 10, 31, 20));
@@ -97,6 +103,26 @@ public:
         _main_push_button_3d_manager = new QPushButton(centralWidget);
         _main_push_button_3d_manager->setObjectName(QString::fromUtf8("_main_push_button_3d_manager"));
         _main_push_button_3d_manager->setGeometry(QRect(230, 10, 81, 23));
+        _main_horizontal_slider_min = new QSlider(centralWidget);
+        _main_horizontal_slider_min->setObjectName(QString::fromUtf8("_main_horizontal_slider_min"));
+        _main_horizontal_slider_min->setGeometry(QRect(100, 60, 551, 20));
+        _main_horizontal_slider_min->setMinimum(400);
+        _main_horizontal_slider_min->setMaximum(2000);
+        _main_horizontal_slider_min->setValue(500);
+        _main_horizontal_slider_min->setOrientation(Qt::Horizontal);
+        _main_label_min = new QLabel(centralWidget);
+        _main_label_min->setObjectName(QString::fromUtf8("_main_label_min"));
+        _main_label_min->setGeometry(QRect(10, 60, 81, 16));
+        _main_label_max = new QLabel(centralWidget);
+        _main_label_max->setObjectName(QString::fromUtf8("_main_label_max"));
+        _main_label_max->setGeometry(QRect(10, 90, 81, 16));
+        _main_horizontal_slider_max = new QSlider(centralWidget);
+        _main_horizontal_slider_max->setObjectName(QString::fromUtf8("_main_horizontal_slider_max"));
+        _main_horizontal_slider_max->setGeometry(QRect(100, 90, 551, 20));
+        _main_horizontal_slider_max->setMinimum(400);
+        _main_horizontal_slider_max->setMaximum(2000);
+        _main_horizontal_slider_max->setValue(1500);
+        _main_horizontal_slider_max->setOrientation(Qt::Horizontal);
         SpeculumGUI->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SpeculumGUI);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -127,6 +153,8 @@ public:
         _main_push_button_floor_manager->setText(QApplication::translate("SpeculumGUI", "Floor Manager", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("SpeculumGUI", "Step:", 0, QApplication::UnicodeUTF8));
         _main_push_button_3d_manager->setText(QApplication::translate("SpeculumGUI", "3D Manager", 0, QApplication::UnicodeUTF8));
+        _main_label_min->setText(QApplication::translate("SpeculumGUI", "Min: 500mm", 0, QApplication::UnicodeUTF8));
+        _main_label_max->setText(QApplication::translate("SpeculumGUI", "Max: 1500mm", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("SpeculumGUI", "File", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

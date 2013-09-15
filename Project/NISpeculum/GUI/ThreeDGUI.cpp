@@ -33,6 +33,12 @@ void ThreeDGUI::setup_connections(){
 	connect(this->_ui->_3d_check_box_polygon, SIGNAL(stateChanged(int)), this, SLOT(on_check_box_polygon(int)));
 
 	connect(this->_ui->_3d_push_button_save,SIGNAL(clicked()),this,SLOT(on_button_save()));
+
+	connect(this->_ui->_3d_double_spin_box_normal, SIGNAL(valueChanged(double)), this, SLOT(on_spin_box_radius_normal(double)));
+	
+
+	connect(this->_ui->_3d_push_button_capture,SIGNAL(clicked()),this,SLOT(on_button_capture_model()));
+	connect(this->_ui->_3d_spin_box_nframes, SIGNAL(valueChanged(int)), this, SLOT(on_spin_box_nframes(int)));
 }
 
 //-----------------------------------------------------------------------------
@@ -48,4 +54,16 @@ void ThreeDGUI::on_check_box_polygon(int value){
 
 void ThreeDGUI::on_button_save(){
 	this->_controller->_property_manager->_flag_requests[PropertyManager::R_SAVE_PCL] = true;
+}
+
+void ThreeDGUI::on_spin_box_radius_normal(double value){
+	this->_controller->_property_manager->_3d_normal_radius = value;
+}
+
+void ThreeDGUI::on_spin_box_nframes(int value){
+	this->_controller->_model_n_frames = value;
+}
+
+void ThreeDGUI::on_button_capture_model(){
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_CAPTURE] = true;
 }

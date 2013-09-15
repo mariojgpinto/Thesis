@@ -69,6 +69,9 @@ class Floor{
 
 		ToolBox::Plane _plane;
 
+		int _depth_min;
+		int _depth_max;
+
 		//Masks
 		cv::Mat _mask;
 		cv::Mat _area_mask;

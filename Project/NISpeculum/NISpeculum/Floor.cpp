@@ -18,8 +18,11 @@
 // CONTRUCTORS
 //-----------------------------------------------------------------------------
 Floor::Floor():
-_area_mask(480,640,(const uchar)255),
-_mask(480,640,(const uchar)255){
+	_area_mask(480,640,(const uchar)255),
+	_mask(480,640,(const uchar)255),
+	_depth_min(500),
+	_depth_max(1000)
+	{
 	this->setup_variables();
 }
 
@@ -551,6 +554,21 @@ bool Floor::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem,
 		elem->LinkEndChild(elem_input);
 	}
 
+	//DEPTH
+	{
+		tinyxml2::XMLElement *elem_depth = doc->NewElement(_XML_MIRROR_ELEM_DEPTH);
+			
+			tinyxml2::XMLElement *elem_depth_min = doc->NewElement(_XML_MIRROR_ELEM_DEPTH_MIN);
+			elem_depth_min->SetAttribute(_XML_VALUE,this->_depth_min);
+			elem_depth->LinkEndChild(elem_depth_min);
+
+			tinyxml2::XMLElement *elem_depth_max = doc->NewElement(_XML_MIRROR_ELEM_DEPTH_MAX);
+			elem_depth_max->SetAttribute(_XML_VALUE,this->_depth_max);
+			elem_depth->LinkEndChild(elem_depth_max);
+
+		elem->LinkEndChild(elem_depth);
+	}
+
 	return true;
 }
 
@@ -736,6 +754,30 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 
 			elem_input_pt = elem_input_pt->NextSiblingElement(_XML_FLOOR_ELEM_INPUT_POINT);
 		}
+	}
+
+	//DEPTH
+	{
+		tinyxml2::XMLElement *elem_depth = root->FirstChildElement(_XML_MIRROR_ELEM_DEPTH);
+
+		if(!elem_depth) return false;
+
+		int depth_min = 0;
+		tinyxml2::XMLElement *elem_depth_min = elem_depth->FirstChildElement(_XML_MIRROR_ELEM_DEPTH_MIN);
+		if(!elem_depth_min) return false;
+
+		error = elem_depth_min->QueryIntAttribute(_XML_VALUE,&depth_min);
+		if(error) return false;
+
+		int depth_max = 0;
+		tinyxml2::XMLElement *elem_depth_max = elem_depth->FirstChildElement(_XML_MIRROR_ELEM_DEPTH_MAX);
+		if(!elem_depth_max) return false;
+
+		error = elem_depth_max->QueryIntAttribute(_XML_VALUE,&depth_max);
+		if(error) return false;
+
+		this->_depth_min = depth_min;
+		this->_depth_max = depth_max;
 	}
 
 	return true;
