@@ -130,17 +130,17 @@ void Controller::init(const char* oni_file){
 //-----------------------------------------------------------------------------
 void Controller::run(int argc, char* argv[]){
 	this->_t_gui = new boost::thread(&Controller::thread_gui,this,argc,argv);
-	Sleep(1000);
+	Sleep(500);
 
 	this->_t_kinect = new boost::thread(&Controller::thread_kinect,this);
 	Sleep(1000);
 	//this->_t_pcl_producer = new boost::thread(&Controller::thread_pcl_producer,this);
 	//Sleep(500);
 	this->_t_pcl_consumer = new boost::thread(&Controller::thread_pcl_consumer,this);
-	Sleep(500);
+	Sleep(1500);
 
-	this->_t_pcl_polygon = new boost::thread(&Controller::thread_pcl_polygon,this);
-	Sleep(500);
+	//this->_t_pcl_polygon = new boost::thread(&Controller::thread_pcl_polygon,this);
+	//Sleep(500);
 
 	while(this->_property_manager->_running){
 		//Copy the information from the Kinect

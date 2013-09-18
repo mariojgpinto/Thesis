@@ -44,7 +44,7 @@ Viewer3D::~Viewer3D(){
 void Viewer3D::init(){
 	//_viewer->setBackgroundColor (0, 0, 0);
 	pcl::PointCloud<pcl::PointXYZRGB> cloud;
-	this->_viewer->addPointCloud(cloud.makeShared());
+	this->_viewer->addPointCloud(cloud.makeShared(),"cloud");
 
 	_viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2);
 	_viewer->addCoordinateSystem (1.0);
