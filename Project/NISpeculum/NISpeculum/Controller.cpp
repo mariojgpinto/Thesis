@@ -139,8 +139,8 @@ void Controller::run(int argc, char* argv[]){
 	this->_t_pcl_consumer = new boost::thread(&Controller::thread_pcl_consumer,this);
 	Sleep(1500);
 
-	//this->_t_pcl_polygon = new boost::thread(&Controller::thread_pcl_polygon,this);
-	//Sleep(500);
+	this->_t_pcl_polygon = new boost::thread(&Controller::thread_pcl_polygon,this);
+	Sleep(500);
 
 	while(this->_property_manager->_running){
 		//Copy the information from the Kinect
@@ -942,8 +942,10 @@ void Controller::thread_pcl_consumer(){
 				//polygon copy
 				polygon = this->_polygon;
 
-				if(polygon.polygons.size())
+				if(polygon.polygons.size()){
+					printf("New Polygon\n");
 					this->_3d_viewer->show_polygon(&polygon);
+				}
 				
 				this->_polygon_ready_show = false;
 			}
