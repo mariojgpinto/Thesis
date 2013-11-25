@@ -3,7 +3,7 @@
 
 %------------------------------INTERNATIONALIZATION----------------------------
 %\usepackage[utf8]{inputenc}
-\usepackage[english]{babel} %\usepackage[english,portuges]{babel} % amazingly, the filename is really "portuges"! 
+\usepackage[english,portuges]{babel} %\usepackage[english,portuges]{babel} % amazingly, the filename is really "portuges"! 
 \usepackage[T1]{fontenc} % change from default OT1, which contains only the 128 ASCII characters.
 \usepackage{textcomp}
 
@@ -52,15 +52,15 @@
 %-----------------------------------PDF CONFIG----------------------------------
 \usepackage[usenames,dvipsnames]{color}
 \usepackage[pdfauthor={Mario Pinto, PG17664},%
-            pdftitle={3D Concentric Data Acquisition using a Static Setup},%
+            pdftitle={360 Fast 3D Data Acquisition using a Static Setup},%
             urlcolor=NavyBlue,% default is magenta
             citecolor=black,% default is green
             linkcolor=NavyBlue,% default is red
             pdftex,colorlinks,pagebackref]{hyperref} %,a4paper
-\def\chapterautorefname{Chapter}       % Make hyperref's autoref names start with capital letters.
-\def\sectionautorefname{Section}       % See url below for default values:
-\def\subsectionautorefname{Subsection} % http://www.tug.org/applications/hyperref/manual.html#TBL-23
-\def\tableautorefname{Table}           % Note: autoref feature didn't seem to work with tables
+\def\chapterautorefname{Capítulo}       % Make hyperref's autoref names start with capital letters.
+\def\sectionautorefname{Secção}       % See url below for default values:
+\def\subsectionautorefname{Subsecção} % http://www.tug.org/applications/hyperref/manual.html#TBL-23
+\def\tableautorefname{Tabela}           % Note: autoref feature didn't seem to work with tables
 
 \usepackage{pdfpages} % to be able to include pdf documents with includepdf{}
 %-----------------------------------END PACKAGES----------------------------------
@@ -103,21 +103,20 @@
 
 \input{./[01]Introduction/[01][00]Introduction}
 \input{./[01]Introduction/[01][01]Motivação}
-%\input{./[01]Introduction/[01][02]Objetivos}
-%\input{./[01]Introduction/[01][03]Estrutura_do_Documento}
+\input{./[01]Introduction/[01][02]Objetivos}
+\input{./[01]Introduction/[01][03]Estrutura_do_Documento}
 
 \input{./[02]SoA/[02][00]Introdução}
 \input{./[02]SoA/[02][01]Metodos_de_Captura}
-%\input{./[02]SoA/[02][02]Sistemas_de_Aquisição_360}
-%\input{./[02]SoA/[02][03]Aplicações}
-%\input{./[02]SoA/[02][04]Sumário}
+\input{./[02]SoA/[02][02]Sistemas_de_Aquisição_360}
+\input{./[02]SoA/[02][03]Aplicações}
+\input{./[02]SoA/[02][04]Sumário}
 
-%\input{./Text/[03]Methodology/[03][00]Introduction}
-%\input{./Text/[04]Concept_Design/[04][00]Introduction}
-%\input{./Text/[05]Development/[05][00]Introduction}
-%\input{./Text/[06]Results_and_Discussion/[06][00]Introduction}
-%\input{./Text/[07]Conclusion/[07][00]Conclusion}
 
+\input{./[03]Desenho/[03][00]Introdução}
+\input{./[04]Implementação/[04][00]Introdução}
+\input{./[05]Resultados/[05][00]Introdução}
+\input{./[06]Conclusão/[06][00]Introdução}
 
 \bibliographystyle{./[00]Bibtex/myplainnat} % Based on plainnat, which uses the full first names of the authors instead of initials;
                                % Differences from plainnat: 
