@@ -11,5 +11,5 @@
 \contentsline {chapter}{\numberline {3}Visão do Sistema}{5}{chapter.3}
 \contentsline {chapter}{\numberline {4}Implementação}{7}{chapter.4}
 \contentsline {chapter}{\numberline {5}Resultados}{9}{chapter.5}
-\contentsline {chapter}{\numberline {6}Conclusão}{11}{chapter.6}
+\contentsline {chapter}{\numberline {6}Conclusão e Trabalho Futuro}{11}{chapter.6}
 \contentsline {chapter}{7\hspace *{1em}Bibliografia}{13}{section*.4}
