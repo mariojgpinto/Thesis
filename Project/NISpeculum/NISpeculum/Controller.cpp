@@ -571,8 +571,8 @@ void Controller::model_add_frame(){
 
 void Controller::generate_model(){
 	//Create Average images;
-	this->_model_depth_average.zeros(cv::Size(640,480),CV_16UC1);
-	this->_model_color_average.zeros(cv::Size(640,480),CV_8UC3);
+	this->_model_depth_average = cv::Mat::zeros(cv::Size(640,480),CV_16UC1);
+	this->_model_color_average = cv::Mat::zeros(cv::Size(640,480),CV_8UC3);
 	cv::Mat average_counter = cv::Mat::zeros(cv::Size(640,480),CV_8UC1);
 	
 	cv::Mat1i freq_n(cv::Size(640,480),0);
@@ -608,7 +608,14 @@ void Controller::generate_model(){
 
 	//this->_model_depth_average /= this->_model_frames_depth.size();
 	freq_v.copyTo(this->_model_depth_average);
-	this->_model_color_average /= this->_model_frames_depth.size();
+	this->_model_color_average /= (this->_model_frames_depth.size()-1);
+
+	cv::imshow("win1",this->_model_color_average);
+	cv::Mat t8u;
+	freq_v.convertTo(t8u,CV_8UC1);
+	cv::imshow("win2",freq_v);
+	cv::imshow("win3",t8u);
+	cv::waitKey();
 
 	//Create Masks for avg images
 	cv::Mat main_mask;
@@ -627,9 +634,8 @@ void Controller::generate_model(){
 
 	std::vector<cv::Mat> mirror_mask(this->_mirrors.size());
 	for(int i = 0 ; i < this->_mirrors.size() ; ++i){
-		cv::Mat temp;
 		this->_model_depth_average.copyTo(mask_floor_temp,this->_mirrors[i]->_area_mask);
-		cv::inRange(temp,
+		cv::inRange(mask_floor_temp,
 					this->_mirrors[i]->_depth_min,
 					this->_mirrors[i]->_depth_max,
 					mirror_mask[i]);

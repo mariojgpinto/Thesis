@@ -16,6 +16,8 @@ ThreeDGUI::ThreeDGUI(Controller* controller, QApplication *app, QWidget *parent,
 	this->_controller = controller;
 
 	this->setup_connections();
+
+	this->on_spin_box_nframes(10);
 }
 
 ThreeDGUI::~ThreeDGUI()
@@ -65,5 +67,11 @@ void ThreeDGUI::on_spin_box_nframes(int value){
 }
 
 void ThreeDGUI::on_button_capture_model(){
+	this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
 	this->_controller->_property_manager->_flag_requests[PropertyManager::R_CAPTURE] = true;
+
+
+	cv::namedWindow("win1");
+	cv::namedWindow("win2");
+	cv::namedWindow("win3");
 }
