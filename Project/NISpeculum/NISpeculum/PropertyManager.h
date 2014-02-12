@@ -14,18 +14,22 @@ class PropertyManager{
 				R_SAVE,
 				R_LOAD,
 				R_SAVE_PCL,
-				R_CAPTURE
+				R_CAPTURE,
 		};
-		static const int _n_request_flags = 9;
+		static const int _n_request_flags = 10;
 
 		enum PROCESSED{
 			P_FLOOR_PLANE = 1,
 			P_MIRROR = 2,
 			P_MASK = 4,
 			P_POLYGON = 8,
-			P_CAPTURE = 16
+			P_CAPTURE = 16,
+			P_CAPTURE_SHOW = 32,
+			P_FILTER = 64,
+			P_OUTLIERS = 128,
+			P_VOXEL = 256
 		};
-		static const int _n_processed_flags = 17;
+		static const int _n_processed_flags = 257;
 
 		enum UPDATE{
 			U_IMAGE,
@@ -53,6 +57,31 @@ class PropertyManager{
 		bool _flag_requests[_n_request_flags];	
 		bool _flag_processed[_n_processed_flags];
 		bool _flag_update[_n_update_flags];
+
+		//1 - Bilateral
+		//2 - MedianBlur
+		//3 - GaussinaBlur
+		int	_filter_method;
+
+		//1 - Radius
+		//2 - Statistical
+		int _outliers_methods;
+
+		double	_voxel_grid_x;
+		double	_voxel_grid_y;
+		double	_voxel_grid_z;
+
+		int		_outliers_radius_neighbors;
+		double	_outliers_radius_radius;
+		int		_outliers_statistical_meank;
+		double	_outliers_statistical_stddev;
+
+
+		//1 - pcd
+		//2 - ply
+		//3 - obj
+		int				_save_pcl_mode;
+		char			_file_name[256];
 };
 
 #endif//_PROPERTY_MANAGER

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MirrorManagerGUI.ui'
 **
-** Created: Mon 16. Sep 22:44:08 2013
+** Created: Wed 12. Feb 14:53:52 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -14,6 +14,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QCheckBox>
 #include <QtGui/QFrame>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
@@ -53,6 +54,13 @@ public:
     QLabel *_mirror_label_max;
     QFrame *line_5;
     QPushButton *_mirror_push_button_add;
+    QCheckBox *_mirror_check_box_color;
+    QSpinBox *_mirror_spin_box_color_r;
+    QLabel *label_2;
+    QSpinBox *_mirror_spin_box_color_g;
+    QLabel *label_3;
+    QSpinBox *_mirror_spin_box_color_b;
+    QLabel *label_4;
     QMenuBar *menubar;
     QMenu *menuFile;
 
@@ -99,7 +107,7 @@ public:
         _mirror_horizontal_slider_d->setObjectName(QString::fromUtf8("_mirror_horizontal_slider_d"));
         _mirror_horizontal_slider_d->setGeometry(QRect(100, 420, 431, 20));
         _mirror_horizontal_slider_d->setMinimum(0);
-        _mirror_horizontal_slider_d->setMaximum(1000);
+        _mirror_horizontal_slider_d->setMaximum(3000);
         _mirror_horizontal_slider_d->setValue(500);
         _mirror_horizontal_slider_d->setOrientation(Qt::Horizontal);
         _mirror_widget = new QWidget(centralwidget);
@@ -130,7 +138,7 @@ public:
         _mirror_horizontal_slider_max->setObjectName(QString::fromUtf8("_mirror_horizontal_slider_max"));
         _mirror_horizontal_slider_max->setGeometry(QRect(100, 280, 431, 20));
         _mirror_horizontal_slider_max->setMinimum(400);
-        _mirror_horizontal_slider_max->setMaximum(2000);
+        _mirror_horizontal_slider_max->setMaximum(5000);
         _mirror_horizontal_slider_max->setValue(1000);
         _mirror_horizontal_slider_max->setOrientation(Qt::Horizontal);
         _mirror_horizontal_slider_min = new QSlider(centralwidget);
@@ -159,10 +167,37 @@ public:
         _mirror_push_button_add = new QPushButton(centralwidget);
         _mirror_push_button_add->setObjectName(QString::fromUtf8("_mirror_push_button_add"));
         _mirror_push_button_add->setGeometry(QRect(10, 10, 75, 23));
+        _mirror_check_box_color = new QCheckBox(centralwidget);
+        _mirror_check_box_color->setObjectName(QString::fromUtf8("_mirror_check_box_color"));
+        _mirror_check_box_color->setGeometry(QRect(20, 90, 71, 21));
+        _mirror_spin_box_color_r = new QSpinBox(centralwidget);
+        _mirror_spin_box_color_r->setObjectName(QString::fromUtf8("_mirror_spin_box_color_r"));
+        _mirror_spin_box_color_r->setGeometry(QRect(30, 120, 51, 21));
+        _mirror_spin_box_color_r->setMaximum(255);
+        _mirror_spin_box_color_r->setValue(255);
+        label_2 = new QLabel(centralwidget);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_2->setGeometry(QRect(20, 120, 16, 21));
+        _mirror_spin_box_color_g = new QSpinBox(centralwidget);
+        _mirror_spin_box_color_g->setObjectName(QString::fromUtf8("_mirror_spin_box_color_g"));
+        _mirror_spin_box_color_g->setGeometry(QRect(110, 120, 51, 21));
+        _mirror_spin_box_color_g->setMaximum(255);
+        _mirror_spin_box_color_g->setValue(255);
+        label_3 = new QLabel(centralwidget);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
+        label_3->setGeometry(QRect(100, 120, 16, 21));
+        _mirror_spin_box_color_b = new QSpinBox(centralwidget);
+        _mirror_spin_box_color_b->setObjectName(QString::fromUtf8("_mirror_spin_box_color_b"));
+        _mirror_spin_box_color_b->setGeometry(QRect(190, 120, 51, 21));
+        _mirror_spin_box_color_b->setMaximum(255);
+        _mirror_spin_box_color_b->setValue(255);
+        label_4 = new QLabel(centralwidget);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+        label_4->setGeometry(QRect(180, 120, 16, 21));
         MirrorManager->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MirrorManager);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 540, 18));
+        menubar->setGeometry(QRect(0, 0, 540, 21));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         MirrorManager->setMenuBar(menubar);
@@ -187,6 +222,10 @@ public:
         _mirror_label_min->setText(QApplication::translate("MirrorManager", "Min: 500mm", 0, QApplication::UnicodeUTF8));
         _mirror_label_max->setText(QApplication::translate("MirrorManager", "Max: 1000mm", 0, QApplication::UnicodeUTF8));
         _mirror_push_button_add->setText(QApplication::translate("MirrorManager", "Add Mirror", 0, QApplication::UnicodeUTF8));
+        _mirror_check_box_color->setText(QApplication::translate("MirrorManager", "Use Color", 0, QApplication::UnicodeUTF8));
+        label_2->setText(QApplication::translate("MirrorManager", "R:", 0, QApplication::UnicodeUTF8));
+        label_3->setText(QApplication::translate("MirrorManager", "G:", 0, QApplication::UnicodeUTF8));
+        label_4->setText(QApplication::translate("MirrorManager", "B:", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("MirrorManager", "File", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

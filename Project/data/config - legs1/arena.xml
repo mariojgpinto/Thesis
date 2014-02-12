@@ -43,10 +43,10 @@
             <Input flag="1"/>
         </Flags>
         <Plane>
-            <A value="-0.562465"/>
-            <B value="0.187895"/>
-            <C value="0.805189"/>
-            <D value="-1517"/>
+            <A value="-0.584473"/>
+            <B value="0.179095"/>
+            <C value="0.791401"/>
+            <D value="-1619"/>
         </Plane>
         <Area>
             <AreaMask path="..\..\data\config\mirror_area_mask_0.png"/>
@@ -67,43 +67,43 @@
             </Points>
         </Input>
         <Depth>
-            <Min value="1177"/>
-            <Max value="2623"/>
+            <Min value="600"/>
+            <Max value="5000"/>
         </Depth>
     </Mirror>
-	<Mirror>
+    <Mirror>
         <Flags>
             <Plane flag="1"/>
             <Mask flag="1"/>
             <Input flag="1"/>
         </Flags>
         <Plane>
-            <A value="0.51348"/>
-            <B value="0.204388"/>
-            <C value="0.833405"/>
-            <D value="-1654.59"/>
+            <A value="0.595227"/>
+            <B value="0.201004"/>
+            <C value="0.778011"/>
+            <D value="-1497"/>
         </Plane>
         <Area>
             <AreaMask path="..\..\data\config\mirror_area_mask_1.png"/>
             <Limits>
-                <MaxWidth value="620"/>
-                <MinWidth value="382"/>
+                <MaxWidth value="617"/>
+                <MinWidth value="383"/>
                 <MaxHeight value="312"/>
-                <MinHeight value="28"/>
+                <MinHeight value="34"/>
             </Limits>
         </Area>
         <Input>
             <NPoints value="4"/>
             <Points>
-                <Point point_x="392" point_y="46"/>
-                <Point point_x="382" point_y="264"/>
-                <Point point_x="615" point_y="312"/>
-                <Point point_x="620" point_y="28"/>
+                <Point point_x="393" point_y="42"/>
+                <Point point_x="383" point_y="263"/>
+                <Point point_x="611" point_y="312"/>
+                <Point point_x="617" point_y="34"/>
             </Points>
         </Input>
         <Depth>
-            <Min value="2000"/>
-            <Max value="2864"/>
+            <Min value="600"/>
+            <Max value="5000"/>
         </Depth>
     </Mirror>
 </Mirrors>

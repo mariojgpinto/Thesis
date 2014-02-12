@@ -25,6 +25,11 @@ class __declspec(dllexport) FloorManagerGUI : public QMainWindow
 
 		void on_button_add_floor();
 
+		void on_floor_check_box_color(int value);
+		void on_floor_spin_box_color_r(int value);
+		void on_floor_spin_box_color_g(int value);
+		void on_floor_spin_box_color_b(int value);
+
 		void on_slider_a(int value);
 		void on_slider_b(int value);
 		void on_slider_c(int value);

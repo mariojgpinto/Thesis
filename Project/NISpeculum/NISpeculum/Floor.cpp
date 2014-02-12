@@ -18,10 +18,10 @@
 // CONTRUCTORS
 //-----------------------------------------------------------------------------
 Floor::Floor():
-	_area_mask(480,640,(const uchar)255),
+	//_area_mask(480,640,(const uchar)255),
 	_mask(480,640,(const uchar)255),
 	_depth_min(500),
-	_depth_max(1000)
+	_depth_max(3000)
 	{
 	this->setup_variables();
 }
@@ -51,6 +51,11 @@ void Floor::setup_variables(){
 	this->_thresh = 10;
 
 	this->_plane.set(0,0,0,0);
+
+	this->_color = false;
+	this->_color_r = 255;
+	this->_color_b = 255;
+	this->_color_g = 255;
 }
 
 //-----------------------------------------------------------------------------
@@ -623,6 +628,7 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 			else this->_ready[Floor::INPUT] = temp_flag;
 		} else this->_ready[Floor::INPUT] = false;
 	}
+	printf("FLAGS");
 
 	//READ PLANE
 	if(this->_ready[Floor::PLANE]){
@@ -665,17 +671,17 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 			this->_plane.set(a,b,c,d);
 		}
 	}
-
+	printf("PLANE");
 	//READ AREA 
 	if(this->_ready[Floor::AREA]){
 		tinyxml2::XMLElement *elem_area = root->FirstChildElement(_XML_FLOOR_ELEM_AREA);
 
 		if(!elem_area) return false;
-
+		printf("Image");
 		bool result = ToolBoxXML::cv_load_image_xml(elem_area,_XML_FLOOR_ELEM_AREA_MASK,_area_mask,0);
 		if(!result) 
 			return false;
-
+		
 		tinyxml2::XMLElement *elem_area_limits = elem_area->FirstChildElement(_XML_FLOOR_ELEM_AREA_LIMITS);
 
 		if(!elem_area_limits) return false;
@@ -704,7 +710,7 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 			if(error) return false;
 		}else return false;
 	}
-
+	printf("AREA");
 	//READ MASK
 	if(this->_ready[Floor::FLOOR_MASK]){
 		tinyxml2::XMLElement *elem_mask = root->FirstChildElement(_XML_FLOOR_ELEM_MASK);
@@ -722,7 +728,7 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 		error = elem_mask_tresh->QueryDoubleAttribute(_XML_VALUE,&this->_thresh);
 		if(error) return false;
 	}
-
+	printf("MASK");
 	//READ INPUT
 	if(this->_ready[Floor::INPUT]){
 		tinyxml2::XMLElement *elem_input = root->FirstChildElement(_XML_FLOOR_ELEM_INPUT);
@@ -755,7 +761,7 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 			elem_input_pt = elem_input_pt->NextSiblingElement(_XML_FLOOR_ELEM_INPUT_POINT);
 		}
 	}
-
+	printf("INPUT");
 	//DEPTH
 	{
 		tinyxml2::XMLElement *elem_depth = root->FirstChildElement(_XML_MIRROR_ELEM_DEPTH);
@@ -779,6 +785,6 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 		this->_depth_min = depth_min;
 		this->_depth_max = depth_max;
 	}
-
+	printf("DEPTH");
 	return true;
 }

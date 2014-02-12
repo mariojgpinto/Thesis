@@ -51,12 +51,17 @@ void MirrorManagerGUI::setup_connections(){
 	this->_ui->_mirror_push_button_add->setShortcut(QKeySequence("Ctrl+M"));
 	connect(this->_ui->_mirror_push_button_add,SIGNAL(clicked()),this,SLOT(on_button_add_mirror()));
 
+	connect(this->_ui->_mirror_check_box_color, SIGNAL(stateChanged(int)), this, SLOT(on_mirror_check_box_color(int)));
+	connect(this->_ui->_mirror_spin_box_color_r, SIGNAL(valueChanged(int)), this, SLOT(on_mirror_spin_box_color_r(int)));
+	connect(this->_ui->_mirror_spin_box_color_g, SIGNAL(valueChanged(int)), this, SLOT(on_mirror_spin_box_color_g(int)));
+	connect(this->_ui->_mirror_spin_box_color_b, SIGNAL(valueChanged(int)), this, SLOT(on_mirror_spin_box_color_b(int)));
+
 	connect(this->_ui->_mirror_horizontal_slider_a, SIGNAL(valueChanged(int)), this, SLOT(on_slider_a(int)));
 	connect(this->_ui->_mirror_horizontal_slider_b, SIGNAL(valueChanged(int)), this, SLOT(on_slider_b(int)));
 	connect(this->_ui->_mirror_horizontal_slider_c, SIGNAL(valueChanged(int)), this, SLOT(on_slider_c(int)));
 	connect(this->_ui->_mirror_horizontal_slider_d, SIGNAL(valueChanged(int)), this, SLOT(on_slider_d(int)));
 
-	connect(this->_ui->_mirror_spin_box, SIGNAL(valueChanged(int)), this, SLOT(on_mirror_checkBox(int)));
+	connect(this->_ui->_mirror_spin_box, SIGNAL(valueChanged(int)), this, SLOT(on_mirror_spin_box(int)));
 
 	connect(this->_ui->_mirror_horizontal_slider_min, SIGNAL(valueChanged(int)), this, SLOT(on_slider_min(int)));
 	connect(this->_ui->_mirror_horizontal_slider_max, SIGNAL(valueChanged(int)), this, SLOT(on_slider_max(int)));
@@ -80,6 +85,30 @@ void MirrorManagerGUI::on_button_add_mirror(){
 		this->_controller->_gui->point_selection(4);
 		area = true;
 	}	
+}
+
+void MirrorManagerGUI::on_mirror_check_box_color(int value){
+	if(this->_idx_mirror >= 0){
+		this->_controller->_mirrors[this->_idx_mirror]->_color = (value) ? true : false;
+	}
+}
+
+void MirrorManagerGUI::on_mirror_spin_box_color_r(int value){
+	if(this->_idx_mirror >= 0){
+		this->_controller->_mirrors[this->_idx_mirror]->_color_r = value;
+	}
+}
+
+void MirrorManagerGUI::on_mirror_spin_box_color_g(int value){
+	if(this->_idx_mirror >= 0){
+		this->_controller->_mirrors[this->_idx_mirror]->_color_g = value;
+	}
+}
+
+void MirrorManagerGUI::on_mirror_spin_box_color_b(int value){
+	if(this->_idx_mirror >= 0){
+		this->_controller->_mirrors[this->_idx_mirror]->_color_b = value;
+	}
 }
 
 void MirrorManagerGUI::on_slider_a(int value){
@@ -147,7 +176,7 @@ void MirrorManagerGUI::on_slider_d(int value){
 	this->_ui->_mirror_label_d->setText(buff);
 }
 
-void MirrorManagerGUI::on_mirror_checkBox(int value){
+void MirrorManagerGUI::on_mirror_spin_box(int value){
 	this->_idx_mirror = value;
 	this->update_values();
 }
@@ -176,6 +205,12 @@ void MirrorManagerGUI::on_slider_max(int value){
 void MirrorManagerGUI::update_values(){
 	if(this->_controller->_mirrors.size()){
 		this->_idx_mirror = (this->_idx_mirror == -1) ? this->_controller->_mirrors.size() -1 : this->_idx_mirror;
+
+		this->_ui->_mirror_check_box_color->setChecked(this->_controller->_mirrors[this->_idx_mirror]->_color);
+		this->_ui->_mirror_spin_box_color_r->setValue(this->_controller->_mirrors[this->_idx_mirror]->_color_r);
+		this->_ui->_mirror_spin_box_color_g->setValue(this->_controller->_mirrors[this->_idx_mirror]->_color_g);
+		this->_ui->_mirror_spin_box_color_b->setValue(this->_controller->_mirrors[this->_idx_mirror]->_color_b);
+
 		this->_ui->_mirror_spin_box->setMaximum(this->_controller->_mirrors.size() -1);
 		this->_ui->_mirror_spin_box->setMinimum(0);
 

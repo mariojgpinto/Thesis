@@ -94,7 +94,12 @@ class Floor{
 
 		//Floor Points
 		std::vector<cv::Point*>* _user_points;
-
+		
+	public:
+		bool	_color;
+		int		_color_r;
+		int		_color_b;
+		int		_color_g;
 };
 
 #endif

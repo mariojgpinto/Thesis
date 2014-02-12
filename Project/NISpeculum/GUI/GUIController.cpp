@@ -45,7 +45,8 @@ void GUIController::hide_all(){
 	
 void GUIController::run(int argc, char* argv[]){
 	QApplication* app = new QApplication(argc,argv);
-	//cv::namedWindow("Color");
+	//cv::namedWindow("win1");
+	//cv::namedWindow("win2");
 	//kinect = new QNIKinect("C:\\Dev\\Kinect\\Data\\ONI\\mirror_papers.oni");
 	//kinect->get_kinect()->set_processing_flag(NIKinect::DEPTH_COLOR, true);
 	_mirror_manager = new MirrorManagerGUI(_controller,app);

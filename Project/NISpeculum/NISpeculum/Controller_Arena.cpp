@@ -45,11 +45,16 @@ void Controller::construct_mirrors_masks(){
 	temp.copyTo(_mask_mirrors);
 }
 
+void Controller::construct_floor_mask(){
+	this->_floor->_area_mask.copyTo(this->_mask_floor);
+}
+
 void Controller::construct_global_mask(){
 	this->construct_mirrors_masks();
+	this->construct_floor_mask();
 
 	if(this->_floor->_ready[Floor::AREA]){
-		cv::bitwise_or(this->_mask_mirrors,this->_floor->_area_mask,this->_mask_mirrors_and_foor);
+		cv::bitwise_or(this->_mask_mirrors,this->_mask_floor,this->_mask_mirrors_and_foor);
 	}
 }
 
@@ -125,7 +130,7 @@ bool Controller::save_to_file(char* path, char* filename){
 
 bool Controller::load_from_file(char* file_path){
 	if(!file_path) return false;
-
+	
 	//XML Variables
 	tinyxml2::XMLDocument doc2;
 	tinyxml2::XMLError error;
@@ -142,7 +147,6 @@ bool Controller::load_from_file(char* file_path){
 		//READ FLOOR
 		if(strcmp(root->Value(),_XML_ARENA_ELEM_FLOOR) == 0){
 			Floor* floor = new Floor();
-
 			result = floor->load_from_file(&doc2,root);
 
 			if(result){

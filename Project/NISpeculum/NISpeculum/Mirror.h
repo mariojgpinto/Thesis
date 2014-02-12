@@ -80,6 +80,12 @@ class Mirror{
 		int _area_min_width;
 		int _area_min_height;
 
+		bool	_color;
+		int		_color_r;
+		int		_color_b;
+		int		_color_g;
+
+
 	private:
 		//Mirror Points
 		std::vector<cv::Point*>* _user_points;

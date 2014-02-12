@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SpeculumGUI.ui'
 **
-** Created: Mon 16. Sep 22:44:07 2013
+** Created: Wed 12. Feb 11:41:48 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -119,14 +119,14 @@ public:
         _main_horizontal_slider_max = new QSlider(centralWidget);
         _main_horizontal_slider_max->setObjectName(QString::fromUtf8("_main_horizontal_slider_max"));
         _main_horizontal_slider_max->setGeometry(QRect(100, 90, 551, 20));
-        _main_horizontal_slider_max->setMinimum(400);
-        _main_horizontal_slider_max->setMaximum(2000);
+        _main_horizontal_slider_max->setMinimum(1000);
+        _main_horizontal_slider_max->setMaximum(5000);
         _main_horizontal_slider_max->setValue(1500);
         _main_horizontal_slider_max->setOrientation(Qt::Horizontal);
         SpeculumGUI->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(SpeculumGUI);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 660, 18));
+        menuBar->setGeometry(QRect(0, 0, 660, 21));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         SpeculumGUI->setMenuBar(menuBar);

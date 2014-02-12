@@ -57,6 +57,7 @@ class Controller{
 	public:
 		//Arena
 		void construct_mirrors_masks();
+		void construct_floor_mask();
 		void construct_global_mask();
 
 		//Storage
@@ -116,8 +117,9 @@ class Controller{
 		cv::Mat _mask_mirrors;
 		cv::Mat _mask_mirrors_and_foor;
 		
-		xn::DepthMetaData _xn_depth_md;
-		xn::ImageMetaData _xn_color_md;
+		xn::DepthMetaData	_xn_depth_md;
+		cv::Mat				_xn_depth_mat;
+		xn::ImageMetaData	_xn_color_md;
 				
 		XnPoint3D* _point_list;// = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
 		XnPoint3D* _real_world;// = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES); 
@@ -152,6 +154,8 @@ class Controller{
 		int _model_n_points;
 		XnPoint3D* _model_projective;
 		XnPoint3D* _model_realworld;
+		int **_model_back_3d_to_2d; //X && Y
+
 		pcl::PointCloud<pcl::PointXYZRGB> _model_cloud;
 		pcl::PolygonMesh _model_polygon;
 

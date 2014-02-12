@@ -23,8 +23,26 @@ class __declspec(dllexport) ThreeDGUI : public QMainWindow
 
 		void on_spin_box_radius_normal(double value);
 
+		void on_check_box_filter(int value);
+		void on_combo_box_filter(QString value);
+
+
+		void on_check_box_outliers(int value);
+
+		void on_check_box_voxel(int value);
+		void on_spin_box_voxel_x(double value);
+		void on_spin_box_voxel_y(double value);
+		void on_spin_box_voxel_z(double value);
+
+		void on_combo_box_filter_3d(QString value);
+		void on_spin_box_minneighbors(int value);
+		void on_spin_box_radius(double value);
+		void on_spin_box_meank(int value);
+		void on_spin_box_stddev(double value);
 
 		void on_spin_box_nframes(int value);
+
+		void on_combo_box_file_type(QString value);
 		void on_button_capture_model();
 
 	protected:

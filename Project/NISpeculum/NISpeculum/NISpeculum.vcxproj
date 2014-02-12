@@ -40,11 +40,11 @@
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\VTK_DEBUG.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXPCL.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\FLANN.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOX.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOXCV.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOXPCL.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOXXML.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -56,11 +56,11 @@
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\VTK_RELEASE.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TINYXML.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXCV.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXXML.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXPCL.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\FLANN.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOX.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOXCV.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOXPCL.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOXXML.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -91,6 +91,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

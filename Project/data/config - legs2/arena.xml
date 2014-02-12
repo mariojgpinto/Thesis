@@ -9,7 +9,7 @@
         <A value="-0.0218347"/>
         <B value="0.971847"/>
         <C value="-0.234601"/>
-        <D value="529.412"/>
+        <D value="-529.412"/>
     </Plane>
     <Area>
         <AreaMask path="..\..\data\config\floor_area_mask.png"/>
@@ -35,7 +35,7 @@
     </Depth>
 </Floor>
 
-<Mirrors n_mirrors="2">
+<Mirrors n_mirrors="1">
     <Mirror>
         <Flags>
             <Plane flag="1"/>
@@ -69,41 +69,6 @@
         <Depth>
             <Min value="1177"/>
             <Max value="2623"/>
-        </Depth>
-    </Mirror>
-	<Mirror>
-        <Flags>
-            <Plane flag="1"/>
-            <Mask flag="1"/>
-            <Input flag="1"/>
-        </Flags>
-        <Plane>
-            <A value="0.51348"/>
-            <B value="0.204388"/>
-            <C value="0.833405"/>
-            <D value="-1654.59"/>
-        </Plane>
-        <Area>
-            <AreaMask path="..\..\data\config\mirror_area_mask_1.png"/>
-            <Limits>
-                <MaxWidth value="620"/>
-                <MinWidth value="382"/>
-                <MaxHeight value="312"/>
-                <MinHeight value="28"/>
-            </Limits>
-        </Area>
-        <Input>
-            <NPoints value="4"/>
-            <Points>
-                <Point point_x="392" point_y="46"/>
-                <Point point_x="382" point_y="264"/>
-                <Point point_x="615" point_y="312"/>
-                <Point point_x="620" point_y="28"/>
-            </Points>
-        </Input>
-        <Depth>
-            <Min value="2000"/>
-            <Max value="2864"/>
         </Depth>
     </Mirror>
 </Mirrors>

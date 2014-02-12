@@ -25,6 +25,9 @@
 
 //OUTLIERS
 #include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/filters/radius_outlier_removal.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
 
 //SMOOTHING
 #include <pcl/kdtree/kdtree_flann.h>
@@ -91,6 +94,13 @@ Controller::Controller():
 	this->_model_n_points = 0;
 	this->_model_projective = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES);
 	this->_model_realworld = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES);
+
+	this->_model_back_3d_to_2d = (int**)malloc(sizeof(int*) * XN_VGA_Y_RES * XN_VGA_X_RES);
+	for(int i = 0 ; i < XN_VGA_Y_RES * XN_VGA_X_RES ; i++){
+		this->_model_back_3d_to_2d[i] = (int*)malloc(sizeof(int) * 2);
+		this->_model_back_3d_to_2d[i][XX] = 0;
+		this->_model_back_3d_to_2d[i][YY] = 0;
+	}
 }
 
 /**
@@ -172,6 +182,66 @@ void Controller::run(int argc, char* argv[]){
 					pcl_flag += PropertyManager::P_FLOOR_PLANE;
 				}
 			
+				this->_mutex_pcl.lock();
+					this->copy_to_pcl(pcl_flag);
+				this->_mutex_pcl.unlock();
+
+				if(this->_property_manager->_flag_processed[PropertyManager::P_VOXEL]){
+					//Add Voxel Grid Filter
+					// Create the filtering object
+					sensor_msgs::PointCloud2 cloud2; 
+					pcl::toROSMsg(this->_pcl_cloud,cloud2);
+					sensor_msgs::PointCloud2ConstPtr cloud2Ptr (new sensor_msgs::PointCloud2(cloud2)); 
+					//const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud(((const pcl::PointCloud<pcl::PointXYZRGB>)this->_pcl_cloud).makeShared());
+					//pcl::PointCloudPtr downsampled;
+					//pcl::PointCloud<pcl::PointXYZ> cloud;// = this->_pcl_cloud;
+
+					pcl::VoxelGrid<sensor_msgs::PointCloud2> sor; 
+					sor.setInputCloud (cloud2Ptr);
+					sor.setLeafSize (	this->_property_manager->_voxel_grid_x, 
+										this->_property_manager->_voxel_grid_y, 
+										this->_property_manager->_voxel_grid_z);
+
+					sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2 ()); 
+					sor.filter (*cloud_filtered); 
+        
+					pcl::fromROSMsg (*cloud_filtered, this->_pcl_cloud); 
+				}
+
+				if(this->_property_manager->_flag_processed[PropertyManager::P_OUTLIERS]){
+					if(this->_property_manager->_outliers_methods == 1){
+					
+						pcl::PointCloud<pcl::PointXYZRGB> cloud = this->_pcl_cloud;
+						pcl::RadiusOutlierRemoval<pcl::PointXYZRGB> outrem;
+						// build the filter
+						outrem.setInputCloud(cloud.makeShared());
+						outrem.setRadiusSearch(this->_property_manager->_outliers_radius_radius);
+						outrem.setMinNeighborsInRadius (this->_property_manager->_outliers_radius_neighbors);
+						// apply filter
+						outrem.setNegative(true);
+						outrem.filter (this->_pcl_cloud);
+					} 
+						else
+					if(this->_property_manager->_outliers_methods == 2){
+						pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = this->_pcl_cloud.makeShared();
+						pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
+
+						// Create the filtering object
+						pcl::StatisticalOutlierRemoval<pcl::PointXYZRGB> sor;
+						sor.setInputCloud (cloud);
+						sor.setMeanK (this->_property_manager->_outliers_statistical_meank);
+						sor.setStddevMulThresh (this->_property_manager->_outliers_statistical_stddev);
+						sor.filter (*cloud_filtered);
+
+						//sor.setNegative (true);
+						//sor.filter (*cloud_filtered);
+						printf("Statistical\n");
+
+						this->_pcl_cloud = *cloud_filtered.get();
+					}
+					
+				}
+
 				if(this->_property_manager->_flag_processed[PropertyManager::P_CAPTURE]){
 					if(this->_model_frames_depth.size() < this->_model_n_frames){
 						this->model_add_frame();
@@ -195,14 +265,7 @@ void Controller::run(int argc, char* argv[]){
 			}
 
 			if(this->_property_manager->_flag_update[PropertyManager::U_PCL]){
-				this->_mutex_pcl.lock();
-					this->copy_to_pcl(pcl_flag);
-				this->_mutex_pcl.unlock();
-
-				if(this->_property_manager->_flag_requests[PropertyManager::R_SAVE_PCL]){
-					ToolBoxPCL::write_to_pcd_file(this->_pcl_cloud,"cloud.pcd");
-					this->_property_manager->_flag_requests[PropertyManager::R_SAVE_PCL] = false;
-				}
+				
 
 				this->_condition_consumer.notify_all();
 			}
@@ -232,7 +295,7 @@ void Controller::process_images(){
 	this->_kinect->get_color(this->_mat_color_bgr);
 
 	this->_kinect->get_depth(this->_mat_depth16UC1);
-	this->_mat_depth16UC1.convertTo(this->_mat_depth8UC1,CV_8UC1);
+	this->_mat_depth16UC1.convertTo(this->_mat_depth8UC1,CV_8UC1,0.05);
 
 	this->_kinect->get_depth_meta_data(this->_xn_depth_md);
 }
@@ -267,6 +330,9 @@ void Controller::process_mirrors_masks(){
 					mirror->_depth_min,
 					mirror->_depth_max,
 					mirror->_mask);
+
+		//cv::imshow("win1",mirror->_mask);
+		//cv::waitKey();
 	}
 }
 
@@ -374,7 +440,7 @@ void Controller::process_request(){
 				if(ToolBoxPCL::calc_plane_from_points(&points3d,&a,&b,&c,&d,1)){
 					mirror->set_plane(a,b,c,d);
 
-					this->add_mirror(mirror);
+					//this->add_mirror(mirror);
 
 					this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = true;
 
@@ -415,6 +481,35 @@ void Controller::process_request(){
 		this->_property_manager->_flag_requests[PropertyManager::R_CAPTURE] = false;
 	}
 
+	if(this->_property_manager->_flag_requests[PropertyManager::R_SAVE_PCL]){
+		if(this->_property_manager->_flag_update[PropertyManager::U_PCL]){
+			pcl::PointCloud<pcl::PointXYZRGB> cloud;
+
+			if(this->_property_manager->_flag_processed[PropertyManager::P_CAPTURE_SHOW]){
+				//Model Point Cloud
+				cloud = this->_model_cloud;
+			}
+			else{
+				//Current Point Cloud
+				cloud = this->_pcl_cloud;
+			}
+
+			if(this->_property_manager->_save_pcl_mode == 1){
+				ToolBoxPCL::write_to_ply_file(cloud,this->_property_manager->_file_name);
+			} else
+			if(this->_property_manager->_save_pcl_mode == 1){
+				ToolBoxPCL::write_to_pcd_file(cloud,this->_property_manager->_file_name);
+			}else
+			if(this->_property_manager->_save_pcl_mode == 1){
+				ToolBoxPCL::write_to_obj_file(cloud,this->_property_manager->_file_name);
+			}
+			
+			this->_property_manager->_flag_requests[PropertyManager::R_SAVE_PCL] = false;
+
+
+		}
+	}
+
 	this->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = false;
 }
 
@@ -427,8 +522,35 @@ bool Controller::generate_3d(){
 	this->_n_points = 0;
 	uchar* ptr = this->_mask_main.data;
 
+	//Create buffer
+	//Add Filter on 3D Manager Window! 
+	if(this->_property_manager->_flag_processed[PropertyManager::P_FILTER]){
+		//Bilateral
+		if(this->_property_manager->_filter_method == 1){
+			cv::Mat temp;cv::Mat temp2 = cv::Mat(480,640,CV_16UC1);;
+			this->_mat_depth16UC1.convertTo(temp,CV_32FC1);
+			cv::bilateralFilter(temp,temp2,5,4,4);
+
+			temp2.convertTo(this->_mat_depth16UC1,CV_16UC1);
+		} else
+		//Median
+		if(this->_property_manager->_filter_method == 2){
+			cv::medianBlur(this->_mat_depth16UC1,this->_mat_depth16UC1,5);
+		} else
+		//Gaussian
+		if(this->_property_manager->_filter_method == 3){
+			cv::GaussianBlur(this->_mat_depth16UC1,this->_mat_depth16UC1,cv::Size(5,5),0);
+		}
+	}
+	//In the pass through filtering, all points with matching values in a predefined value range are passed through 
+	//without any modifications to their data. The pass through filtering is one of the basic filtering methods and 
+	//it is fast and simple to use. It is implemented in PCL as a template class and therefore supports all predefined 
+	//point types. (29.)
+	//CV::INPAINT -> Active Segmentation in 3D using iKnect Sensor
+
 	//cv::GaussianBlur(this->_mat_depth16UC1,this->_mat_depth16UC1,cv::Size(3,3),0);
 	UINT16* ptr_16u = (UINT16*)this->_mat_depth16UC1.data;
+
 
 	for(int y = 0; y < XN_VGA_Y_RES ; y += this->_property_manager->_3d_step) { 
 		for(int x = 0; x < XN_VGA_X_RES ; x += this->_property_manager->_3d_step) { 
@@ -456,7 +578,8 @@ bool Controller::generate_3d_mirrors(){
 	float dist;
 	double nx,ny,nz;
 	int idx;
-
+	//uint8_t* ptr_clr = (uint8_t*)this->_mat_color_bgr.data;
+	//int xx, yy;
 	for(int i = 0 ; i < this->_mirrors.size() ; ++i){
 		Mirror *mirror = this->_mirrors[i];
 
@@ -466,13 +589,18 @@ bool Controller::generate_3d_mirrors(){
 			nx *= -1; ny *= -1; nz *= -1;
 
 			uchar* mask_mirror_ptr = mirror->_mask.data;
+			//cv::imshow("win2",mirror->_mask);
 
 			for(int x = mirror->_area_min_width ; x < mirror->_area_max_width ; x+=this->_property_manager->_3d_step){
 				for(int y = mirror->_area_min_height ; y < mirror->_area_max_height ; y+=this->_property_manager->_3d_step){
-					if(mask_ptr[y * XN_VGA_X_RES + x] && mask_mirror_ptr[y * XN_VGA_X_RES + x]){
+					idx = y * XN_VGA_X_RES + x;
+					if(mask_ptr[idx] && mask_mirror_ptr[idx]){
 						idx = this->_back_2d_to_3d[x][y];
 						XnPoint3D pt = this->_real_world[idx];
 						//mirror->_points[mirror->_n_points] = this->_real_world[idx];
+
+						//xx = this->_back_3d_to_2d[idx][XX];
+						//yy = this->_back_3d_to_2d[idx][YY];
 
 						mirror->_points[mirror->_n_points].X = pt.X;
 						mirror->_points[mirror->_n_points].Y = pt.Y;
@@ -491,7 +619,11 @@ bool Controller::generate_3d_mirrors(){
 							mirror->_points_mirrored[mirror->_n_points].Z = pt.Z;
 
 							mirror->_points_idx[mirror->_n_points] = idx;
-							mirror->_n_points++; 		
+							mirror->_n_points++; 
+
+							//ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2] = 255;
+							//ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1] = 0;
+							//ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0] = 0;
 						}
 					}
 				}
@@ -569,20 +701,28 @@ void Controller::model_add_frame(){
 	this->_model_frames_color.push_back(temp_color);
 }
 
+cv::RNG rng(12345);
+
 void Controller::generate_model(){
 	//Create Average images;
-	this->_model_depth_average = cv::Mat::zeros(cv::Size(640,480),CV_16UC1);
-	this->_model_color_average = cv::Mat::zeros(cv::Size(640,480),CV_8UC3);
-	cv::Mat average_counter = cv::Mat::zeros(cv::Size(640,480),CV_8UC1);
-	
+	//this->_model_depth_average = cv::Mat::zeros(cv::Size(640,480),CV_16UC1);
+	//this->_model_color_average = cv::Mat::zeros(cv::Size(640,480),CV_8UC3);
+	//cv::Mat average_counter = cv::Mat::zeros(cv::Size(640,480),CV_8UC1);
+	int old_step = this->_property_manager->_3d_step;
+
 	cv::Mat1i freq_n(cv::Size(640,480),0);
 	cv::Mat1f freq_v(cv::Size(640,480),0);
+	cv::Mat freq_c = cv::Mat::zeros(cv::Size(640,480),CV_32FC3);
 
-	int idx;
-	int* ptr_freq_v = (int*)freq_v.data;
-	float* ptr_freq_n = (float*)freq_n.data;
+	int idx, idx_clr;
+	float* ptr_freq_v = (float*)freq_v.data;
+	int* ptr_freq_n = (int*)freq_n.data;
+	float* ptr_freq_c = (float*)freq_c.data;
+
+	//Create Depth and Color Sum Image
 	for(int k = 0 ; k < this->_model_frames_depth.size() ; ++k){
 		UINT16* ptr_16u = (UINT16*)this->_model_frames_depth[k].data;
+		uint8_t* ptr_clr = (uint8_t*)this->_model_frames_color[k].data;
 		for(int y = 0; y < XN_VGA_Y_RES ; ++y) { 
 			for(int x = 0; x < XN_VGA_X_RES ; ++x) { 
 				idx = y * XN_VGA_X_RES + x;
@@ -590,13 +730,17 @@ void Controller::generate_model(){
 					ptr_freq_n[idx]++;
 					ptr_freq_v[idx]+=ptr_16u[idx];
 				}
+
+				idx_clr = y * XN_VGA_X_RES * 3 + x* 3;
+
+				ptr_freq_c[idx_clr + 0] += ptr_clr[idx_clr + 0];
+				ptr_freq_c[idx_clr + 1] += ptr_clr[idx_clr + 1];
+				ptr_freq_c[idx_clr + 2] += ptr_clr[idx_clr + 2];
 			} 
 		}
-
-		//this->_model_depth_average += this->_model_depth_average[k];
-		this->_model_color_average += this->_model_frames_color[k];
 	}
 
+	//Create Depth and Color Average Image
 	for(int y = 0; y < XN_VGA_Y_RES ; ++y) { 
 		for(int x = 0; x < XN_VGA_X_RES ; ++x) {
 			idx = y * XN_VGA_X_RES + x;
@@ -606,57 +750,93 @@ void Controller::generate_model(){
 		}
 	}
 
-	//this->_model_depth_average /= this->_model_frames_depth.size();
-	freq_v.copyTo(this->_model_depth_average);
-	this->_model_color_average /= (this->_model_frames_depth.size()-1);
+	freq_c /= this->_model_frames_color.size();
+	
+	
+	freq_c.convertTo(this->_model_color_average,CV_8UC3);
+	freq_v.convertTo(this->_model_depth_average,CV_16UC1);
 
-	cv::imshow("win1",this->_model_color_average);
-	cv::Mat t8u;
-	freq_v.convertTo(t8u,CV_8UC1);
-	cv::imshow("win2",freq_v);
-	cv::imshow("win3",t8u);
-	cv::waitKey();
 
+	//cv::Mat t8u;
+	//this->_model_depth_average.convertTo(t8u,CV_8UC1,0.05);
+	//cv::imshow("win1",this->_model_color_average);
+	////cv::imshow("win2",this->_mat_color_bgr);
+	//cv::imshow("win3",t8u);
+	//cv::imshow("win4",this->_mat_depth8UC1);
+	//cv::waitKey();
+	
 	//Create Masks for avg images
 	cv::Mat main_mask;
+
 	cv::inRange(this->_model_depth_average,
 				this->_property_manager->_depth_min,
 				this->_property_manager->_depth_max,
 				main_mask);
 
-	cv::Mat mask_floor_temp;
-	cv::Mat mask_floor;
-	this->_model_depth_average.copyTo(mask_floor_temp,this->_floor->_area_mask);
-	cv::inRange(mask_floor_temp,
-				this->_floor->_depth_min, //this->_floor->_depth_min
-				this->_floor->_depth_max, //this->_floor->_depth_max
-				mask_floor);
+	cv::bitwise_and(main_mask,this->_mask_mirrors_and_foor,main_mask);
 
-	std::vector<cv::Mat> mirror_mask(this->_mirrors.size());
-	for(int i = 0 ; i < this->_mirrors.size() ; ++i){
-		this->_model_depth_average.copyTo(mask_floor_temp,this->_mirrors[i]->_area_mask);
-		cv::inRange(mask_floor_temp,
-					this->_mirrors[i]->_depth_min,
-					this->_mirrors[i]->_depth_max,
-					mirror_mask[i]);
+
+	//Contours to remove noise
+	cv::Mat t8u;
+	main_mask.convertTo(t8u,CV_8UC1,0.05);
+	//cv::Mat image_temp;
+	//this->_model_depth_average.copyTo(image_temp);
+
+	cv::vector<cv::vector<cv::Point> > contours;
+	cv::vector<cv::Vec4i> hierarchy;
+			
+	cv::findContours( t8u, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+
+	for(unsigned int i = 0; i< contours.size(); i++ ){
+		if(contours[i].size() < 50){
+			cv::Scalar clr = cv::Scalar(/*255);// */rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+			cv::Rect rect = cv::boundingRect(contours[i]);
+			drawContours( this->_model_color_average, contours, i, clr, -1, 8, hierarchy, 0, cv::Point() );
+			//cv::rectangle(top_view_color,rect, clr);
+		}
 	}
+
+	Mirror* mirror;
+	uchar* ptr_mirror_mask = this->_mask_mirrors.data;
 
 	//Generate 3D
 	this->_model_n_points;
 
 	uchar* ptr_main_mask = main_mask.data;
-	UINT16* ptr_16u = (UINT16*)this->_mat_depth16UC1.data;
+	//uchar* ptr_mirror_mask = this->_mask_mirrors.data;
 
-	for(int y = 0; y < XN_VGA_Y_RES ; y += this->_property_manager->_3d_step) { 
-		for(int x = 0; x < XN_VGA_X_RES ; x += this->_property_manager->_3d_step) { 
-			if(ptr_main_mask[y * XN_VGA_X_RES + x]){
+	UINT16* ptr_16u = (UINT16*)this->_model_depth_average.data;
+
+	for(int y = 0; y < XN_VGA_Y_RES ; ++y /*y += this->_property_manager->_3d_step*/) { 
+		for(int x = 0; x < XN_VGA_X_RES ; ++x/*x += this->_property_manager->_3d_step*/) { 
+			idx = y * XN_VGA_X_RES + x;
+
+			if(ptr_main_mask[idx]){
 				XnPoint3D point1;
 				point1.X = x; 
 				point1.Y = y; 
-				point1.Z = ptr_16u[y * XN_VGA_X_RES + x]; 
+				point1.Z = ptr_16u[idx];
 
+				if(ptr_mirror_mask[idx]){
+					for(int j = 0 ; j < this->_mirrors.size() ; ++j){
+						mirror = this->_mirrors[j];
+
+						if(mirror && mirror->_area_mask.data[idx]){
+							if(point1.Z > mirror->_depth_min && point1.Z < mirror->_depth_max){
+								this->_model_back_3d_to_2d[this->_model_n_points][XX] = x;
+								this->_model_back_3d_to_2d[this->_model_n_points][YY] = y;
 				
-				this->_model_projective[this->_model_n_points++] = point1;
+								this->_model_projective[this->_model_n_points++] = point1;
+							}
+						}
+					}
+				}
+				else{
+					this->_model_back_3d_to_2d[this->_model_n_points][XX] = x;
+					this->_model_back_3d_to_2d[this->_model_n_points][YY] = y;
+				
+					this->_model_projective[this->_model_n_points++] = point1;
+				}
 			}
 		}
 	} 
@@ -666,22 +846,93 @@ void Controller::generate_model(){
 														this->_model_realworld); 
 
 	
-	uint8_t* ptr_clr = (uint8_t*)this->_model_color_average.data;
+	//uint8_t* ptr_clr = (uint8_t*)this->_model_color_average.data;
 
 	//Generate PCL-3D Floor
-	uchar* ptr_mask_floor = mask_floor.data;
-	for(int y = 0; y < XN_VGA_Y_RES ; y += this->_property_manager->_3d_step) { 
-		for(int x = 0; x < XN_VGA_X_RES ; x += this->_property_manager->_3d_step) { 
-			if(ptr_mask_floor[y * XN_VGA_X_RES + x]){
+	//uchar* ptr_mask_floor = mask_floor.data;
+	//for(int y = 0; y < XN_VGA_Y_RES ; y += this->_property_manager->_3d_step) { 
+	//	for(int x = 0; x < XN_VGA_X_RES ; x += this->_property_manager->_3d_step) { 
+	//		//if(ptr_mask_floor[y * XN_VGA_X_RES + x]){
 
-			}
+	//		//}
+	//	}
+	//}
+
+	//Generate PCL-3D from Mirrors
+	_pcl_cloud.clear();
+
+	uchar* ptr = this->_mask_main.data;
+
+	uint8_t* ptr_clr = (uint8_t*)this->_model_color_average.data;
+
+	_model_cloud.clear();
+
+	int xx, yy;
+	double dist;
+	
+	std::vector<double> nx,ny,nz;
+	for(int i = 0 ; i < this->_mirrors.size() ; ++i){
+		double nx_,ny_,nz_;
+
+		mirror = this->_mirrors[i];
+
+		if(mirror){
+			mirror->_n_points = 0;
+			mirror->_plane.get_normal(&nx_,&ny_,&nz_);
+			nx_ *= -1; ny_ *= -1; nz_ *= -1;
+
+			nx.push_back(nx_);
+			ny.push_back(ny_);
+			nz.push_back(nz_);
 		}
 	}
 
-	//Generate PCL-3D from Mirrors
+
+	for(int i = 0 ; i < this->_model_n_points ; ++i){
+		xx = this->_model_back_3d_to_2d[i][XX];
+		yy = this->_model_back_3d_to_2d[i][YY];
+		idx = yy * XN_VGA_X_RES + xx;
+
+		if(ptr_mirror_mask[idx]){
+			for(int j = 0 ; j < this->_mirrors.size() ; ++j){
+				mirror = this->_mirrors[j];
+
+				if(mirror && mirror->_area_mask.data[idx]){
+					//if(this->_model_realworld[i].Z > mirror->_depth_min && this->_model_realworld[i].Z < mirror->_depth_max){
+						dist = mirror->_plane.distance_to_plane( this->_model_realworld[i].X,
+																 this->_model_realworld[i].Y,
+																 this->_model_realworld[i].Z);
+
+						this->_model_realworld[i].X += 2 * dist * nx[j];
+						this->_model_realworld[i].Y += 2 * dist * ny[j];
+						this->_model_realworld[i].Z += 2 * dist * nz[j];
+					//}
+				}
+			}
+		}
 
 
+		dist = this->_floor->_plane.distance_to_plane(	this->_model_realworld[i].X,
+														this->_model_realworld[i].Y,
+														this->_model_realworld[i].Z);
 
+		if(dist > this->_floor->_thresh){
+			
+
+			pcl::PointXYZRGB pt(ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2],
+								ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1],
+								ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0]);
+						
+			pt.x = this->_model_realworld[i].X;
+			pt.y = this->_model_realworld[i].Y;
+			pt.z = this->_model_realworld[i].Z;
+			this->_model_cloud.push_back(pt);
+		}
+	}
+
+	this->_property_manager->_3d_step = old_step;
+
+	this->_property_manager->_flag_processed[PropertyManager::P_CAPTURE_SHOW] = true;
 }
 
 void Controller::copy_to_pcl(int flag){
@@ -742,20 +993,38 @@ void Controller::copy_to_pcl(int flag){
 				uchar* ptr_floor = this->_floor->_mask.data;
 				uchar* ptr_mirror = this->_mask_mirrors.data;
 
-				for(int i = 0 ; i < _n_points ; ++i){
-					int xx = this->_back_3d_to_2d[i][XX];
-					int yy = this->_back_3d_to_2d[i][YY];
+				if(this->_floor->_color){
+					for(int i = 0 ; i < _n_points ; ++i){
+						int xx = this->_back_3d_to_2d[i][XX];
+						int yy = this->_back_3d_to_2d[i][YY];
 
-					if(ptr[yy * XN_VGA_X_RES + xx] && ptr_floor[yy * XN_VGA_X_RES + xx]){
-						//pcl::PointXYZRGB pt(0,0,255);
-						pcl::PointXYZRGB pt(ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2],
-											ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1],
-											ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0]);
+						if(ptr[yy * XN_VGA_X_RES + xx] && ptr_floor[yy * XN_VGA_X_RES + xx]){
+							//pcl::PointXYZRGB pt(0,0,255);
+							pcl::PointXYZRGB pt(this->_floor->_color_r,this->_floor->_color_g,this->_floor->_color_b);
 						
-						pt.x = this->_real_world[i].X;
-						pt.y = this->_real_world[i].Y;
-						pt.z = this->_real_world[i].Z;
-						this->_pcl_cloud.push_back(pt);
+							pt.x = this->_real_world[i].X;
+							pt.y = this->_real_world[i].Y;
+							pt.z = this->_real_world[i].Z;
+							this->_pcl_cloud.push_back(pt);
+						}
+					}
+				}
+				else{
+					for(int i = 0 ; i < _n_points ; ++i){
+						int xx = this->_back_3d_to_2d[i][XX];
+						int yy = this->_back_3d_to_2d[i][YY];
+
+						if(ptr[yy * XN_VGA_X_RES + xx] && ptr_floor[yy * XN_VGA_X_RES + xx]){
+							//pcl::PointXYZRGB pt(0,0,255);
+							pcl::PointXYZRGB pt(ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2],
+												ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1],
+												ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0]);
+						
+							pt.x = this->_real_world[i].X;
+							pt.y = this->_real_world[i].Y;
+							pt.z = this->_real_world[i].Z;
+							this->_pcl_cloud.push_back(pt);
+						}
 					}
 				}
 
@@ -763,26 +1032,43 @@ void Controller::copy_to_pcl(int flag){
 					Mirror *mirror = this->_mirrors[i];
 
 					if(mirror){
-						for(int j = 0 ; j < mirror->_n_points ; ++j){
-							int idx = mirror->_points_idx[j];
-							//pcl::PointXYZRGB pt(255,255,0);
-							//pt.x = mirror->_points[j].X;
-							//pt.y = mirror->_points[j].Y;
-							//pt.z = mirror->_points[j].Z;
+						if(mirror->_color){
+							for(int j = 0 ; j < mirror->_n_points ; ++j){
+								int idx = mirror->_points_idx[j];
+							
+								pcl::PointXYZRGB pt2(mirror->_color_r,mirror->_color_g,mirror->_color_b);
+								pt2.x = mirror->_points_mirrored[j].X;
+								pt2.y = mirror->_points_mirrored[j].Y;
+								pt2.z = mirror->_points_mirrored[j].Z;
 
-							//this->_pcl_cloud.push_back(pt);
-							int xx = this->_back_3d_to_2d[idx][XX];
-							int yy = this->_back_3d_to_2d[idx][YY];
+								this->_pcl_cloud.push_back(pt2);
+							}
+						}
+						else{
+							for(int j = 0 ; j < mirror->_n_points ; ++j){
+								int idx = mirror->_points_idx[j];
+								//pcl::PointXYZRGB pt(255,255,0);
+								//pt.x = mirror->_points[j].X;
+								//pt.y = mirror->_points[j].Y;
+								//pt.z = mirror->_points[j].Z;
 
-							pcl::PointXYZRGB pt2(ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2],
-												 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1],
-												 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0]);
-							//pcl::PointXYZRGB pt2(255,255,255);
-							pt2.x = mirror->_points_mirrored[j].X;
-							pt2.y = mirror->_points_mirrored[j].Y;
-							pt2.z = mirror->_points_mirrored[j].Z;
+								//this->_pcl_cloud.push_back(pt);
+								int xx = this->_back_3d_to_2d[idx][XX];
+								int yy = this->_back_3d_to_2d[idx][YY];
+								//ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2] = 0;
+								//ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1] = 0;
+								//ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0] = 255;
+								pcl::PointXYZRGB pt2(ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2],
+													 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1],
+													 ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0]);
+							
+								//pcl::PointXYZRGB pt2(255,255,255);
+								pt2.x = mirror->_points_mirrored[j].X;
+								pt2.y = mirror->_points_mirrored[j].Y;
+								pt2.z = mirror->_points_mirrored[j].Z;
 
-							this->_pcl_cloud.push_back(pt2);
+								this->_pcl_cloud.push_back(pt2);
+							}
 						}
 					}
 				}
@@ -868,16 +1154,20 @@ void Controller::thread_pcl_producer(){
 		this->_mutex_kinect.lock();
 			//copy MD
 			this->_kinect->get_depth_meta_data(this->_xn_depth_md);
+			this->_kinect->get_depth(_xn_depth_mat);
 		this->_mutex_kinect.unlock();
 
-		//Create buffer
+
+
+
+		UINT16* ptr_16u = (UINT16*)this->_xn_depth_mat.data;
 		int n_points = 0;
 		for(int y = 0; y < XN_VGA_Y_RES ; y += this->_property_manager->_3d_step) { 
 			for(int x = 0; x < XN_VGA_X_RES ; x += this->_property_manager->_3d_step) { 
 				XnPoint3D point1;
 				point1.X = x; 
 				point1.Y = y; 
-				point1.Z = this->_xn_depth_md[y * XN_VGA_X_RES + x]; 
+				point1.Z = ptr_16u[y * XN_VGA_X_RES + x];//this->_xn_depth_md[y * XN_VGA_X_RES + x]; 
 
 				this->_point_list[n_points++] = point1;
 				//this->_point_list[y * XN_VGA_X_RES + x] = point1;
@@ -960,11 +1250,19 @@ void Controller::thread_pcl_consumer(){
 			}
 		}
 		else{
-			this->_mutex_pcl.lock();
-				cloud = this->_pcl_cloud;
-			this->_mutex_pcl.unlock();
+			if(this->_property_manager->_flag_processed[PropertyManager::P_CAPTURE_SHOW]){
+				cloud = this->_model_cloud;
 
-			this->_3d_viewer->show_cloud(&cloud);
+				this->_3d_viewer->show_cloud(&cloud);
+			}
+			else{
+				this->_mutex_pcl.lock();
+					cloud = this->_pcl_cloud;
+				this->_mutex_pcl.unlock();
+
+				this->_3d_viewer->show_cloud(&cloud);
+			}
+
 		}
 		++_frame_counter[Controller::PCL_CONSUMER];
 		if (_frame_counter[Controller::PCL_CONSUMER] == 15)

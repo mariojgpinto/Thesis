@@ -28,23 +28,23 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_245_DEBUG.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\QT_482_DEBUG.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXQT.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENNI.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_1.6.0.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOX.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOXQT.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENCV_245_RELEASE.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\QT_482_RELEASE.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOXQT.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\OPENNI.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\BOOST.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\PCL_1.6.0.props" />
     <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\EIGEN.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\Dev\PropertySheets\TOOLBOX.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOX.props" />
+    <Import Project="..\..\..\..\..\PropertySheets\TOOLBOXQT.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>

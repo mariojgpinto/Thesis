@@ -49,6 +49,11 @@ void FloorManagerGUI::setup_connections(){
 	this->_ui->_floor_push_button_add->setShortcut(QKeySequence("Ctrl+F"));
 	connect(this->_ui->_floor_push_button_add,SIGNAL(clicked()),this,SLOT(on_button_add_floor()));
 
+	connect(this->_ui->_floor_check_box_color, SIGNAL(stateChanged(int)), this, SLOT(on_floor_check_box_color(int)));
+	connect(this->_ui->_floor_spin_box_color_r, SIGNAL(valueChanged(int)), this, SLOT(on_floor_spin_box_color_r(int)));
+	connect(this->_ui->_floor_spin_box_color_g, SIGNAL(valueChanged(int)), this, SLOT(on_floor_spin_box_color_g(int)));
+	connect(this->_ui->_floor_spin_box_color_b, SIGNAL(valueChanged(int)), this, SLOT(on_floor_spin_box_color_b(int)));
+
 	connect(this->_ui->_floor_horizontal_slider_thresh, SIGNAL(valueChanged(int)), this, SLOT(on_slider_thresh(int)));
 
 	connect(this->_ui->_floor_horizontal_slider_a, SIGNAL(valueChanged(int)), this, SLOT(on_slider_a(int)));
@@ -78,6 +83,30 @@ void FloorManagerGUI::on_button_add_floor(){
 		this->_controller->_gui->point_selection(2);
 		area = true;
 	}	
+}
+
+void FloorManagerGUI::on_floor_check_box_color(int value){
+	if(this->_controller->_floor){
+		this->_controller->_floor->_color = (value) ? true : false;
+	}
+}
+
+void FloorManagerGUI::on_floor_spin_box_color_r(int value){
+	if(this->_controller->_floor){
+		this->_controller->_floor->_color_r = value;
+	}
+}
+
+void FloorManagerGUI::on_floor_spin_box_color_g(int value){
+	if(this->_controller->_floor){
+		this->_controller->_floor->_color_g = value;
+	}
+}
+
+void FloorManagerGUI::on_floor_spin_box_color_b(int value){
+	if(this->_controller->_floor){
+		this->_controller->_floor->_color_b = value;
+	}
 }
 
 void FloorManagerGUI::on_slider_a(int value){
@@ -132,7 +161,7 @@ void FloorManagerGUI::on_slider_d(int value){
 	if(value < 0) return;
 	ToolBox::Plane* plane = &this->_controller->_floor->_plane;
 
-	this->_controller->_floor->_plane.set_normalized(plane->_a,plane->_b,plane->_c,value*-1);
+	this->_controller->_floor->_plane.set_normalized(plane->_a,plane->_b,plane->_c,value);
 	
 	char buff[128];
 	sprintf(buff,"A: %.4f\0",plane->_a);
@@ -175,14 +204,24 @@ void FloorManagerGUI::on_slider_max(int value){
 void FloorManagerGUI::update_values(){
 	ToolBox::Plane* plane = &this->_controller->_floor->_plane;
 
+	disconnect(this->_ui->_floor_horizontal_slider_a, SIGNAL(valueChanged(int)), this, SLOT(on_slider_a(int)));
+	disconnect(this->_ui->_floor_horizontal_slider_b, SIGNAL(valueChanged(int)), this, SLOT(on_slider_b(int)));
+	disconnect(this->_ui->_floor_horizontal_slider_c, SIGNAL(valueChanged(int)), this, SLOT(on_slider_c(int)));
+	disconnect(this->_ui->_floor_horizontal_slider_d, SIGNAL(valueChanged(int)), this, SLOT(on_slider_d(int)));
+
 	this->_ui->_floor_horizontal_slider_a->setValue(plane->_a * 1000);
 	this->on_slider_a(plane->_a * 1000);
 	this->_ui->_floor_horizontal_slider_b->setValue(plane->_b * 1000);
 	this->on_slider_b(plane->_b * 1000);
 	this->_ui->_floor_horizontal_slider_c->setValue(plane->_c * 1000);
 	this->on_slider_c(plane->_c * 1000);
-	this->_ui->_floor_horizontal_slider_d->setValue(plane->_d * -1);
-	this->on_slider_d(plane->_d * 1000);
+	this->_ui->_floor_horizontal_slider_d->setValue(plane->_d);
+	this->on_slider_d(plane->_d);
+
+	connect(this->_ui->_floor_horizontal_slider_a, SIGNAL(valueChanged(int)), this, SLOT(on_slider_a(int)));
+	connect(this->_ui->_floor_horizontal_slider_b, SIGNAL(valueChanged(int)), this, SLOT(on_slider_b(int)));
+	connect(this->_ui->_floor_horizontal_slider_c, SIGNAL(valueChanged(int)), this, SLOT(on_slider_c(int)));
+	connect(this->_ui->_floor_horizontal_slider_d, SIGNAL(valueChanged(int)), this, SLOT(on_slider_d(int)));
 
 	this->_ui->_floor_horizontal_slider_thresh->setValue(this->_controller->_floor->_thresh);
 

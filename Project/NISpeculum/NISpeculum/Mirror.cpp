@@ -46,7 +46,12 @@ void Mirror::setup_variables(){
 	this->_points_mirrored = (XnPoint3D *)malloc(sizeof(XnPoint3D) * XN_VGA_Y_RES * XN_VGA_X_RES);
 
 	this->_depth_min = 600;
-	this->_depth_max = 1000;
+	this->_depth_max = 5000;
+
+	this->_color = false;
+	this->_color_r = 255;
+	this->_color_b = 255;
+	this->_color_g = 255;
 }
 
 //-----------------------------------------------------------------------------

@@ -90,6 +90,9 @@ void SpeculumGUI::on_save(){
 void SpeculumGUI::on_load(){
 	this->_controller->_property_manager->_flag_requests[PropertyManager::R_REQUEST] = true;
 	this->_controller->_property_manager->_flag_requests[PropertyManager::R_LOAD] = true;
+
+	//cv::namedWindow("win1");
+	//cv::namedWindow("win2");
 }
 
 void SpeculumGUI::on_pause(){

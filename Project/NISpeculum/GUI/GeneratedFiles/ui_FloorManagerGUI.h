@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'FloorManagerGUI.ui'
 **
-** Created: Mon 16. Sep 22:44:08 2013
+** Created: Wed 12. Feb 14:57:27 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -14,6 +14,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QCheckBox>
 #include <QtGui/QFrame>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
@@ -22,6 +23,7 @@
 #include <QtGui/QMenuBar>
 #include <QtGui/QPushButton>
 #include <QtGui/QSlider>
+#include <QtGui/QSpinBox>
 #include <QtGui/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -52,6 +54,13 @@ public:
     QPushButton *_floor_push_button_add;
     QLabel *_floor_label_thresh;
     QSlider *_floor_horizontal_slider_thresh;
+    QCheckBox *_floor_check_box_color;
+    QLabel *label_4;
+    QSpinBox *_floor_spin_box_color_r;
+    QLabel *label_2;
+    QSpinBox *_floor_spin_box_color_g;
+    QSpinBox *_floor_spin_box_color_b;
+    QLabel *label_3;
     QMenuBar *menubar;
     QMenu *menuFile;
 
@@ -98,7 +107,7 @@ public:
         _floor_horizontal_slider_d->setObjectName(QString::fromUtf8("_floor_horizontal_slider_d"));
         _floor_horizontal_slider_d->setGeometry(QRect(100, 450, 431, 20));
         _floor_horizontal_slider_d->setMinimum(0);
-        _floor_horizontal_slider_d->setMaximum(1000);
+        _floor_horizontal_slider_d->setMaximum(1500);
         _floor_horizontal_slider_d->setValue(500);
         _floor_horizontal_slider_d->setOrientation(Qt::Horizontal);
         _floor_widget = new QWidget(centralwidget);
@@ -123,7 +132,7 @@ public:
         _floor_horizontal_slider_max->setObjectName(QString::fromUtf8("_floor_horizontal_slider_max"));
         _floor_horizontal_slider_max->setGeometry(QRect(100, 310, 431, 20));
         _floor_horizontal_slider_max->setMinimum(400);
-        _floor_horizontal_slider_max->setMaximum(2000);
+        _floor_horizontal_slider_max->setMaximum(5000);
         _floor_horizontal_slider_max->setValue(1000);
         _floor_horizontal_slider_max->setOrientation(Qt::Horizontal);
         _floor_horizontal_slider_min = new QSlider(centralwidget);
@@ -162,10 +171,37 @@ public:
         _floor_horizontal_slider_thresh->setMaximum(50);
         _floor_horizontal_slider_thresh->setValue(10);
         _floor_horizontal_slider_thresh->setOrientation(Qt::Horizontal);
+        _floor_check_box_color = new QCheckBox(centralwidget);
+        _floor_check_box_color->setObjectName(QString::fromUtf8("_floor_check_box_color"));
+        _floor_check_box_color->setGeometry(QRect(20, 50, 71, 21));
+        label_4 = new QLabel(centralwidget);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+        label_4->setGeometry(QRect(180, 80, 16, 21));
+        _floor_spin_box_color_r = new QSpinBox(centralwidget);
+        _floor_spin_box_color_r->setObjectName(QString::fromUtf8("_floor_spin_box_color_r"));
+        _floor_spin_box_color_r->setGeometry(QRect(30, 80, 51, 21));
+        _floor_spin_box_color_r->setMaximum(255);
+        _floor_spin_box_color_r->setValue(255);
+        label_2 = new QLabel(centralwidget);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_2->setGeometry(QRect(20, 80, 16, 21));
+        _floor_spin_box_color_g = new QSpinBox(centralwidget);
+        _floor_spin_box_color_g->setObjectName(QString::fromUtf8("_floor_spin_box_color_g"));
+        _floor_spin_box_color_g->setGeometry(QRect(110, 80, 51, 21));
+        _floor_spin_box_color_g->setMaximum(255);
+        _floor_spin_box_color_g->setValue(255);
+        _floor_spin_box_color_b = new QSpinBox(centralwidget);
+        _floor_spin_box_color_b->setObjectName(QString::fromUtf8("_floor_spin_box_color_b"));
+        _floor_spin_box_color_b->setGeometry(QRect(190, 80, 51, 21));
+        _floor_spin_box_color_b->setMaximum(255);
+        _floor_spin_box_color_b->setValue(255);
+        label_3 = new QLabel(centralwidget);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
+        label_3->setGeometry(QRect(100, 80, 16, 21));
         FloorManager->setCentralWidget(centralwidget);
         menubar = new QMenuBar(FloorManager);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 540, 18));
+        menubar->setGeometry(QRect(0, 0, 540, 21));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         FloorManager->setMenuBar(menubar);
@@ -180,7 +216,7 @@ public:
 
     void retranslateUi(QMainWindow *FloorManager)
     {
-        FloorManager->setWindowTitle(QApplication::translate("FloorManager", "MainWindow", 0, QApplication::UnicodeUTF8));
+        FloorManager->setWindowTitle(QApplication::translate("FloorManager", "FloorManager", 0, QApplication::UnicodeUTF8));
         _floor_action_close->setText(QApplication::translate("FloorManager", "Close", 0, QApplication::UnicodeUTF8));
         _floor_label_a->setText(QApplication::translate("FloorManager", "A:", 0, QApplication::UnicodeUTF8));
         _floor_label_b->setText(QApplication::translate("FloorManager", "B:", 0, QApplication::UnicodeUTF8));
@@ -190,6 +226,10 @@ public:
         _floor_label_max->setText(QApplication::translate("FloorManager", "Max: 1000mm", 0, QApplication::UnicodeUTF8));
         _floor_push_button_add->setText(QApplication::translate("FloorManager", "Add Floor", 0, QApplication::UnicodeUTF8));
         _floor_label_thresh->setText(QApplication::translate("FloorManager", "Thresh: 10mm", 0, QApplication::UnicodeUTF8));
+        _floor_check_box_color->setText(QApplication::translate("FloorManager", "Use Color", 0, QApplication::UnicodeUTF8));
+        label_4->setText(QApplication::translate("FloorManager", "B:", 0, QApplication::UnicodeUTF8));
+        label_2->setText(QApplication::translate("FloorManager", "R:", 0, QApplication::UnicodeUTF8));
+        label_3->setText(QApplication::translate("FloorManager", "G:", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("FloorManager", "File", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

@@ -25,12 +25,17 @@ class __declspec(dllexport) MirrorManagerGUI : public QMainWindow
 
 		void on_button_add_mirror();
 
+		void on_mirror_check_box_color(int value);
+		void on_mirror_spin_box_color_r(int value);
+		void on_mirror_spin_box_color_g(int value);
+		void on_mirror_spin_box_color_b(int value);
+
 		void on_slider_a(int value);
 		void on_slider_b(int value);
 		void on_slider_c(int value);
 		void on_slider_d(int value);
 
-		void on_mirror_checkBox(int value);
+		void on_mirror_spin_box(int value);
 
 		void on_slider_min(int value);
 		void on_slider_max(int value);
