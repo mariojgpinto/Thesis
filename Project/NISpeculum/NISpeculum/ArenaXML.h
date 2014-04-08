@@ -72,6 +72,14 @@
 		#define _XML_FLOOR_ELEM_INPUT_POINT "Point"
 		//CV::POINT
 
+//Mirror Input
+#define _XML_FLOOR_ELEM_DEPTH "Depth"
+	#define _XML_FLOOR_ELEM_DEPTH_MIN "Min"
+		//_XML_VALUE
+	#define _XML_FLOOR_ELEM_DEPTH_MAX "Max"
+		//_XML_VALUE
+	#define _XML_FLOOR_ELEM_THRESHOLD "Threshold"
+		//_XML_VALUE
 
 //MIRROR
 #define _XML_MIRROR_FILE_AREA_MASK "mirror_area_mask_"
@@ -122,5 +130,6 @@
 		//_XML_VALUE
 	#define _XML_MIRROR_ELEM_DEPTH_MAX "Max"
 		//_XML_VALUE
+
 
 #endif //_ARENA_XML

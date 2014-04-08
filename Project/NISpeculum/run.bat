@@ -1,0 +1,1 @@
+Release\NISpeculum.exe ..\data\videos\Test3\BBoxM.oni

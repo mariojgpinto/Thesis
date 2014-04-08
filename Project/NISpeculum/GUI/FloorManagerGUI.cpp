@@ -158,7 +158,7 @@ void FloorManagerGUI::on_slider_c(int value){
 }
 
 void FloorManagerGUI::on_slider_d(int value){
-	if(value < 0) return;
+	//if(value < 0) return;
 	ToolBox::Plane* plane = &this->_controller->_floor->_plane;
 
 	this->_controller->_floor->_plane.set_normalized(plane->_a,plane->_b,plane->_c,value);
@@ -233,9 +233,12 @@ void FloorManagerGUI::update_widget(){
 	if(this->_controller->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE]){
 		cv::Mat temp;
 		this->_controller->_mat_color_bgr.copyTo(temp,this->_controller->_floor->_area_mask);
+		cv::flip(temp,temp,1);
 		this->_cvwidget->setImage(&temp);
 	}
 	else{
-		this->_cvwidget->setImage(&this->_controller->_mat_color_bgr);
+		cv::Mat temp;
+		cv::flip(temp,temp,1);
+		this->_cvwidget->setImage(&temp);
 	}
 }

@@ -157,14 +157,31 @@ void SpeculumGUI::on_slider_max(int value){
 void SpeculumGUI::update_widget(){
 	//if(img)
 		//this->_cvwidget->setImage(img);
+	if(this->_controller->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE] && this->_controller->_property_manager->_flag_processed[PropertyManager::P_MIRROR]){
+		cv::Mat temp;
+		cv::Mat mask_temp;
+		cv::bitwise_and(this->_controller->_mask_mirrors_and_foor, this->_controller->_mask_depth, mask_temp);
+
+		this->_controller->_mat_color_bgr.copyTo(temp,mask_temp);
+		//this->_controller->_mat_color_bgr.copyTo(temp,this->_controller->_mask_mirrors_and_foor);
+		cv::flip(temp,temp,1);
+		this->_cvwidget->setImage(&temp);
+	}
+	else
 	if(this->_controller->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE]){
 		cv::Mat temp;
 
 		this->_controller->_mat_color_bgr.copyTo(temp,this->_controller->_mask_main);
+		cv::flip(temp,temp,1);
 		this->_cvwidget->setImage(&temp);
 	}
-	else
-		this->_cvwidget->setImage(&this->_controller->_mat_color_bgr);
+	else{
+		//NO MASKS
+		cv::Mat temp;
+		this->_controller->_mat_color_bgr.copyTo(temp);
+		cv::flip(temp,temp,1);
+		this->_cvwidget->setImage(&temp);
+	}
 }
 
 //void SpeculumGUI::update_timer(){

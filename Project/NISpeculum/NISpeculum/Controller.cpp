@@ -179,6 +179,10 @@ void Controller::run(int argc, char* argv[]){
 				if(this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE]){
 					this->process_floor_mask();
 					this->remove_floor();
+					if(this->_property_manager->_flag_processed[PropertyManager::P_MIRROR]){
+						this->remove_floor_from_mirrors();
+					}
+
 					pcl_flag += PropertyManager::P_FLOOR_PLANE;
 				}
 			
@@ -269,6 +273,7 @@ void Controller::run(int argc, char* argv[]){
 
 				this->_condition_consumer.notify_all();
 			}
+		
 			if(this->_property_manager->_flag_update[PropertyManager::U_IMAGE]){
 				this->_gui->update();
 			}		
@@ -292,9 +297,11 @@ void Controller::run(int argc, char* argv[]){
 }
 
 void Controller::process_images(){
-	this->_kinect->get_color(this->_mat_color_bgr);
+	this->_kinect->get_color(this->_mat_color_rgb);
+	cv::flip(this->_mat_color_rgb,this->_mat_color_bgr,1);
 
 	this->_kinect->get_depth(this->_mat_depth16UC1);
+	cv::flip(this->_mat_depth16UC1,this->_mat_depth16UC1,1);
 	this->_mat_depth16UC1.convertTo(this->_mat_depth8UC1,CV_8UC1,0.05);
 
 	this->_kinect->get_depth_meta_data(this->_xn_depth_md);
@@ -351,25 +358,25 @@ void Controller::process_request(){
 	
 	if(this->_property_manager->_flag_requests[PropertyManager::R_FLOOR_POINTS]){
 		double a,b,c,d;
-		if(this->_kinect->get_floor_plane(&a,&b,&c,&d)){
-			printf("%f, %f, %f, %f\n",a,b,c,d);
+		//if(this->_kinect->get_floor_plane(&a,&b,&c,&d)){
+		//	printf("%f, %f, %f, %f\n",a,b,c,d);
 
-			this->_floor->set_plane(a,b,c,d);
+		//	this->_floor->set_plane(a,b,c,d);
 
-			this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE] = true;
+		//	this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE] = true;
 
-			cv::destroyWindow("Add Floor");
-		}
-		else{
+		//	//cv::destroyWindow("Add Floor");
+		//}
+		//else{
 			if(this->_aux_points->size() > 2){
 				std::vector<cv::Point3f*> points3d;
 				XnPoint3D *points_in = (XnPoint3D*)malloc(sizeof(XnPoint3D) * _aux_points->size());
 				XnPoint3D *points_out = (XnPoint3D*)malloc(sizeof(XnPoint3D) * _aux_points->size());
-
+				UINT16* ptr_16u = (UINT16*)this->_mat_depth16UC1.data;
 				for(int i = 0 ; i < _aux_points->size() ; ++i){
 					points_in[i].X = _aux_points->at(i)->x;
 					points_in[i].Y = _aux_points->at(i)->y;
-					points_in[i].Z = this->_xn_depth_md[points_in[i].Y * XN_VGA_X_RES + points_in[i].X]; 
+					points_in[i].Z = ptr_16u[((int)points_in[i].Y) * XN_VGA_X_RES + ((int)points_in[i].X)]; 
 				}
 
 				if(! this->_kinect->convert_to_realworld(_aux_points->size(),points_in,points_out)){
@@ -393,7 +400,7 @@ void Controller::process_request(){
 			else{
 				this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE] = false;
 			}
-		}
+		//}
 
 		this->_property_manager->_flag_requests[PropertyManager::R_FLOOR_POINTS] = false;
 	}
@@ -419,12 +426,12 @@ void Controller::process_request(){
 			std::vector<cv::Point3f*> points3d;
 			XnPoint3D *points_in = (XnPoint3D*)malloc(sizeof(XnPoint3D) * this->_aux_points->size());
 			XnPoint3D *points_out = (XnPoint3D*)malloc(sizeof(XnPoint3D) * this->_aux_points->size());
-
+			UINT16* ptr_16u = (UINT16*)this->_mat_depth16UC1.data;
 			for(int i = 0 ; i < this->_aux_points->size() ; ++i){
-				if(this->_xn_depth_md[this->_aux_points->at(i)->y * XN_VGA_X_RES + this->_aux_points->at(i)->x] > 1){
+				if(ptr_16u[this->_aux_points->at(i)->y * XN_VGA_X_RES + this->_aux_points->at(i)->x] > 1){
 					points_in[i].X = this->_aux_points->at(i)->x;
 					points_in[i].Y = this->_aux_points->at(i)->y;
-					points_in[i].Z = this->_xn_depth_md[points_in[i].Y * XN_VGA_X_RES + points_in[i].X]; 
+					points_in[i].Z = ptr_16u[((int)points_in[i].Y) * XN_VGA_X_RES + ((int)points_in[i].X)]; 
 				}
 			}
 
@@ -457,12 +464,12 @@ void Controller::process_request(){
 	}
 
 	if(this->_property_manager->_flag_requests[PropertyManager::R_SAVE]){
-		this->save_to_file("..\\..\\data\\config","arena");
+		this->save_to_file("..\\data\\config","arena");
 		this->_property_manager->_flag_requests[PropertyManager::R_SAVE] = false;
 	}
 
 	if(this->_property_manager->_flag_requests[PropertyManager::R_LOAD]){
-		this->load_from_file("..\\..\\data\\config\\arena.xml");
+		this->load_from_file("..\\data\\config\\arena.xml");
 		this->_gui->update_mirror_manager();
 		this->_property_manager->_flag_processed[PropertyManager::P_MIRROR] = true;
 		this->_property_manager->_flag_processed[PropertyManager::P_FLOOR_PLANE] = true;
@@ -495,12 +502,12 @@ void Controller::process_request(){
 			}
 
 			if(this->_property_manager->_save_pcl_mode == 1){
-				ToolBoxPCL::write_to_ply_file(cloud,this->_property_manager->_file_name);
-			} else
-			if(this->_property_manager->_save_pcl_mode == 1){
 				ToolBoxPCL::write_to_pcd_file(cloud,this->_property_manager->_file_name);
+			} else
+			if(this->_property_manager->_save_pcl_mode == 2){
+				ToolBoxPCL::write_to_ply_file(cloud,this->_property_manager->_file_name);
 			}else
-			if(this->_property_manager->_save_pcl_mode == 1){
+			if(this->_property_manager->_save_pcl_mode == 3){
 				ToolBoxPCL::write_to_obj_file(cloud,this->_property_manager->_file_name);
 			}
 			
@@ -549,6 +556,8 @@ bool Controller::generate_3d(){
 	//CV::INPAINT -> Active Segmentation in 3D using iKnect Sensor
 
 	//cv::GaussianBlur(this->_mat_depth16UC1,this->_mat_depth16UC1,cv::Size(3,3),0);
+	cv::dilate(this->_mat_depth16UC1,this->_mat_depth16UC1,cv::Mat(3,3,CV_8UC1));
+
 	UINT16* ptr_16u = (UINT16*)this->_mat_depth16UC1.data;
 
 
@@ -556,7 +565,7 @@ bool Controller::generate_3d(){
 		for(int x = 0; x < XN_VGA_X_RES ; x += this->_property_manager->_3d_step) { 
 			if(ptr[y * XN_VGA_X_RES + x]){
 				XnPoint3D point1;
-				point1.X = x; 
+				point1.X = x; //point1.X = 640-x; 
 				point1.Y = y; 
 				point1.Z = ptr_16u[y * XN_VGA_X_RES + x]; 
 
@@ -577,6 +586,7 @@ bool Controller::generate_3d_mirrors(){
 
 	float dist;
 	double nx,ny,nz;
+	
 	int idx;
 	//uint8_t* ptr_clr = (uint8_t*)this->_mat_color_bgr.data;
 	//int xx, yy;
@@ -586,7 +596,10 @@ bool Controller::generate_3d_mirrors(){
 		if(mirror){
 			mirror->_n_points = 0;
 			mirror->_plane.get_normal(&nx,&ny,&nz);
-			nx *= -1; ny *= -1; nz *= -1;
+			if(mirror->_plane._d < 0){
+				nx *= -1; ny *= -1; nz *= -1;
+			}
+			//nx *= -1; ny *= -1; nz *= -1;
 
 			uchar* mask_mirror_ptr = mirror->_mask.data;
 			//cv::imshow("win2",mirror->_mask);
@@ -613,7 +626,7 @@ bool Controller::generate_3d_mirrors(){
 						pt.Z = pt.Z + (2 * dist * nz);
 
 						double dist = this->_floor->_plane.distance_to_plane(pt.X,pt.Y,pt.Z);
-						if(dist > this->_floor->_thresh){
+						//if(dist > this->_floor->_thresh){
 							mirror->_points_mirrored[mirror->_n_points].X = pt.X;
 							mirror->_points_mirrored[mirror->_n_points].Y = pt.Y;
 							mirror->_points_mirrored[mirror->_n_points].Z = pt.Z;
@@ -624,7 +637,7 @@ bool Controller::generate_3d_mirrors(){
 							//ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 2] = 255;
 							//ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 1] = 0;
 							//ptr_clr[yy * XN_VGA_X_RES * 3 + xx* 3 + 0] = 0;
-						}
+						//}
 					}
 				}
 			}
@@ -1111,7 +1124,9 @@ void Controller::remove_floor_from_mirrors(){
 			XnPoint3D pt = mirror->_points_mirrored[k];
 			double dist = this->_floor->_plane.distance_to_plane(pt.X,pt.Y,pt.Z);
 			if(dist < this->_floor->_thresh){
-				
+				mirror->_points_mirrored[k].X = 0;
+				mirror->_points_mirrored[k].Y = 0;
+				mirror->_points_mirrored[k].Z = 0;
 			}
 		}
 	}
@@ -1157,7 +1172,7 @@ void Controller::thread_pcl_producer(){
 			this->_kinect->get_depth(_xn_depth_mat);
 		this->_mutex_kinect.unlock();
 
-
+		cv::flip(_xn_depth_mat,_xn_depth_mat,1);
 
 
 		UINT16* ptr_16u = (UINT16*)this->_xn_depth_mat.data;

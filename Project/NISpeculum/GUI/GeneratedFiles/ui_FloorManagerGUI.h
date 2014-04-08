@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'FloorManagerGUI.ui'
 **
-** Created: Wed 12. Feb 14:57:27 2014
+** Created: Sun 30. Mar 11:53:35 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -106,8 +106,8 @@ public:
         _floor_horizontal_slider_d = new QSlider(centralwidget);
         _floor_horizontal_slider_d->setObjectName(QString::fromUtf8("_floor_horizontal_slider_d"));
         _floor_horizontal_slider_d->setGeometry(QRect(100, 450, 431, 20));
-        _floor_horizontal_slider_d->setMinimum(0);
-        _floor_horizontal_slider_d->setMaximum(1500);
+        _floor_horizontal_slider_d->setMinimum(-2000);
+        _floor_horizontal_slider_d->setMaximum(2000);
         _floor_horizontal_slider_d->setValue(500);
         _floor_horizontal_slider_d->setOrientation(Qt::Horizontal);
         _floor_widget = new QWidget(centralwidget);

@@ -160,10 +160,10 @@ void MirrorManagerGUI::on_slider_c(int value){
 }
 
 void MirrorManagerGUI::on_slider_d(int value){
-	if(value < 0) return;
+	//if(value < 0) return;
 	ToolBox::Plane* plane = &this->_controller->_mirrors[this->_idx_mirror]->_plane;
 
-	this->_controller->_mirrors[this->_idx_mirror]->_plane.set_normalized(plane->_a,plane->_b,plane->_c,value*-1);
+	this->_controller->_mirrors[this->_idx_mirror]->_plane.set_normalized(plane->_a,plane->_b,plane->_c,value);
 	
 	char buff[128];
 	sprintf(buff,"A: %.4f\0",plane->_a);
@@ -222,8 +222,8 @@ void MirrorManagerGUI::update_values(){
 		this->on_slider_b(plane->_b * 1000);
 		this->_ui->_mirror_horizontal_slider_c->setValue(plane->_c * 1000);
 		this->on_slider_c(plane->_c * 1000);
-		this->_ui->_mirror_horizontal_slider_d->setValue(plane->_d * -1);
-		this->on_slider_d(plane->_d * 1000);
+		this->_ui->_mirror_horizontal_slider_d->setValue(plane->_d);
+		this->on_slider_d(plane->_d);
 
 		this->_ui->_mirror_horizontal_slider_min->setValue(this->_controller->_mirrors[this->_idx_mirror]->_depth_min);
 		this->_ui->_mirror_horizontal_slider_max->setValue(this->_controller->_mirrors[this->_idx_mirror]->_depth_max);
@@ -234,6 +234,7 @@ void MirrorManagerGUI::update_widget(){
 	if(this->_idx_mirror >= 0){
 		cv::Mat temp;
 		this->_controller->_mat_color_bgr.copyTo(temp,this->_controller->_mirrors[this->_idx_mirror]->_area_mask);
+		cv::flip(temp,temp,1);
 		this->_cvwidget->setImage(&temp);
 	}
 }

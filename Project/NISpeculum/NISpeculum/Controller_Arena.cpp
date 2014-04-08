@@ -123,7 +123,7 @@ bool Controller::save_to_file(char* path, char* filename){
 	}
 
 	//Save XML
-	doc->SaveFile( xml_name.data( ) );
+	tinyxml2::XMLError error = doc->SaveFile( xml_name.data( ) );
 
 	return true;
 }

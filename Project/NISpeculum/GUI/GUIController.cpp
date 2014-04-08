@@ -79,7 +79,9 @@ void GUIController::point_selection(int flag_id, cv::Mat* image){
 				image->copyTo(img);
 			}
 			else{
-				this->_controller->_mat_color_bgr.copyTo(img,this->_controller->_floor->_area_mask);
+				cv::Mat temp;
+				cv::bitwise_and(this->_controller->_floor->_area_mask, this->_controller->_mat_depth8UC1,temp);
+				this->_controller->_mat_color_bgr.copyTo(img,temp);
 			}
 			this->_point_selection_id = flag_id;
 			break;
@@ -97,7 +99,9 @@ void GUIController::point_selection(int flag_id, cv::Mat* image){
 				image->copyTo(img);
 			}
 			else{
-				this->_controller->_mat_color_bgr.copyTo(img,this->_controller->_mirrors[this->_controller->_mirrors.size()-1]->_area_mask);
+				cv::Mat temp;
+				cv::bitwise_and(this->_controller->_mirrors[this->_controller->_mirrors.size()-1]->_area_mask, this->_controller->_mat_depth8UC1,temp);
+				this->_controller->_mat_color_bgr.copyTo(img,temp);
 			}
 			this->_point_selection_id = flag_id;
 			break;

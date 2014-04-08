@@ -561,15 +561,20 @@ bool Floor::save_to_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *elem,
 
 	//DEPTH
 	{
-		tinyxml2::XMLElement *elem_depth = doc->NewElement(_XML_MIRROR_ELEM_DEPTH);
+		tinyxml2::XMLElement *elem_depth = doc->NewElement(_XML_FLOOR_ELEM_DEPTH);
 			
-			tinyxml2::XMLElement *elem_depth_min = doc->NewElement(_XML_MIRROR_ELEM_DEPTH_MIN);
+			tinyxml2::XMLElement *elem_depth_min = doc->NewElement(_XML_FLOOR_ELEM_DEPTH_MIN);
 			elem_depth_min->SetAttribute(_XML_VALUE,this->_depth_min);
 			elem_depth->LinkEndChild(elem_depth_min);
 
-			tinyxml2::XMLElement *elem_depth_max = doc->NewElement(_XML_MIRROR_ELEM_DEPTH_MAX);
+			tinyxml2::XMLElement *elem_depth_max = doc->NewElement(_XML_FLOOR_ELEM_DEPTH_MAX);
 			elem_depth_max->SetAttribute(_XML_VALUE,this->_depth_max);
 			elem_depth->LinkEndChild(elem_depth_max);
+
+			tinyxml2::XMLElement *elem_threshold = doc->NewElement(_XML_FLOOR_ELEM_THRESHOLD);
+			elem_threshold->SetAttribute(_XML_VALUE,this->_thresh);
+			elem_depth->LinkEndChild(elem_threshold);
+			
 
 		elem->LinkEndChild(elem_depth);
 	}
@@ -764,26 +769,34 @@ bool Floor::load_from_file(tinyxml2::XMLDocument *doc, tinyxml2::XMLElement *roo
 	printf("INPUT");
 	//DEPTH
 	{
-		tinyxml2::XMLElement *elem_depth = root->FirstChildElement(_XML_MIRROR_ELEM_DEPTH);
+		tinyxml2::XMLElement *elem_depth = root->FirstChildElement(_XML_FLOOR_ELEM_DEPTH);
 
 		if(!elem_depth) return false;
 
 		int depth_min = 0;
-		tinyxml2::XMLElement *elem_depth_min = elem_depth->FirstChildElement(_XML_MIRROR_ELEM_DEPTH_MIN);
+		tinyxml2::XMLElement *elem_depth_min = elem_depth->FirstChildElement(_XML_FLOOR_ELEM_DEPTH_MIN);
 		if(!elem_depth_min) return false;
 
 		error = elem_depth_min->QueryIntAttribute(_XML_VALUE,&depth_min);
 		if(error) return false;
 
 		int depth_max = 0;
-		tinyxml2::XMLElement *elem_depth_max = elem_depth->FirstChildElement(_XML_MIRROR_ELEM_DEPTH_MAX);
+		tinyxml2::XMLElement *elem_depth_max = elem_depth->FirstChildElement(_XML_FLOOR_ELEM_DEPTH_MAX);
 		if(!elem_depth_max) return false;
 
 		error = elem_depth_max->QueryIntAttribute(_XML_VALUE,&depth_max);
 		if(error) return false;
 
+		int threshold = 0;
+		tinyxml2::XMLElement *elem_threshold = elem_depth->FirstChildElement(_XML_FLOOR_ELEM_THRESHOLD);
+		if(!elem_threshold) return false;
+
+		error = elem_threshold->QueryIntAttribute(_XML_VALUE,&threshold);
+		if(error) return false;
+
 		this->_depth_min = depth_min;
 		this->_depth_max = depth_max;
+		this->_thresh = threshold;
 	}
 	printf("DEPTH");
 	return true;

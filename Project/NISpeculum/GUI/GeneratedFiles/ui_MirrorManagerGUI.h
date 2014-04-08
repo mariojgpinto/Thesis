@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MirrorManagerGUI.ui'
 **
-** Created: Wed 12. Feb 14:53:52 2014
+** Created: Sun 30. Mar 13:19:42 2014
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -106,7 +106,7 @@ public:
         _mirror_horizontal_slider_d = new QSlider(centralwidget);
         _mirror_horizontal_slider_d->setObjectName(QString::fromUtf8("_mirror_horizontal_slider_d"));
         _mirror_horizontal_slider_d->setGeometry(QRect(100, 420, 431, 20));
-        _mirror_horizontal_slider_d->setMinimum(0);
+        _mirror_horizontal_slider_d->setMinimum(-3000);
         _mirror_horizontal_slider_d->setMaximum(3000);
         _mirror_horizontal_slider_d->setValue(500);
         _mirror_horizontal_slider_d->setOrientation(Qt::Horizontal);
@@ -137,16 +137,16 @@ public:
         _mirror_horizontal_slider_max = new QSlider(centralwidget);
         _mirror_horizontal_slider_max->setObjectName(QString::fromUtf8("_mirror_horizontal_slider_max"));
         _mirror_horizontal_slider_max->setGeometry(QRect(100, 280, 431, 20));
-        _mirror_horizontal_slider_max->setMinimum(400);
-        _mirror_horizontal_slider_max->setMaximum(5000);
-        _mirror_horizontal_slider_max->setValue(1000);
+        _mirror_horizontal_slider_max->setMinimum(500);
+        _mirror_horizontal_slider_max->setMaximum(10000);
+        _mirror_horizontal_slider_max->setValue(3000);
         _mirror_horizontal_slider_max->setOrientation(Qt::Horizontal);
         _mirror_horizontal_slider_min = new QSlider(centralwidget);
         _mirror_horizontal_slider_min->setObjectName(QString::fromUtf8("_mirror_horizontal_slider_min"));
         _mirror_horizontal_slider_min->setGeometry(QRect(100, 250, 431, 20));
         _mirror_horizontal_slider_min->setMinimum(400);
-        _mirror_horizontal_slider_min->setMaximum(2000);
-        _mirror_horizontal_slider_min->setValue(500);
+        _mirror_horizontal_slider_min->setMaximum(5000);
+        _mirror_horizontal_slider_min->setValue(1500);
         _mirror_horizontal_slider_min->setOrientation(Qt::Horizontal);
         line_4 = new QFrame(centralwidget);
         line_4->setObjectName(QString::fromUtf8("line_4"));
@@ -219,8 +219,8 @@ public:
         _mirror_label_c->setText(QApplication::translate("MirrorManager", "C:", 0, QApplication::UnicodeUTF8));
         _mirror_label_d->setText(QApplication::translate("MirrorManager", "D:", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("MirrorManager", "Mirror", 0, QApplication::UnicodeUTF8));
-        _mirror_label_min->setText(QApplication::translate("MirrorManager", "Min: 500mm", 0, QApplication::UnicodeUTF8));
-        _mirror_label_max->setText(QApplication::translate("MirrorManager", "Max: 1000mm", 0, QApplication::UnicodeUTF8));
+        _mirror_label_min->setText(QApplication::translate("MirrorManager", "Min: 1500mm", 0, QApplication::UnicodeUTF8));
+        _mirror_label_max->setText(QApplication::translate("MirrorManager", "Max: 3000mm", 0, QApplication::UnicodeUTF8));
         _mirror_push_button_add->setText(QApplication::translate("MirrorManager", "Add Mirror", 0, QApplication::UnicodeUTF8));
         _mirror_check_box_color->setText(QApplication::translate("MirrorManager", "Use Color", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("MirrorManager", "R:", 0, QApplication::UnicodeUTF8));
